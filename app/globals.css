@@ -2,26 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
+/* Remove dark mode gradient from default Next.js template */
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: rgb(250 250 249); /* stone-50 */
+}
+
+/* Print styles */
+@media print {
+  body {
+    background-color: white;
+    font-size: 11pt;
+  }
+
+  header {
+    position: static !important;
+    box-shadow: none !important;
+    border-bottom: 1px solid #e5e7eb !important;
+  }
+
+  textarea {
+    border: 1px solid #d1d5db !important;
+    min-height: 3rem;
+    break-inside: avoid;
+  }
+
+  section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
 }
