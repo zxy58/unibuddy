@@ -2,36 +2,58 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Remove dark mode gradient from default Next.js template */
+:root {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F7F6F4;
+  --text-primary: #111111;
+  --text-secondary: #6B6B6B;
+  --text-tertiary: #9B9B9B;
+  --border-primary: #C8C4BE;
+  --border-secondary: #E0DDD8;
+  --border-tertiary: #EBEBEB;
+  --radius-lg: 12px;
+  --radius-md: 8px;
+
+  /* Brand palette */
+  --purple: #534AB7;
+  --purple-dark: #3C3489;
+  --purple-light: #EEEDFE;
+  --purple-border: #AFA9EC;
+  --green: #1D9E75;
+  --green-dark: #0F6E56;
+  --green-light: #E1F5EE;
+  --green-border: #9FE1CB;
+  --amber: #BA7517;
+  --amber-dark: #633806;
+  --amber-light: #FAEEDA;
+  --amber-border: #FAC775;
+  --red: #D85A30;
+  --red-light: #FAECE7;
+  --red-dark: #993C1D;
+}
+
+* { box-sizing: border-box; }
+
 body {
-  background-color: rgb(250 250 249); /* stone-50 */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #ECEAE5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Print styles */
-@media print {
-  body {
-    background-color: white;
-    font-size: 11pt;
-  }
+/* Scrollbar hide */
+.no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scroll::-webkit-scrollbar { display: none; }
 
-  header {
-    position: static !important;
-    box-shadow: none !important;
-    border-bottom: 1px solid #e5e7eb !important;
-  }
+/* Filter row */
+.filter-row { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 2px; }
+.filter-row::-webkit-scrollbar { display: none; }
 
-  textarea {
-    border: 1px solid #d1d5db !important;
-    min-height: 3rem;
-    break-inside: avoid;
-  }
-
-  section {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-
-  .print\:hidden {
-    display: none !important;
-  }
+/* Textarea reset */
+textarea {
+  font-family: inherit;
+  resize: none;
 }
+
+/* Smooth transitions */
+button { transition: background 0.15s, border-color 0.15s, opacity 0.15s; }
