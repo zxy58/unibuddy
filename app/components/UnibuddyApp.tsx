@@ -129,6 +129,7 @@ export default function UnibuddyApp() {
         toggleAI={toggleAI}
         profile={profile}
         onSignOut={handleSignOut}
+        moves={moves}
       />
     ),
     playbook: (

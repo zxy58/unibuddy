@@ -32,6 +32,12 @@
   --green-light: #D1FAE5;
   --green-border: #6EE7B7;
 
+  /* Indigo blue */
+  --blue: #4F46E5;
+  --blue-dark: #3730A3;
+  --blue-light: #EEF2FF;
+  --blue-border: #C7D2FE;
+
   /* Status: amber */
   --amber: #F59E0B;
   --amber-dark: #B45309;
