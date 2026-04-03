@@ -337,7 +337,7 @@ export default function Dashboard({ goTo, openMove, profile, moves }: DashboardP
             <div>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 3 }}>Did you know?</div>
               <div style={{ fontSize: 12, color: '#78350F', lineHeight: 1.55 }}>
-                "Summer melt" affects up to 40% of first-gen students — accepted students who never show up in fall.
+                &ldquo;Summer melt&rdquo; affects up to 40% of first-gen students — accepted students who never show up in fall.
                 The #1 cause: missing enrollment deposits and FAFSA steps. UniBuddy is built to make sure that doesn&apos;t happen to you.
               </div>
             </div>

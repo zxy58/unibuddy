@@ -208,7 +208,7 @@ export default function ProgressView({ moves, profile, onBack, openMove }: Props
         {(isFirstgen || isLowIncome) && isPreArrival && (
           <div style={{ background: '#FFFBEB', borderRadius: 14, padding: '13px 15px', border: '1px solid #FDE68A' }}>
             <div style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span>💡</span> What is "summer melt"?
+              <span>💡</span> What is &ldquo;summer melt&rdquo;?
             </div>
             <div style={{ fontSize: 12, color: '#78350F', lineHeight: 1.6 }}>
               Up to <strong>40% of first-gen and low-income accepted students</strong> never show up in fall — not because they chose not to go, but because they missed critical enrollment steps like the deposit or FAFSA acceptance. UniBuddy tracks these for you so you don&apos;t fall through the cracks.
