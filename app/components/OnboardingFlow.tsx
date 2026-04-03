@@ -73,7 +73,7 @@ export default function OnboardingFlow({ onComplete }: Props) {
   const primaryBtn = (disabled = false): React.CSSProperties => ({
     width: '100%',
     padding: '13px',
-    background: disabled ? 'var(--border-secondary)' : '#534AB7',
+    background: disabled ? 'var(--border-secondary)' : '#F97316',
     color: disabled ? 'var(--text-tertiary)' : 'white',
     border: 'none',
     borderRadius: 'var(--radius-lg)',
@@ -97,8 +97,8 @@ export default function OnboardingFlow({ onComplete }: Props) {
   const radioCard = (active: boolean): React.CSSProperties => ({
     padding: '11px 14px',
     borderRadius: 'var(--radius-lg)',
-    border: active ? '1.5px solid #534AB7' : '1px solid var(--border-secondary)',
-    background: active ? '#F4F3FD' : 'var(--bg-primary)',
+    border: active ? '1.5px solid #7C3AED' : '1px solid var(--border-secondary)',
+    background: active ? '#F5F3FF' : 'var(--bg-primary)',
     cursor: 'pointer',
     marginBottom: 8,
     transition: 'border-color 0.15s, background 0.15s',
@@ -114,7 +114,7 @@ export default function OnboardingFlow({ onComplete }: Props) {
             flex: 1,
             height: 3,
             borderRadius: 2,
-            background: i < step ? '#534AB7' : i === step ? '#AFA9EC' : 'var(--border-secondary)',
+            background: i < step ? '#7C3AED' : i === step ? '#C4B5FD' : 'var(--border-secondary)',
             transition: 'background 0.3s',
           }}
         />
@@ -135,7 +135,7 @@ export default function OnboardingFlow({ onComplete }: Props) {
               width: 56,
               height: 56,
               borderRadius: 16,
-              background: '#534AB7',
+              background: '#7C3AED',
               color: 'white',
               display: 'flex',
               alignItems: 'center',
@@ -284,7 +284,7 @@ export default function OnboardingFlow({ onComplete }: Props) {
                 style={{
                   fontSize: 13,
                   fontWeight: schoolType === key ? 500 : 400,
-                  color: schoolType === key ? '#534AB7' : 'var(--text-primary)',
+                  color: schoolType === key ? '#7C3AED' : 'var(--text-primary)',
                 }}
               >
                 {label}
@@ -346,7 +346,7 @@ export default function OnboardingFlow({ onComplete }: Props) {
                 style={{
                   fontSize: 14,
                   fontWeight: stage === key ? 500 : 400,
-                  color: stage === key ? '#534AB7' : 'var(--text-primary)',
+                  color: stage === key ? '#7C3AED' : 'var(--text-primary)',
                 }}
               >
                 {label}
@@ -389,9 +389,9 @@ export default function OnboardingFlow({ onComplete }: Props) {
                 style={{
                   padding: '9px 15px',
                   borderRadius: 20,
-                  border: active ? '1.5px solid #534AB7' : '1px solid var(--border-secondary)',
-                  background: active ? '#EEEDFE' : 'var(--bg-primary)',
-                  color: active ? '#534AB7' : 'var(--text-secondary)',
+                  border: active ? '1.5px solid #7C3AED' : '1px solid var(--border-secondary)',
+                  background: active ? '#EDE9FE' : 'var(--bg-primary)',
+                  color: active ? '#7C3AED' : 'var(--text-secondary)',
                   fontSize: 13,
                   cursor: 'pointer',
                   fontWeight: active ? 500 : 400,
@@ -451,7 +451,7 @@ export default function OnboardingFlow({ onComplete }: Props) {
           <div style={qLabel}>When you hit a problem, you usually...</div>
           {q1.map((o) => (
             <div key={o.val} onClick={() => setApproach(o.val)} style={radioCard(approach === o.val)}>
-              <div style={{ fontSize: 13, fontWeight: approach === o.val ? 500 : 400, color: approach === o.val ? '#534AB7' : 'var(--text-primary)' }}>
+              <div style={{ fontSize: 13, fontWeight: approach === o.val ? 500 : 400, color: approach === o.val ? '#7C3AED' : 'var(--text-primary)' }}>
                 {o.label}
               </div>
             </div>
@@ -462,7 +462,7 @@ export default function OnboardingFlow({ onComplete }: Props) {
           <div style={qLabel}>In a new environment, you tend to...</div>
           {q2.map((o) => (
             <div key={o.val} onClick={() => setNewSituation(o.val)} style={radioCard(newSituation === o.val)}>
-              <div style={{ fontSize: 13, fontWeight: newSituation === o.val ? 500 : 400, color: newSituation === o.val ? '#534AB7' : 'var(--text-primary)' }}>
+              <div style={{ fontSize: 13, fontWeight: newSituation === o.val ? 500 : 400, color: newSituation === o.val ? '#7C3AED' : 'var(--text-primary)' }}>
                 {o.label}
               </div>
             </div>
@@ -473,7 +473,7 @@ export default function OnboardingFlow({ onComplete }: Props) {
           <div style={qLabel}>You trust advice most when it comes from...</div>
           {q3.map((o) => (
             <div key={o.val} onClick={() => setTrustSource(o.val)} style={radioCard(trustSource === o.val)}>
-              <div style={{ fontSize: 13, fontWeight: trustSource === o.val ? 500 : 400, color: trustSource === o.val ? '#534AB7' : 'var(--text-primary)' }}>
+              <div style={{ fontSize: 13, fontWeight: trustSource === o.val ? 500 : 400, color: trustSource === o.val ? '#7C3AED' : 'var(--text-primary)' }}>
                 {o.label}
               </div>
             </div>
@@ -512,8 +512,8 @@ export default function OnboardingFlow({ onComplete }: Props) {
                   width: 40,
                   height: 40,
                   borderRadius: '50%',
-                  background: '#EEEDFE',
-                  color: '#534AB7',
+                  background: '#EDE9FE',
+                  color: '#7C3AED',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -581,9 +581,9 @@ export default function OnboardingFlow({ onComplete }: Props) {
                     padding: '4px 10px',
                     borderRadius: 20,
                     fontSize: 12,
-                    background: '#EEEDFE',
-                    color: '#3C3489',
-                    border: '1px solid #AFA9EC',
+                    background: '#EDE9FE',
+                    color: '#5B21B6',
+                    border: '1px solid #C4B5FD',
                   }}
                 >
                   {goalLabels[g]}

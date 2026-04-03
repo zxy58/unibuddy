@@ -28,7 +28,7 @@ const moveOrder = ['dso', 'i20', 'sevis', 'critique', 'officehours']
 
 const statusConfig = {
   made: { dot: '#1D9E75', label: 'Made it', labelColor: '#0F6E56', border: '#1D9E75' },
-  learned: { dot: '#534AB7', label: 'Learned', labelColor: '#3C3489', border: '#534AB7' },
+  learned: { dot: '#7C3AED', label: 'Learned', labelColor: '#5B21B6', border: '#7C3AED' },
   peer: { dot: '#BA7517', label: 'From peer', labelColor: '#633806', border: '#BA7517' },
   locked: { dot: 'var(--border-secondary)', label: 'Locked', labelColor: 'var(--text-tertiary)', border: 'var(--border-tertiary)' },
 }
@@ -96,7 +96,7 @@ export default function Playbook({
                 borderRadius: 20,
                 padding: '6px 12px',
                 fontSize: 12,
-                background: filter === f.id ? '#534AB7' : 'var(--bg-primary)',
+                background: filter === f.id ? '#F97316' : 'var(--bg-primary)',
                 color: filter === f.id ? 'white' : 'var(--text-secondary)',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',

@@ -27,7 +27,7 @@ function ProgressRing({ value, total }: { value: number; total: number }) {
       <circle
         cx="60" cy="60" r={r}
         fill="none"
-        stroke="#534AB7"
+        stroke="#7C3AED"
         strokeWidth="10"
         strokeDasharray={`${filled} ${circ}`}
         strokeLinecap="round"
@@ -53,7 +53,7 @@ function MilestonePill({
   const cfg = {
     critical: { bg: '#FAECE7', border: '#D85A30', num: '#D85A30', dot: '#D85A30' },
     soon:     { bg: '#FEF7EC', border: '#FAC775', num: '#BA7517', dot: '#BA7517' },
-    upcoming: { bg: '#EEEDFE', border: '#AFA9EC', num: '#534AB7', dot: '#534AB7' },
+    upcoming: { bg: '#EDE9FE', border: '#C4B5FD', num: '#7C3AED', dot: '#7C3AED' },
     done:     { bg: '#E1F5EE', border: '#9FE1CB', num: '#1D9E75', dot: '#1D9E75' },
   }[urgency]
 
@@ -161,8 +161,8 @@ export default function Dashboard({ goTo, openMove, aiExpanded, toggleAI, profil
                 width: 36,
                 height: 36,
                 borderRadius: '50%',
-                background: '#EEEDFE',
-                color: '#534AB7',
+                background: '#EDE9FE',
+                color: '#7C3AED',
                 border: 'none',
                 cursor: 'pointer',
                 display: 'flex',
@@ -182,7 +182,7 @@ export default function Dashboard({ goTo, openMove, aiExpanded, toggleAI, profil
         {/* ── Hero progress card ── */}
         <div
           style={{
-            background: 'linear-gradient(135deg, #534AB7 0%, #3C3489 100%)',
+            background: 'linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)',
             borderRadius: 20,
             padding: '20px 20px 16px',
             color: 'white',
@@ -295,7 +295,7 @@ export default function Dashboard({ goTo, openMove, aiExpanded, toggleAI, profil
                 left: 36,
                 right: 8,
                 height: 1.5,
-                background: 'linear-gradient(90deg, #534AB7 0%, var(--border-secondary) 100%)',
+                background: 'linear-gradient(90deg, #7C3AED 0%, var(--border-secondary) 100%)',
                 zIndex: 0,
               }}
             />
@@ -410,7 +410,7 @@ export default function Dashboard({ goTo, openMove, aiExpanded, toggleAI, profil
               {/* AI nudge — subtle, inline */}
               <div
                 style={{
-                  background: '#F4F3FD',
+                  background: '#F5F3FF',
                   borderRadius: 10,
                   padding: '9px 12px',
                   marginBottom: 14,
@@ -420,7 +420,7 @@ export default function Dashboard({ goTo, openMove, aiExpanded, toggleAI, profil
                 }}
               >
                 <div style={{ fontSize: 12, flexShrink: 0 }}>✦</div>
-                <div style={{ fontSize: 12, color: '#3C3489', lineHeight: 1.5 }}>
+                <div style={{ fontSize: 12, color: '#5B21B6', lineHeight: 1.5 }}>
                   {nudge.body.length > 110 ? nudge.body.slice(0, 110) + '…' : nudge.body}
                 </div>
               </div>
@@ -432,7 +432,7 @@ export default function Dashboard({ goTo, openMove, aiExpanded, toggleAI, profil
                   style={{
                     flex: 1,
                     padding: '11px',
-                    background: '#534AB7',
+                    background: '#F97316',
                     color: 'white',
                     border: 'none',
                     borderRadius: 10,
@@ -472,7 +472,7 @@ export default function Dashboard({ goTo, openMove, aiExpanded, toggleAI, profil
                     border: '0.5px solid var(--border-tertiary)',
                   }}
                 >
-                  <div style={{ fontSize: 10, color: '#534AB7', fontWeight: 600, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                  <div style={{ fontSize: 10, color: '#7C3AED', fontWeight: 600, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
                     For your profile
                   </div>
                   <div style={{ fontSize: 12, color: 'var(--text-primary)', lineHeight: 1.6 }}>
@@ -573,7 +573,7 @@ export default function Dashboard({ goTo, openMove, aiExpanded, toggleAI, profil
             >
               Know this week
             </div>
-            <div style={{ fontSize: 11, color: '#534AB7', fontWeight: 500 }}>
+            <div style={{ fontSize: 11, color: '#7C3AED', fontWeight: 500 }}>
               {knowExpanded ? 'Hide ▴' : '1 move ▾'}
             </div>
           </button>
@@ -638,7 +638,7 @@ export default function Dashboard({ goTo, openMove, aiExpanded, toggleAI, profil
               onClick={() => goTo('playbook')}
               style={{
                 fontSize: 11,
-                color: '#534AB7',
+                color: '#7C3AED',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
@@ -657,9 +657,9 @@ export default function Dashboard({ goTo, openMove, aiExpanded, toggleAI, profil
             }}
           >
             {[
-              { key: 'i20',      dot: '#534AB7', label: 'How to request your I-20',     badge: 'Learned',  badgeBg: '#EEEDFE', badgeTxt: '#3C3489' },
+              { key: 'i20',      dot: '#7C3AED', label: 'How to request your I-20',     badge: 'Learned',  badgeBg: '#EDE9FE', badgeTxt: '#5B21B6' },
               { key: 'dso',      dot: '#1D9E75', label: 'The DSO email formula',         badge: 'Made it',  badgeBg: '#E1F5EE', badgeTxt: '#0F6E56' },
-              { key: 'critique', dot: '#BA7517', label: 'Surviving critique culture',    badge: 'Learned',  badgeBg: '#EEEDFE', badgeTxt: '#3C3489' },
+              { key: 'critique', dot: '#BA7517', label: 'Surviving critique culture',    badge: 'Learned',  badgeBg: '#EDE9FE', badgeTxt: '#5B21B6' },
             ].map((item, i) => (
               <div
                 key={item.key}
