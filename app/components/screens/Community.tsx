@@ -72,6 +72,7 @@ export default function Community({
   showToast,
 }: CommunityProps) {
   const [filter, setFilter] = useState<CategoryFilter>('all')
+  const [expandedQuotes, setExpandedQuotes] = useState<Record<string, boolean>>({})
 
   const categories: { id: CategoryFilter; label: string }[] = [
     { id: 'all', label: 'All' },
@@ -223,17 +224,36 @@ export default function Community({
                 </div>
               </div>
 
-              {/* Quote */}
-              <div
-                style={{
-                  fontSize: 13,
-                  color: 'var(--text-secondary)',
-                  lineHeight: 1.5,
-                  fontStyle: 'italic',
-                  marginBottom: 10,
-                }}
-              >
-                {post.quote}
+              {/* Quote — truncated until expanded */}
+              <div style={{ marginBottom: 10 }}>
+                <div
+                  style={{
+                    fontSize: 13,
+                    color: 'var(--text-secondary)',
+                    lineHeight: 1.5,
+                    fontStyle: 'italic',
+                    overflow: expandedQuotes[post.id] ? 'visible' : 'hidden',
+                    display: expandedQuotes[post.id] ? 'block' : '-webkit-box',
+                    WebkitLineClamp: expandedQuotes[post.id] ? undefined : 2,
+                    WebkitBoxOrient: 'vertical',
+                  } as React.CSSProperties}
+                >
+                  {post.quote}
+                </div>
+                <button
+                  onClick={() => setExpandedQuotes((prev) => ({ ...prev, [post.id]: !prev[post.id] }))}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontSize: 11,
+                    color: '#534AB7',
+                    cursor: 'pointer',
+                    padding: '3px 0 0',
+                    display: 'block',
+                  }}
+                >
+                  {expandedQuotes[post.id] ? 'Read less' : 'Read more'}
+                </button>
               </div>
 
               {/* Actions */}

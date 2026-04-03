@@ -18,6 +18,7 @@ const reflectionOptions = [
 
 export default function Growth({ openShareModal }: GrowthProps) {
   const [selectedRefl, setSelectedRefl] = useState<string | null>(null)
+  const [expandedNotes, setExpandedNotes] = useState<Record<string, boolean>>({})
 
   const sectionLabel: React.CSSProperties = {
     fontSize: 11,
@@ -137,7 +138,12 @@ export default function Growth({ openShareModal }: GrowthProps) {
                 background: 'var(--bg-primary)',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
+              <div
+                style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}
+                onClick={() =>
+                  setExpandedNotes((prev) => ({ ...prev, [gm.title]: !prev[gm.title] }))
+                }
+              >
                 <div
                   style={{
                     width: 32,
@@ -155,45 +161,53 @@ export default function Growth({ openShareModal }: GrowthProps) {
                   {gm.icon}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div
-                    style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', marginBottom: 2 }}
-                  >
+                  <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', marginBottom: 2 }}>
                     {gm.title}
                   </div>
                   <div style={{ fontSize: 11, color: '#1D9E75' }}>{gm.date}</div>
                 </div>
+                <div style={{ fontSize: 13, color: 'var(--text-tertiary)', lineHeight: 1, alignSelf: 'center' }}>
+                  {expandedNotes[gm.title] ? '▴' : '▾'}
+                </div>
               </div>
-              <div
-                style={{
-                  fontSize: 13,
-                  color: 'var(--text-secondary)',
-                  lineHeight: 1.5,
-                  fontStyle: 'italic',
-                }}
-              >
-                {gm.note}
-              </div>
-              {gm.showShare && gm.moveKey && (
-                <div style={{ marginTop: 8 }}>
-                  <button
-                    onClick={() => openShareModal(gm.moveKey!)}
+              {expandedNotes[gm.title] && (
+                <>
+                  <div
                     style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 5,
-                      fontSize: 11,
-                      color: '#534AB7',
-                      background: '#EEEDFE',
-                      border: 'none',
-                      borderRadius: 'var(--radius-md)',
-                      padding: '5px 10px',
-                      cursor: 'pointer',
-                      fontWeight: 500,
+                      fontSize: 13,
+                      color: 'var(--text-secondary)',
+                      lineHeight: 1.5,
+                      fontStyle: 'italic',
+                      marginTop: 10,
+                      paddingTop: 10,
+                      borderTop: '0.5px solid var(--border-tertiary)',
                     }}
                   >
-                    Share this move →
-                  </button>
-                </div>
+                    {gm.note}
+                  </div>
+                  {gm.showShare && gm.moveKey && (
+                    <div style={{ marginTop: 8 }}>
+                      <button
+                        onClick={() => openShareModal(gm.moveKey!)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 5,
+                          fontSize: 11,
+                          color: '#534AB7',
+                          background: '#EEEDFE',
+                          border: 'none',
+                          borderRadius: 'var(--radius-md)',
+                          padding: '5px 10px',
+                          cursor: 'pointer',
+                          fontWeight: 500,
+                        }}
+                      >
+                        Share this move →
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           ))}

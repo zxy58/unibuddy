@@ -10,10 +10,15 @@ import Community from './screens/Community'
 import Inbox from './screens/Inbox'
 import ShareModal from './modals/ShareModal'
 import LogModal from './modals/LogModal'
+import OnboardingFlow from './OnboardingFlow'
 import { initialMoves, peers } from '@/app/lib/data'
 import type { TabName, Move } from '@/app/lib/types'
+import type { UserProfile } from '@/app/lib/profile'
+import { loadProfile, saveProfile, clearProfile } from '@/app/lib/profile'
 
 export default function UnibuddyApp() {
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [profileLoaded, setProfileLoaded] = useState(false)
   const [activeTab, setActiveTab] = useState<TabName>('dash')
   const [activeMove, setActiveMove] = useState<string | null>(null)
   const [shareModalOpen, setShareModalOpen] = useState(false)
@@ -33,7 +38,22 @@ export default function UnibuddyApp() {
     toastTimer.current = setTimeout(() => setToast(null), 2400)
   }, [])
 
+  useEffect(() => {
+    setProfile(loadProfile())
+    setProfileLoaded(true)
+  }, [])
+
   useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current) }, [])
+
+  const handleProfileComplete = useCallback((p: UserProfile) => {
+    saveProfile(p)
+    setProfile(p)
+  }, [])
+
+  const handleSignOut = useCallback(() => {
+    clearProfile()
+    setProfile(null)
+  }, [])
 
   const goTo = useCallback((tab: TabName, moveKey?: string) => {
     setActiveTab(tab)
@@ -107,6 +127,8 @@ export default function UnibuddyApp() {
         openShareModal={openShareModal}
         aiExpanded={aiExpanded}
         toggleAI={toggleAI}
+        profile={profile}
+        onSignOut={handleSignOut}
       />
     ),
     playbook: (
@@ -139,6 +161,71 @@ export default function UnibuddyApp() {
         goTo={goTo}
       />
     ),
+  }
+
+  const phoneFrame = (children: React.ReactNode, showNav = false) => (
+    <div
+      style={{
+        minHeight: '100dvh',
+        background: '#ECEAE5',
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        padding: '24px 0',
+      }}
+    >
+      <div
+        style={{
+          width: 375,
+          minHeight: 780,
+          maxHeight: 'calc(100dvh - 48px)',
+          background: 'var(--bg-primary)',
+          border: '0.5px solid var(--border-secondary)',
+          borderRadius: 36,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          boxShadow: '0 24px 80px rgba(0,0,0,0.12), 0 4px 24px rgba(0,0,0,0.06)',
+        }}
+      >
+        {/* Status bar */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '12px 20px 4px',
+            fontSize: 12,
+            color: 'var(--text-secondary)',
+            fontWeight: 500,
+            flexShrink: 0,
+          }}
+        >
+          <span>9:41</span>
+          <span style={{ letterSpacing: 2 }}>●●●</span>
+        </div>
+        {children}
+        {showNav && (
+          <BottomNav
+            active={activeTab}
+            onNavigate={(tab) => {
+              setActiveTab(tab)
+              if (tab !== 'playbook') setActiveMove(null)
+            }}
+            inboxCount={1}
+          />
+        )}
+      </div>
+    </div>
+  )
+
+  // Show onboarding until profile is saved
+  if (!profileLoaded) return null
+  if (!profile) {
+    return phoneFrame(
+      <OnboardingFlow onComplete={handleProfileComplete} />
+    )
   }
 
   return (

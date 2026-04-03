@@ -1,6 +1,10 @@
 'use client'
 
+import { useState } from 'react'
 import type { TabName } from '@/app/lib/types'
+import type { UserProfile } from '@/app/lib/profile'
+import { cohortColors } from '@/app/lib/recommendations'
+import { getDashboardNudge, getCohortTag } from '@/app/lib/recommendations'
 
 interface DashboardProps {
   goTo: (tab: TabName, moveKey?: string) => void
@@ -8,9 +12,22 @@ interface DashboardProps {
   openShareModal: (moveKey?: string) => void
   aiExpanded: Record<string, boolean>
   toggleAI: (id: string) => void
+  profile?: UserProfile | null
+  onSignOut?: () => void
 }
 
-export default function Dashboard({ goTo, openMove, aiExpanded, toggleAI }: DashboardProps) {
+export default function Dashboard({ goTo, openMove, aiExpanded, toggleAI, profile, onSignOut }: DashboardProps) {
+  const [knowExpanded, setKnowExpanded] = useState(false)
+  const [actExpanded, setActExpanded] = useState<Record<string, boolean>>({ act0: true })
+
+  const firstName = profile?.name?.split(' ')[0] || 'Muzi'
+  const cohortTag = profile ? getCohortTag(profile) : 'Pre-arrival · 47 days to go'
+  const nudge = profile ? getDashboardNudge(profile) : {
+    title: 'UniBuddy noticed',
+    body: 'Your I-20 window opens in 8 days. Learning this move now gives you exactly enough time to make it before your visa appointment window closes.',
+    moveKey: 'i20',
+  }
+
   const sectionLabel: React.CSSProperties = {
     fontSize: 11,
     color: 'var(--text-tertiary)',
@@ -72,17 +89,94 @@ export default function Dashboard({ goTo, openMove, aiExpanded, toggleAI }: Dash
       </div>
     ) : null
 
+  const actItems = [
+    {
+      id: 'act0',
+      borderColor: '#D85A30',
+      title: 'Request your I-20 from your DSO',
+      badge: '8 days',
+      badgeBg: '#FAECE7',
+      badgeColor: '#993C1D',
+      desc: "Without this, your visa appointment can't be booked. Learning this move earns it in your playbook.",
+      moveKey: 'i20',
+      aiId: 'dai1',
+      aiLabel: 'For your profile',
+      aiText: "Based on your Aug 24 arrival, your visa appointment must be before Aug 10. Request this week — don't wait past Friday.",
+    },
+    {
+      id: 'act1',
+      borderColor: '#534AB7',
+      title: 'Confirm housing deposit',
+      badge: '12 days',
+      badgeBg: '#EEEDFE',
+      badgeColor: '#3C3489',
+      desc: "Your room is released if the deposit isn't received in time.",
+      moveKey: 'playbook',
+      aiId: 'dai2',
+      aiLabel: 'Housing scam alert',
+      aiText: 'Before paying: verify the listing on Google Maps Street View, confirm landlord name matches county records, and never pay via wire transfer or gift cards.',
+    },
+  ]
+
   return (
     <div className="no-scroll" style={{ display: 'flex', flexDirection: 'column', flex: 1, overflowY: 'auto' }}>
       <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 14, flex: 1 }}>
-        {/* Greeting */}
-        <div>
-          <div style={{ fontSize: 18, fontWeight: 500, color: 'var(--text-primary)' }}>
-            Good morning, Muzi
+
+        {/* Greeting row */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 500, color: 'var(--text-primary)' }}>
+              Good morning, {firstName}
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 3 }}>
+              {cohortTag}
+            </div>
+            {/* Cohort badges */}
+            {profile && profile.cohorts.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 6 }}>
+                {profile.cohorts.map((c) => (
+                  <span
+                    key={c}
+                    style={{
+                      padding: '3px 8px',
+                      borderRadius: 20,
+                      fontSize: 10,
+                      fontWeight: 500,
+                      background: cohortColors[c].bg,
+                      color: cohortColors[c].text,
+                      border: `0.5px solid ${cohortColors[c].border}`,
+                    }}
+                  >
+                    {c === 'international' ? 'Intl' : c === 'firstgen' ? 'First-gen' : c === 'lowincome' ? 'Financial aid' : 'Transfer'}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
-          <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 3 }}>
-            Pre-arrival · 47 days to go
-          </div>
+          {/* Avatar / sign out */}
+          {profile && (
+            <button
+              onClick={onSignOut}
+              title="Sign out"
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: '50%',
+                background: '#EEEDFE',
+                color: '#534AB7',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 14,
+                fontWeight: 600,
+                flexShrink: 0,
+              }}
+            >
+              {firstName[0]?.toUpperCase()}
+            </button>
+          )}
         </div>
 
         {/* Peer notification */}
@@ -178,7 +272,7 @@ export default function Dashboard({ goTo, openMove, aiExpanded, toggleAI }: Dash
           </div>
         </div>
 
-        {/* AI nudge */}
+        {/* AI nudge — personalized */}
         <div
           style={{
             background: '#EEEDFE',
@@ -188,159 +282,142 @@ export default function Dashboard({ goTo, openMove, aiExpanded, toggleAI }: Dash
           }}
         >
           <div style={{ fontSize: 11, color: '#534AB7', fontWeight: 500, marginBottom: 4 }}>
-            UniBuddy noticed
+            {nudge.title}
           </div>
           <div style={{ fontSize: 13, color: '#3C3489', lineHeight: 1.5, marginBottom: 8 }}>
-            Your I-20 window opens in 8 days. Learning this move now gives you exactly enough time to
-            make it before your visa appointment window closes.
+            {nudge.body}
           </div>
-          <button style={shb('purple') as React.CSSProperties} onClick={() => openMove('i20')}>
+          <button style={shb('purple') as React.CSSProperties} onClick={() => openMove(nudge.moveKey)}>
             Learn the move →
           </button>
         </div>
 
-        {/* Act now */}
+        {/* Act now — collapsible items */}
         <div style={sectionLabel}>Act now</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {/* Urgent item 1 */}
-          <div
-            style={{
-              border: '0.5px solid var(--border-tertiary)',
-              borderLeft: '3px solid #D85A30',
-              borderRadius: '0 var(--radius-lg) var(--radius-lg) 0',
-              padding: '14px 16px',
-              background: 'var(--bg-primary)',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                justifyContent: 'space-between',
-                gap: 8,
-                marginBottom: 4,
-              }}
-            >
-              <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-primary)' }}>
-                Request your I-20 from your DSO
-              </div>
+          {actItems.map((item) => {
+            const expanded = actExpanded[item.id] !== false
+            return (
               <div
+                key={item.id}
                 style={{
-                  fontSize: 11,
-                  padding: '3px 8px',
-                  borderRadius: 20,
-                  background: '#FAECE7',
-                  color: '#993C1D',
-                  whiteSpace: 'nowrap',
-                  flexShrink: 0,
+                  border: '0.5px solid var(--border-tertiary)',
+                  borderLeft: `3px solid ${item.borderColor}`,
+                  borderRadius: '0 var(--radius-lg) var(--radius-lg) 0',
+                  padding: '14px 16px',
+                  background: 'var(--bg-primary)',
                 }}
               >
-                8 days
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    justifyContent: 'space-between',
+                    gap: 8,
+                    marginBottom: expanded ? 4 : 0,
+                    cursor: 'pointer',
+                  }}
+                  onClick={() => setActExpanded((prev) => ({ ...prev, [item.id]: !expanded }))}
+                >
+                  <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-primary)' }}>
+                    {item.title}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                    <div
+                      style={{
+                        fontSize: 11,
+                        padding: '3px 8px',
+                        borderRadius: 20,
+                        background: item.badgeBg,
+                        color: item.badgeColor,
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {item.badge}
+                    </div>
+                    <div style={{ fontSize: 14, color: 'var(--text-tertiary)', lineHeight: 1 }}>
+                      {expanded ? '▾' : '▸'}
+                    </div>
+                  </div>
+                </div>
+                {expanded && (
+                  <>
+                    <div
+                      style={{
+                        fontSize: 12,
+                        color: 'var(--text-secondary)',
+                        marginBottom: 10,
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {item.desc}
+                    </div>
+                    <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', alignItems: 'center' }}>
+                      <button
+                        style={shb('purple') as React.CSSProperties}
+                        onClick={() => item.moveKey === 'playbook' ? goTo('playbook') : openMove(item.moveKey)}
+                      >
+                        Learn the move →
+                      </button>
+                      <button style={helpBtn} onClick={() => toggleAI(item.aiId)}>
+                        ? Ask UniBuddy
+                      </button>
+                    </div>
+                    {aiBox(item.aiId, item.aiLabel, item.aiText)}
+                  </>
+                )}
               </div>
-            </div>
-            <div
-              style={{
-                fontSize: 12,
-                color: 'var(--text-secondary)',
-                marginBottom: 10,
-                lineHeight: 1.5,
-              }}
-            >
-              Without this, your visa appointment can&apos;t be booked. Learning this move earns it in
-              your playbook.
-            </div>
-            <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', alignItems: 'center' }}>
-              <button style={shb('purple') as React.CSSProperties} onClick={() => openMove('i20')}>
-                Learn the move →
-              </button>
-              <button style={helpBtn} onClick={() => toggleAI('dai1')}>
-                ? Ask UniBuddy
-              </button>
-            </div>
-            {aiBox('dai1', 'For your profile', 'Based on your Aug 24 arrival, your visa appointment must be before Aug 10. Request this week — don\'t wait past Friday.')}
-          </div>
-
-          {/* Urgent item 2 */}
-          <div
-            style={{
-              border: '0.5px solid var(--border-tertiary)',
-              borderLeft: '3px solid #534AB7',
-              borderRadius: '0 var(--radius-lg) var(--radius-lg) 0',
-              padding: '14px 16px',
-              background: 'var(--bg-primary)',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                justifyContent: 'space-between',
-                gap: 8,
-                marginBottom: 4,
-              }}
-            >
-              <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-primary)' }}>
-                Confirm housing deposit
-              </div>
-              <div
-                style={{
-                  fontSize: 11,
-                  padding: '3px 8px',
-                  borderRadius: 20,
-                  background: '#EEEDFE',
-                  color: '#3C3489',
-                  whiteSpace: 'nowrap',
-                  flexShrink: 0,
-                }}
-              >
-                12 days
-              </div>
-            </div>
-            <div
-              style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 10, lineHeight: 1.5 }}
-            >
-              Your room is released if the deposit isn&apos;t received in time.
-            </div>
-            <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', alignItems: 'center' }}>
-              <button style={shb('purple') as React.CSSProperties} onClick={() => goTo('playbook')}>
-                Learn the move →
-              </button>
-              <button style={helpBtn} onClick={() => toggleAI('dai2')}>
-                ? Ask UniBuddy
-              </button>
-            </div>
-            {aiBox('dai2', 'Housing scam alert', 'Before paying: verify the listing on Google Maps Street View, confirm landlord name matches county records, and never pay via wire transfer or gift cards.')}
-          </div>
+            )
+          })}
         </div>
 
-        {/* Know this week */}
-        <div style={sectionLabel}>Know this week</div>
-        <div
+        {/* Know this week — collapsible */}
+        <button
+          onClick={() => setKnowExpanded((v) => !v)}
           style={{
-            border: '0.5px solid var(--border-tertiary)',
-            borderLeft: '3px solid #1D9E75',
-            borderRadius: '0 var(--radius-lg) var(--radius-lg) 0',
-            padding: '14px 16px',
-            background: 'var(--bg-primary)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+            width: '100%',
           }}
         >
-          <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-primary)', marginBottom: 5 }}>
-            Office hours — the move nobody teaches you
+          <div style={sectionLabel}>Know this week</div>
+          <div style={{ fontSize: 12, color: '#534AB7' }}>
+            {knowExpanded ? 'Hide ▴' : '1 move ▾'}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 10, lineHeight: 1.5 }}>
-            Most students go when struggling. The students who go in week 2 are the ones professors
-            remember for 4 years.
+        </button>
+        {knowExpanded && (
+          <div
+            style={{
+              border: '0.5px solid var(--border-tertiary)',
+              borderLeft: '3px solid #1D9E75',
+              borderRadius: '0 var(--radius-lg) var(--radius-lg) 0',
+              padding: '14px 16px',
+              background: 'var(--bg-primary)',
+            }}
+          >
+            <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-primary)', marginBottom: 5 }}>
+              Office hours — the move nobody teaches you
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 10, lineHeight: 1.5 }}>
+              Most students go when struggling. The students who go in week 2 are the ones professors
+              remember for 4 years.
+            </div>
+            <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', alignItems: 'center' }}>
+              <button style={shb('green') as React.CSSProperties} onClick={() => openMove('officehours')}>
+                Learn this move →
+              </button>
+              <button style={helpBtn} onClick={() => toggleAI('dai3')}>
+                ? Ask UniBuddy
+              </button>
+            </div>
+            {aiBox('dai3', profile?.schoolName ? `For ${profile.schoolName} specifically` : 'For your school', 'At RISD, critique faculty remember students who come before crits, not after. Go once in week 2, introduce yourself, ask one genuine question about their practice.')}
           </div>
-          <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', alignItems: 'center' }}>
-            <button style={shb('green') as React.CSSProperties} onClick={() => openMove('officehours')}>
-              Learn this move →
-            </button>
-            <button style={helpBtn} onClick={() => toggleAI('dai3')}>
-              ? Ask UniBuddy
-            </button>
-          </div>
-          {aiBox('dai3', 'For RISD specifically', 'At RISD, critique faculty remember students who come before crits, not after. Go once in week 2, introduce yourself, ask one genuine question about their practice.')}
-        </div>
+        )}
 
         {/* Recent moves */}
         <div
