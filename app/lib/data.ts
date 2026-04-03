@@ -1,6 +1,108 @@
 import type { Move, Peer } from './types'
 
 export const initialMoves: Record<string, Move> = {
+  enrolldeposit: {
+    title: 'Pay your enrollment deposit — lock in your spot',
+    meta: 'Learned · Financial · Pre-arrival',
+    type: 'learned',
+    tags: ['financial'],
+    steps: [
+      'Log into your admissions portal NOW — most schools require a deposit by May 1 (National Decision Day) or earlier.',
+      'Find "Enrollment Deposit" or "Confirm Enrollment" — the amount is usually $100–$500 and is non-refundable.',
+      'Pay with a card or bank transfer. Save the confirmation email — you\'ll need it to access housing portals and orientation.',
+      'After paying, withdraw from any other schools you were considering (one deposit only — it\'s the ethical and required standard).',
+      'Look for a follow-up email about next steps: NetID activation, housing application, and orientation registration.',
+    ],
+    insider:
+      'Missing the enrollment deposit deadline means your spot goes to the waitlist. Schools DO rescind acceptances for late deposits — even from students who got financial aid.',
+    ai: 'This is the most commonly missed deadline for first-gen students. The deposit confirms you\'re coming — without it, the school assumes you chose elsewhere.',
+    madeit: false,
+  },
+  fafsa: {
+    title: 'FAFSA — what to do after you submit',
+    meta: 'Learned · Financial · Pre-arrival',
+    type: 'learned',
+    tags: ['financial'],
+    steps: [
+      'Check your Student Aid Report (SAR) at studentaid.gov — look for your EFC/SAI and any error flags.',
+      'Log into your school\'s financial aid portal and check if you\'re selected for "verification" — this means they need extra documents.',
+      'If verified: submit all requested documents immediately. Delays in verification delay your aid disbursement.',
+      'Review your Financial Aid Award Letter carefully — grants and scholarships are free money, loans must be repaid. Accept grants first, decline loans you don\'t need.',
+      'Complete any required loan counseling (Entrance Counseling + MPN) at studentaid.gov if you accept federal loans.',
+    ],
+    insider:
+      '"I didn\'t know I had to accept my aid — I thought it was automatic. I almost lost $6,000 in grants." — Jasmine T., Ohio State 2nd year',
+    ai: 'First-gen students leave an estimated $2.6 billion in Pell Grant money on the table each year by not completing FAFSA or missing verification steps. Your award expires if unclaimed.',
+    madeit: false,
+  },
+  aidappeal: {
+    title: 'How to appeal your financial aid package',
+    meta: 'Learned · Financial · Pre-arrival',
+    type: 'learned',
+    tags: ['financial'],
+    steps: [
+      'Write a professional appeal letter — address it to the Financial Aid Office, not a specific person.',
+      'State clearly: your family\'s financial situation has changed OR the award doesn\'t reflect your demonstrated need.',
+      'Include specific documentation: job loss letter, medical bills, divorce decree — anything that explains the gap.',
+      'Compare awards from competing schools (if you have them) — schools will often match or beat a better offer.',
+      'Follow up by phone 5 business days after submitting — politely ask if they received your appeal and the timeline.',
+    ],
+    insider:
+      'Aid offices expect appeals. "We don\'t negotiate" is a standard first response — it\'s not the last word. Students who appeal with documentation get more money 40% of the time.',
+    ai: 'Financial aid appeal season peaks in April–May. Call rather than email — phone calls are triaged faster, and a human voice builds rapport that emails can\'t.',
+    madeit: false,
+  },
+  visaapp: {
+    title: 'F-1 visa interview — how to prepare and book',
+    meta: 'Learned · Visa · Pre-arrival',
+    type: 'learned',
+    tags: ['visa'],
+    steps: [
+      'Complete DS-160 at ceac.state.gov — this is your nonimmigrant visa application. Save your confirmation barcode.',
+      'Pay the MRV (visa application) fee at your country\'s US Embassy payment portal — typically $185. Keep the receipt.',
+      'Book your visa interview at the US Embassy or Consulate in your home country — wait times vary from 1 week to 3+ months depending on location. Book NOW.',
+      'Prepare your documents: I-20, DS-160 barcode, MRV receipt, acceptance letter, financial proof, passport (valid 6+ months beyond intended stay), SEVIS payment receipt.',
+      'At the interview: be honest, concise, and confident. You\'ll be asked why you chose this school and how you\'ll fund your education. Practice 3-sentence answers.',
+    ],
+    insider:
+      'In some countries (India, China, Nigeria), F-1 visa appointment slots book out 8–12 weeks in advance in summer. Students who wait until July for an August arrival often miss the window.',
+    ai: 'Book your visa interview appointment the same week you receive your I-20 — don\'t wait. Interview slots are first-come, first-served and disappear fast in peak season (June–August).',
+    madeit: false,
+  },
+  orientation: {
+    title: 'Register for orientation before it fills up',
+    meta: 'Learned · Academic · Pre-arrival',
+    type: 'learned',
+    tags: ['academic'],
+    steps: [
+      'Look for an orientation registration email — it usually comes 2–4 weeks after you pay your enrollment deposit.',
+      'Log into your student portal and register for your preferred orientation session. Popular dates fill in days.',
+      'If you\'re international, look for the International Student Orientation — it runs 1–2 days BEFORE general orientation and covers I-20 check-in, campus ID, and banking.',
+      'Attend housing check-in (if applicable) and the advising session — this is where you select your first-semester courses.',
+      'Bring your I-20 and passport to international orientation. You\'ll check in with the international office to activate your student status in the SEVIS system.',
+    ],
+    insider:
+      'Students who attend orientation are 30% more likely to return for their second year. It\'s not optional — it\'s where you get your student ID, email activation, and course registration access.',
+    ai: 'First-gen students often skip orientation thinking it\'s just ice-breakers. It\'s not — it\'s where financial aid disbursement gets triggered, housing keys are distributed, and your first advisor meeting happens.',
+    madeit: false,
+  },
+  housing: {
+    title: 'Secure housing before the deadline',
+    meta: 'Learned · Pre-arrival',
+    type: 'learned',
+    tags: ['academic'],
+    steps: [
+      'Log into your student portal and find "Housing Application" — it usually opens 2–4 weeks after your enrollment deposit.',
+      'Submit your housing application and deposit ASAP — on-campus spots are limited and assigned by date submitted, not by need.',
+      'Select roommate preferences carefully — most forms ask about sleep schedule, cleanliness, and study habits. Be honest.',
+      'If on-campus housing is full: search university-approved off-campus housing lists, Facebook groups for your school\'s class year, and ask your international student office for safe neighborhoods.',
+      'Confirm your move-in date and what you\'re allowed to bring — most dorms prohibit certain appliances and require specific bedding sizes.',
+    ],
+    insider:
+      'Many international students miss the housing deadline because they\'re waiting for visa confirmation. Apply for housing before your visa is approved — you can cancel penalty-free if it\'s denied.',
+    ai: 'On-campus housing gives international students faster access to campus resources, meal plans, and peer connections — the ROI on belonging in year 1 is significant.',
+    madeit: false,
+  },
   i20: {
     title: 'How to request your I-20 from your DSO',
     meta: 'Learned · Visa · Pre-arrival',

@@ -10,14 +10,14 @@ interface Props {
   openMove: (key: string) => void
 }
 
-type RecItem = { label: string; moveKey?: string }
+type RecItem = { label: string; moveKey?: string; urgent?: boolean }
 
-function MiniRing({ value, total }: { value: number; total: number }) {
+function MiniRing({ value, total, color = 'white' }: { value: number; total: number; color?: string }) {
   const r = 30, circ = 2 * Math.PI * r
   return (
     <svg width="76" height="76" viewBox="0 0 76 76" style={{ display: 'block' }}>
       <circle cx="38" cy="38" r={r} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="7" />
-      <circle cx="38" cy="38" r={r} fill="none" stroke="white" strokeWidth="7"
+      <circle cx="38" cy="38" r={r} fill="none" stroke={color} strokeWidth="7"
         strokeDasharray={`${(value / total) * circ} ${circ}`} strokeLinecap="round"
         transform="rotate(-90 38 38)" style={{ transition: 'stroke-dasharray 0.6s ease' }} />
     </svg>
@@ -33,48 +33,92 @@ export default function ProgressView({ moves, profile, onBack, openMove }: Props
 
   const isIntl = profile?.cohorts.includes('international')
   const isFirstgen = profile?.cohorts.includes('firstgen')
+  const isLowIncome = profile?.cohorts.includes('lowincome')
   const isArt = profile?.schoolType === 'art'
+  const isPreArrival = profile?.stage === 'pre-arrival'
 
-  // Build completed + recommended per section
+  // ── Financial Aid & Enrollment section (summer melt prevention) ──
+  const enrollDone: string[] = []
+  if (moves['enrolldeposit']?.madeit) enrollDone.push('Enrollment deposit paid ✓')
+  if (moves['fafsa']?.madeit) enrollDone.push('Financial aid accepted ✓')
+  if (moves['aidappeal']?.madeit) enrollDone.push('Aid appeal submitted ✓')
+  if (moves['housing']?.madeit) enrollDone.push('Housing secured ✓')
+  if (moves['orientation']?.madeit) enrollDone.push('Orientation registered ✓')
+
+  const enrollRec: RecItem[] = []
+  if (!moves['enrolldeposit']?.madeit) enrollRec.push({ label: 'Pay your enrollment deposit', moveKey: 'enrolldeposit', urgent: true })
+  if (!moves['fafsa']?.madeit) enrollRec.push({ label: 'Accept your financial aid package', moveKey: 'fafsa', urgent: isFirstgen || isLowIncome })
+  if ((isFirstgen || isLowIncome) && !moves['aidappeal']?.madeit) enrollRec.push({ label: 'Appeal your aid if it feels short', moveKey: 'aidappeal' })
+  if (!moves['housing']?.madeit) enrollRec.push({ label: 'Apply for on-campus housing', moveKey: 'housing' })
+  if (!moves['orientation']?.madeit) enrollRec.push({ label: 'Register for orientation', moveKey: 'orientation' })
+
+  // ── Visa section ──
   const visaDone: string[] = []
   if (moves['i20']?.madeit) visaDone.push('I-20 requested from DSO')
   if (moves['dso']?.madeit) visaDone.push('DSO email formula — used it')
   if (moves['sevis']?.madeit) visaDone.push('SEVIS fee paid correctly')
+  if (moves['visaapp']?.madeit) visaDone.push('Visa interview booked & completed')
 
   const visaRec: RecItem[] = []
-  if (!moves['i20']?.madeit) visaRec.push({ label: 'Request your I-20 from your DSO', moveKey: 'i20' })
+  if (!moves['i20']?.madeit) visaRec.push({ label: 'Request your I-20 from your DSO', moveKey: 'i20', urgent: true })
+  if (!moves['visaapp']?.madeit) visaRec.push({ label: 'Book your F-1 visa interview now', moveKey: 'visaapp', urgent: true })
   if (!moves['dso']?.madeit) visaRec.push({ label: 'Use the DSO email formula', moveKey: 'dso' })
-  if (isIntl && !moves['sevis']?.madeit) visaRec.push({ label: 'Pay your SEVIS fee correctly', moveKey: 'sevis' })
+  if (isIntl && !moves['sevis']?.madeit) visaRec.push({ label: 'Pay your SEVIS fee ($350) at fmjfee.com', moveKey: 'sevis' })
 
+  // ── Academic section ──
   const academicDone: string[] = []
-  if (moves['officehours']?.madeit) academicDone.push('Office hours — made it')
+  if (moves['officehours']?.madeit) academicDone.push('Office hours — went in week 2')
   if (moves['critique']?.madeit) academicDone.push('Critique culture — survived first crit')
+  if (moves['orientation']?.madeit) academicDone.push('Orientation — registered & attended')
 
   const academicRec: RecItem[] = []
   if (!moves['officehours']?.madeit) academicRec.push({ label: 'Office hours in week 2', moveKey: 'officehours' })
   if (isArt && !moves['critique']?.madeit) academicRec.push({ label: 'Critique culture prep', moveKey: 'critique' })
   academicRec.push({ label: 'Email your professor before midterms' })
-  academicRec.push({ label: 'Find your campus writing center' })
+  academicRec.push({ label: 'Find your campus writing / tutoring center' })
 
   const communityRec: RecItem[] = [
     { label: isIntl ? 'Connect with an international peer advisor' : 'Connect with a peer mentor' },
-    { label: isFirstgen ? 'Find your first-gen student group' : 'Join a student club in your interest area' },
+    { label: isFirstgen ? 'Find your first-gen or TRIO student group' : 'Join a student club in your interest area' },
     { label: 'Schedule a coffee chat with a classmate this week' },
   ]
 
   const careerRec: RecItem[] = [
     { label: 'Visit your career center this semester' },
     { label: 'Build your LinkedIn profile' },
-    { label: isIntl ? 'Learn OPT & CPT eligibility timelines' : 'Explore internship search timelines' },
+    { label: isIntl ? 'Learn OPT & CPT eligibility timelines now — plan in year 1' : 'Explore internship search timelines' },
+    { label: isFirstgen ? 'Ask your academic advisor about alumni networks' : 'Attend one networking event this semester' },
   ]
 
+  // Build ordered sections
   const sections = [
+    // Financial Aid & Enrollment — ALWAYS first for pre-arrival students
+    ...(isPreArrival ? [{
+      emoji: '🎓', label: 'Enrollment & Financial Aid',
+      color: '#B45309', chipBg: '#D97706', bg: '#FFFBEB', border: '#FDE68A',
+      done: enrollDone, rec: enrollRec.slice(0, 4),
+      insight: (isFirstgen || isLowIncome)
+        ? 'Summer melt affects up to 40% of first-gen students — accepted students who never enroll. Completing these steps is how you make sure that\'s not you.'
+        : 'Completing enrollment steps early means full access to housing, orientation spots, and financial aid before slots run out.',
+    }] : []),
+
+    // Visa — only for international
     ...(isIntl ? [{
       emoji: '🛂', label: 'Visa & Documentation',
       color: '#7C3AED', chipBg: '#7C3AED', bg: '#EDE9FE', border: '#C4B5FD',
-      done: visaDone, rec: visaRec.slice(0, 3),
-      insight: 'Completing visa moves early removes the single biggest source of uncertainty for international students.',
+      done: visaDone, rec: visaRec.slice(0, 4),
+      insight: 'F-1 visa appointment slots in many countries book out 8–12 weeks in advance. Starting early removes the single biggest source of uncertainty for international students.',
     }] : []),
+
+    {
+      emoji: '📚', label: 'Academic',
+      color: '#5B21B6', chipBg: '#5B21B6', bg: '#F5F3FF', border: '#C4B5FD',
+      done: academicDone, rec: academicRec.slice(0, 3),
+      insight: isFirstgen
+        ? 'First-gen students who go to office hours in week 2 earn an average of 0.4 GPA points higher than those who wait until they\'re struggling.'
+        : 'Proactive engagement with professors is the single most underrated lever in academic success.',
+    },
+
     {
       emoji: '🤝', label: 'Community & Belonging',
       color: '#4F46E5', chipBg: '#4F46E5', bg: '#EEF2FF', border: '#C7D2FE',
@@ -85,18 +129,11 @@ export default function ProgressView({ moves, profile, onBack, openMove }: Props
         ? 'First-gen students who find a peer mentor in semester 1 are 3× more likely to return for sophomore year.'
         : 'Students who connect early compound those relationships across all four years.',
     },
-    {
-      emoji: '📚', label: 'Academic',
-      color: '#5B21B6', chipBg: '#5B21B6', bg: '#F5F3FF', border: '#C4B5FD',
-      done: academicDone, rec: academicRec.slice(0, 3),
-      insight: isFirstgen
-        ? 'First-gen students who go to office hours in week 2 earn an average of 0.4 GPA points higher.'
-        : 'Proactive engagement with professors is the single most underrated lever in academic success.',
-    },
+
     {
       emoji: '💼', label: 'Career',
       color: '#B45309', chipBg: '#D97706', bg: '#FEF3C7', border: '#FCD34D',
-      done: [] as string[], rec: careerRec,
+      done: [] as string[], rec: careerRec.slice(0, 3),
       insight: isIntl
         ? 'International students who start career planning in year 1 have 3× more OPT/CPT options when they need them.'
         : isFirstgen
@@ -120,11 +157,11 @@ export default function ProgressView({ moves, profile, onBack, openMove }: Props
 
       <div style={{ padding: '12px 20px 36px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-        {/* Stats — dark card */}
+        {/* Stats — dark hero card */}
         <div style={{ background: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)', borderRadius: 20, padding: '18px 20px 16px', color: 'white' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
             <div style={{ position: 'relative', flexShrink: 0 }}>
-              <MiniRing value={made} total={total} />
+              <MiniRing value={made} total={total} color="#F97316" />
               <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <div style={{ fontSize: 15, fontWeight: 700, color: 'white', lineHeight: 1 }}>{pct}%</div>
               </div>
@@ -167,10 +204,22 @@ export default function ProgressView({ moves, profile, onBack, openMove }: Props
           </span>
         </div>
 
+        {/* Summer melt explainer — first-gen / low-income only */}
+        {(isFirstgen || isLowIncome) && isPreArrival && (
+          <div style={{ background: '#FFFBEB', borderRadius: 14, padding: '13px 15px', border: '1px solid #FDE68A' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#92400E', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span>💡</span> What is "summer melt"?
+            </div>
+            <div style={{ fontSize: 12, color: '#78350F', lineHeight: 1.6 }}>
+              Up to <strong>40% of first-gen and low-income accepted students</strong> never show up in fall — not because they chose not to go, but because they missed critical enrollment steps like the deposit or FAFSA acceptance. UniBuddy tracks these for you so you don&apos;t fall through the cracks.
+            </div>
+          </div>
+        )}
+
         {/* Goal sections */}
         {sections.map((section) => (
           <div key={section.emoji} style={{ borderRadius: 16, overflow: 'hidden', border: `1px solid ${section.border}` }}>
-            {/* Section header chip */}
+            {/* Section header */}
             <div style={{ background: section.chipBg, padding: '11px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 15 }}>{section.emoji}</span>
               <span style={{ fontSize: 12, fontWeight: 700, color: 'white', letterSpacing: '0.4px', textTransform: 'uppercase' }}>
@@ -184,7 +233,7 @@ export default function ProgressView({ moves, profile, onBack, openMove }: Props
             </div>
 
             <div style={{ background: 'var(--bg-primary)', padding: '12px 14px 14px' }}>
-              {/* Completed */}
+              {/* Completed items */}
               {section.done.map((item, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, paddingBottom: 8 }}>
                   <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#D1FAE5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 10, color: '#065F46' }}>✓</div>
@@ -192,7 +241,7 @@ export default function ProgressView({ moves, profile, onBack, openMove }: Props
                 </div>
               ))}
 
-              {/* Label for recommended */}
+              {/* Recommended label */}
               {section.rec.length > 0 && (
                 <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8, marginTop: section.done.length > 0 ? 4 : 0 }}>
                   {section.done.length > 0 ? 'Next moves' : 'Recommended for you'}
@@ -206,15 +255,21 @@ export default function ProgressView({ moves, profile, onBack, openMove }: Props
                   onClick={item.moveKey ? () => openMove(item.moveKey!) : undefined}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px',
-                    borderRadius: 10, background: section.bg, marginBottom: 6,
+                    borderRadius: 10, marginBottom: 6,
+                    background: item.urgent ? '#FAECE7' : section.bg,
                     cursor: item.moveKey ? 'pointer' : 'default',
-                    border: `0.5px solid ${section.border}`,
+                    border: item.urgent ? '0.5px solid #D85A30' : `0.5px solid ${section.border}`,
                   }}
                 >
-                  <div style={{ width: 5, height: 5, borderRadius: '50%', background: section.color, flexShrink: 0 }} />
-                  <span style={{ flex: 1, fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.35 }}>{item.label}</span>
+                  {item.urgent && <span style={{ fontSize: 10 }}>🔴</span>}
+                  {!item.urgent && <div style={{ width: 5, height: 5, borderRadius: '50%', background: section.color, flexShrink: 0 }} />}
+                  <span style={{ flex: 1, fontSize: 13, color: item.urgent ? '#993C1D' : 'var(--text-primary)', lineHeight: 1.35, fontWeight: item.urgent ? 600 : 400 }}>
+                    {item.label}
+                  </span>
                   {item.moveKey && (
-                    <span style={{ fontSize: 11, color: section.color, fontWeight: 600, flexShrink: 0 }}>Learn →</span>
+                    <span style={{ fontSize: 11, color: item.urgent ? '#D85A30' : section.color, fontWeight: 600, flexShrink: 0 }}>
+                      {item.urgent ? 'Do now →' : 'Learn →'}
+                    </span>
                   )}
                 </div>
               ))}
