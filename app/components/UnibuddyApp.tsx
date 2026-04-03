@@ -167,7 +167,7 @@ export default function UnibuddyApp() {
     <div
       style={{
         minHeight: '100dvh',
-        background: '#ECEAE5',
+        background: '#EEE9FF',
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
@@ -180,13 +180,13 @@ export default function UnibuddyApp() {
           minHeight: 780,
           maxHeight: 'calc(100dvh - 48px)',
           background: 'var(--bg-primary)',
-          border: '0.5px solid var(--border-secondary)',
-          borderRadius: 36,
+          border: 'none',
+          borderRadius: 40,
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
-          boxShadow: '0 24px 80px rgba(0,0,0,0.12), 0 4px 24px rgba(0,0,0,0.06)',
+          boxShadow: '0 32px 80px rgba(124,58,237,0.18), 0 8px 32px rgba(0,0,0,0.08)',
         }}
       >
         {/* Status bar */}
@@ -195,10 +195,10 @@ export default function UnibuddyApp() {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '12px 20px 4px',
+            padding: '14px 24px 4px',
             fontSize: 12,
             color: 'var(--text-secondary)',
-            fontWeight: 500,
+            fontWeight: 600,
             flexShrink: 0,
           }}
         >
@@ -232,7 +232,7 @@ export default function UnibuddyApp() {
     <div
       style={{
         minHeight: '100dvh',
-        background: '#ECEAE5',
+        background: '#EEE9FF',
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
@@ -246,13 +246,13 @@ export default function UnibuddyApp() {
           minHeight: 780,
           maxHeight: 'calc(100dvh - 48px)',
           background: 'var(--bg-primary)',
-          border: '0.5px solid var(--border-secondary)',
-          borderRadius: 36,
+          border: 'none',
+          borderRadius: 40,
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
-          boxShadow: '0 24px 80px rgba(0,0,0,0.12), 0 4px 24px rgba(0,0,0,0.06)',
+          boxShadow: '0 32px 80px rgba(124,58,237,0.18), 0 8px 32px rgba(0,0,0,0.08)',
         }}
       >
         {/* Status bar */}
@@ -261,15 +261,95 @@ export default function UnibuddyApp() {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '12px 20px 4px',
+            padding: '14px 24px 4px',
             fontSize: 12,
             color: 'var(--text-secondary)',
-            fontWeight: 500,
+            fontWeight: 600,
             flexShrink: 0,
           }}
         >
           <span>9:41</span>
           <span style={{ letterSpacing: 2 }}>●●●</span>
+        </div>
+
+        {/* Brand header bar */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '8px 20px 10px',
+            flexShrink: 0,
+          }}
+        >
+          <button
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: 10,
+              background: 'var(--bg-secondary)',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 16,
+              color: 'var(--text-secondary)',
+            }}
+          >
+            ≡
+          </button>
+          <div
+            style={{
+              fontSize: 18,
+              fontWeight: 800,
+              color: '#7C3AED',
+              letterSpacing: '-0.5px',
+            }}
+          >
+            UniBuddy
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: 10,
+                background: 'var(--bg-secondary)',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 15,
+                color: 'var(--text-secondary)',
+              }}
+            >
+              🔔
+            </button>
+            {profile && (
+              <button
+                onClick={handleSignOut}
+                title="Sign out"
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #7C3AED, #5B21B6)',
+                  color: 'white',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 13,
+                  fontWeight: 700,
+                }}
+              >
+                {profile.name?.[0]?.toUpperCase() || 'U'}
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Toast */}

@@ -132,10 +132,10 @@ export function getCohortTag(profile: UserProfile): string {
 
 /** Badge color config per cohort */
 export const cohortColors: Record<CohortType, { bg: string; text: string; border: string }> = {
-  international: { bg: '#EEEDFE', text: '#3C3489', border: '#AFA9EC' },
-  firstgen: { bg: '#E1F5EE', text: '#0F6E56', border: '#9FE1CB' },
-  lowincome: { bg: '#FAEEDA', text: '#633806', border: '#FAC775' },
-  transfer: { bg: '#F7F6F4', text: '#6B6B6B', border: '#E0DDD8' },
+  international: { bg: '#EDE9FE', text: '#5B21B6', border: '#C4B5FD' },
+  firstgen: { bg: '#D1FAE5', text: '#065F46', border: '#6EE7B7' },
+  lowincome: { bg: '#FEF3C7', text: '#92400E', border: '#FCD34D' },
+  transfer: { bg: '#F3F4F6', text: '#374151', border: '#D1D5DB' },
 }
 
 /** Friendly label for goal chips */

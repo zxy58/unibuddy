@@ -4,39 +4,51 @@
 
 :root {
   --bg-primary: #FFFFFF;
-  --bg-secondary: #F7F6F4;
-  --text-primary: #111111;
-  --text-secondary: #6B6B6B;
-  --text-tertiary: #9B9B9B;
-  --border-primary: #C8C4BE;
-  --border-secondary: #E0DDD8;
-  --border-tertiary: #EBEBEB;
-  --radius-lg: 12px;
-  --radius-md: 8px;
+  --bg-secondary: #F5F3FF;
+  --text-primary: #0D0826;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+  --border-primary: #C4B5FD;
+  --border-secondary: #E9E4FF;
+  --border-tertiary: #F0EFFE;
+  --radius-lg: 16px;
+  --radius-md: 10px;
 
-  /* Brand palette */
-  --purple: #534AB7;
-  --purple-dark: #3C3489;
-  --purple-light: #EEEDFE;
-  --purple-border: #AFA9EC;
-  --green: #1D9E75;
-  --green-dark: #0F6E56;
-  --green-light: #E1F5EE;
-  --green-border: #9FE1CB;
-  --amber: #BA7517;
-  --amber-dark: #633806;
-  --amber-light: #FAEEDA;
-  --amber-border: #FAC775;
-  --red: #D85A30;
-  --red-light: #FAECE7;
-  --red-dark: #993C1D;
+  /* Brand purple */
+  --purple: #7C3AED;
+  --purple-dark: #5B21B6;
+  --purple-light: #EDE9FE;
+  --purple-border: #C4B5FD;
+
+  /* CTA orange */
+  --orange: #F97316;
+  --orange-dark: #EA6C00;
+  --orange-light: #FFF7ED;
+  --orange-border: #FED7AA;
+
+  /* Status: green */
+  --green: #10B981;
+  --green-dark: #059669;
+  --green-light: #D1FAE5;
+  --green-border: #6EE7B7;
+
+  /* Status: amber */
+  --amber: #F59E0B;
+  --amber-dark: #B45309;
+  --amber-light: #FEF3C7;
+  --amber-border: #FCD34D;
+
+  /* Status: red (urgency) */
+  --red: #EF4444;
+  --red-light: #FEE2E2;
+  --red-dark: #DC2626;
 }
 
 * { box-sizing: border-box; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #ECEAE5;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  background: #EEE9FF;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
