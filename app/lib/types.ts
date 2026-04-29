@@ -1,5 +1,5 @@
 export type MoveType = 'todo' | 'done' | 'locked'
-export type TabName = 'timeline' | 'guides' | 'profile'
+export type TabName = 'timeline' | 'guides' | 'ask' | 'profile'
 export type MoveCategory = 'visa' | 'financial' | 'enrollment' | 'academic' | 'housing' | 'health'
 
 export interface StepLink {

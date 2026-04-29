@@ -68,7 +68,7 @@ export function getDashboardNudge(profile: UserProfile): {
     }
   }
 
-  if (isIntl && profile.stage === 'pre-arrival') {
+  if (isIntl) {
     return {
       title: 'Your visa window opens now',
       body: `Getting your I-20 starts the clock on everything else. Your visa appointment, SEVIS payment, and arrival date all depend on it.`,

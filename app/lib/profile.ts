@@ -1,23 +1,18 @@
 export type CohortType = 'international' | 'firstgen' | 'lowincome' | 'transfer'
-export type SchoolType = 'art' | 'research' | 'largepublic' | 'liberal' | 'community'
-export type JourneyStage = 'pre-arrival' | 'first-semester' | 'sophomore' | 'transfer-first'
-export type GoalType = 'visa' | 'financial' | 'academic' | 'career' | 'social'
 
 export interface UserProfile {
   name: string
-  email: string
-  cohorts: CohortType[]
-  schoolType: SchoolType
-  schoolName: string
-  country: string
-  stage: JourneyStage
-  goals: GoalType[]
-  approach: 'solo' | 'help' | 'wait'
-  newSituation: 'jump' | 'observe' | 'guide'
-  trustSource: 'experience' | 'official' | 'peers'
+  cohorts: CohortType[]       // student type(s)
+  country: string             // home country (intl) or US state (domestic)
+  schoolName: string          // enrolled institution
+  startDate: string           // "YYYY-MM" — when they start
+  phone: string               // for SMS nudges (optional, can be empty)
+  email: string               // for email nudges
+  notifySMS: boolean
+  notifyEmail: boolean
 }
 
-const STORAGE_KEY = 'unibuddy-profile-v1'
+const STORAGE_KEY = 'unibuddy-profile-v2'
 
 export function loadProfile(): UserProfile | null {
   if (typeof window === 'undefined') return null
@@ -44,23 +39,15 @@ export function clearProfile(): void {
 }
 
 export const cohortLabels: Record<CohortType, string> = {
-  international: 'International',
-  firstgen: 'First-gen',
-  lowincome: 'Financial aid',
-  transfer: 'Transfer',
+  international: 'International student',
+  firstgen: 'First-generation student',
+  lowincome: 'Financial aid / low-income',
+  transfer: 'Transfer student',
 }
 
-export const stageLabels: Record<JourneyStage, string> = {
-  'pre-arrival': 'Pre-arrival',
-  'first-semester': 'First semester',
-  'sophomore': 'Continuing student',
-  'transfer-first': 'Transfer — first semester',
-}
-
-export const schoolTypeLabels: Record<SchoolType, string> = {
-  art: 'Art & design school',
-  research: 'Research university',
-  largepublic: 'Large public university',
-  liberal: 'Liberal arts college',
-  community: 'Community college',
+export const cohortShort: Record<CohortType, string> = {
+  international: '🌐 International',
+  firstgen: '⭐ First-gen',
+  lowincome: '💛 Financial aid',
+  transfer: '↗ Transfer',
 }

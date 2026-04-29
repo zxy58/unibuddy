@@ -6,6 +6,7 @@ import Toast from './ui/Toast'
 import Timeline from './screens/Timeline'
 import GuideDetail from './screens/GuideDetail'
 import AllGuides from './screens/AllGuides'
+import AskScreen from './screens/AskScreen'
 import ProfileScreen from './screens/ProfileScreen'
 import OnboardingFlow from './OnboardingFlow'
 import { initialMoves } from '@/app/lib/data'
@@ -160,10 +161,18 @@ export default function UnibuddyApp() {
                   openGuide={openGuide}
                 />
               )}
+              {activeTab === 'ask' && (
+                <AskScreen
+                  profile={profile}
+                  moves={moves}
+                  openGuide={openGuide}
+                />
+              )}
               {activeTab === 'profile' && (
                 <ProfileScreen
                   profile={profile}
                   onSignOut={handleSignOut}
+                  onProfileUpdate={(p) => setProfile(p)}
                 />
               )}
             </div>
