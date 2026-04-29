@@ -3,7 +3,15 @@
 import { useState } from 'react'
 import type { UserProfile, CohortType, SchoolType, JourneyStage, GoalType } from '@/app/lib/profile'
 import { cohortLabels, schoolTypeLabels, stageLabels } from '@/app/lib/profile'
-import { cohortColors, goalLabels } from '@/app/lib/recommendations'
+import { cohortColors } from '@/app/lib/recommendations'
+
+const goalLabels: Record<GoalType, string> = {
+  visa: 'Visa & immigration',
+  financial: 'Financial aid',
+  academic: 'Academic success',
+  career: 'Career planning',
+  social: 'Social belonging',
+}
 
 interface Props {
   onComplete: (profile: UserProfile) => void
