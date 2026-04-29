@@ -9,6 +9,8 @@ import AllGuides from './screens/AllGuides'
 import AskScreen from './screens/AskScreen'
 import ProfileScreen from './screens/ProfileScreen'
 import OnboardingFlow from './OnboardingFlow'
+import BuddyAvatar from './ui/BuddyAvatar'
+import type { BuddyMood } from './ui/BuddyAvatar'
 import { initialMoves } from '@/app/lib/data'
 import type { TabName, Move } from '@/app/lib/types'
 import type { UserProfile } from '@/app/lib/profile'
@@ -21,6 +23,7 @@ export default function UnibuddyApp() {
   const [activeGuide, setActiveGuide] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [moves, setMoves] = useState<Record<string, Move>>(initialMoves)
+  const [streak, setStreak] = useState(1)
 
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -33,6 +36,22 @@ export default function UnibuddyApp() {
   useEffect(() => {
     setProfile(loadProfile())
     setProfileLoaded(true)
+    // Streak tracking
+    const today = new Date().toDateString()
+    const yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    const data = JSON.parse(localStorage.getItem('ub_streak') || `{"count":1,"last":""}`)
+    if (data.last === today) {
+      setStreak(data.count)
+    } else if (data.last === yesterday.toDateString()) {
+      const next = { count: data.count + 1, last: today }
+      localStorage.setItem('ub_streak', JSON.stringify(next))
+      setStreak(next.count)
+    } else {
+      const reset = { count: 1, last: today }
+      localStorage.setItem('ub_streak', JSON.stringify(reset))
+      setStreak(1)
+    }
   }, [])
 
   useEffect(() => () => { if (toastTimer.current) clearTimeout(toastTimer.current) }, [])
@@ -63,6 +82,10 @@ export default function UnibuddyApp() {
 
   // If a guide is open, show it full-screen (overlay)
   const guideOpen = activeGuide && moves[activeGuide]
+
+  const criticalCount = Object.values(moves).filter(m => !m.done && m.urgency === 'critical').length
+  const allDone = Object.values(moves).every(m => m.done)
+  const buddyMood: BuddyMood = allDone ? 'celebrate' : criticalCount > 0 ? 'urgent' : 'happy'
 
   const phoneFrame = (children: React.ReactNode, showNav = false) => (
     <div style={{
@@ -107,14 +130,21 @@ export default function UnibuddyApp() {
   }
 
   const headerBar = (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 20px 10px', flexShrink: 0 }}>
-      <div style={{ fontSize: 18, fontWeight: 800, color: '#7C3AED', letterSpacing: '-0.5px' }}>UniBuddy</div>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 18px 8px', flexShrink: 0 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <button style={{ width: 34, height: 34, borderRadius: 10, background: 'var(--bg-secondary)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15 }}>🔔</button>
+        <BuddyAvatar mood={buddyMood} size={36} />
+        <div style={{ fontSize: 17, fontWeight: 800, color: '#7C3AED', letterSpacing: '-0.5px' }}>UniBuddy</div>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        {/* Streak counter */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 20, background: '#FFF7ED', border: '1.5px solid #FED7AA' }}>
+          <span style={{ fontSize: 14 }}>🔥</span>
+          <span style={{ fontSize: 12, fontWeight: 800, color: '#EA580C' }}>{streak}</span>
+        </div>
         <button
           onClick={handleSignOut}
           title="Sign out"
-          style={{ width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(135deg, #7C3AED, #5B21B6)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700 }}
+          style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, #7C3AED, #5B21B6)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}
         >
           {profile.name?.[0]?.toUpperCase() || 'U'}
         </button>

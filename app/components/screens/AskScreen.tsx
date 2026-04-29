@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import type { Move } from '@/app/lib/types'
 import type { UserProfile } from '@/app/lib/profile'
+import BuddyAvatar from '@/app/components/ui/BuddyAvatar'
 
 interface Props {
   profile: UserProfile
@@ -284,9 +285,12 @@ export default function AskScreen({ profile, moves, openGuide }: Props) {
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       {/* Header */}
-      <div style={{ padding: '10px 18px 12px', borderBottom: '1px solid var(--border-tertiary)', flexShrink: 0 }}>
-        <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>Ask UniBuddy</div>
-        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 1 }}>Step-by-step guidance, personalized to you</div>
+      <div style={{ padding: '10px 18px 12px', borderBottom: '1px solid var(--border-tertiary)', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <BuddyAvatar mood="thinking" size={36} />
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>Ask UniBuddy</div>
+          <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 1 }}>Step-by-step guidance, personalized to you</div>
+        </div>
       </div>
 
       {/* Messages */}
@@ -296,7 +300,9 @@ export default function AskScreen({ profile, moves, openGuide }: Props) {
             {/* Bubble */}
             <div style={{ display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start', marginBottom: msg.guideKey || msg.quickReplies ? 6 : 0 }}>
               {msg.role === 'assistant' && (
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg, #7C3AED, #5B21B6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, color: 'white', fontWeight: 800, flexShrink: 0, marginRight: 8, alignSelf: 'flex-end' }}>U</div>
+                <div style={{ flexShrink: 0, marginRight: 4, alignSelf: 'flex-end' }}>
+                  <BuddyAvatar mood="happy" size={28} />
+                </div>
               )}
               <div style={{
                 maxWidth: '78%', padding: '10px 13px', borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',

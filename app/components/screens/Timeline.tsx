@@ -3,6 +3,8 @@
 import type { Move } from '@/app/lib/types'
 import type { UserProfile } from '@/app/lib/profile'
 import { cohortColors, getDashboardNudge, getPrioritizedMoves } from '@/app/lib/recommendations'
+import BuddyAvatar from '@/app/components/ui/BuddyAvatar'
+import type { BuddyMood } from '@/app/components/ui/BuddyAvatar'
 
 interface Props {
   profile: UserProfile
@@ -103,24 +105,38 @@ export default function Timeline({ profile, moves, openGuide }: Props) {
   const totalCount = ordered.length
   const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
 
+  const buddyMood: BuddyMood = completedCount === totalCount ? 'celebrate' : actNow.length > 0 ? 'urgent' : 'happy'
+
   return (
     <div className="no-scroll" style={{ flex: 1, overflowY: 'auto' }}>
       <div style={{ padding: '4px 18px 32px', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-        {/* Greeting */}
-        <div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.4px' }}>
-            Hi {profile.name?.split(' ')[0] || 'there'} 👋
-          </div>
-          {profile.cohorts.length > 0 && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 6 }}>
-              {profile.cohorts.map(c => (
-                <span key={c} style={{ padding: '3px 9px', borderRadius: 20, fontSize: 10, fontWeight: 600, background: cohortColors[c].bg, color: cohortColors[c].text, border: `1px solid ${cohortColors[c].border}` }}>
-                  {c === 'international' ? '🌐 International' : c === 'firstgen' ? '⭐ First-gen' : c === 'lowincome' ? '💛 Financial aid' : '↗ Transfer'}
-                </span>
-              ))}
+        {/* Greeting + Buddy */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.4px' }}>
+              Hi {profile.name?.split(' ')[0] || 'there'} 👋
             </div>
-          )}
+            {profile.cohorts.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 6 }}>
+                {profile.cohorts.map(c => (
+                  <span key={c} style={{ padding: '3px 9px', borderRadius: 20, fontSize: 10, fontWeight: 600, background: cohortColors[c].bg, color: cohortColors[c].text, border: `1px solid ${cohortColors[c].border}` }}>
+                    {c === 'international' ? '🌐 International' : c === 'firstgen' ? '⭐ First-gen' : c === 'lowincome' ? '💛 Financial aid' : '↗ Transfer'}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+          <div style={{ flexShrink: 0 }}>
+            <BuddyAvatar mood={buddyMood} size={56} />
+          </div>
+        </div>
+
+        {/* Buddy speech bubble */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+          <div style={{ flex: 1, padding: '11px 14px', borderRadius: '4px 16px 16px 16px', background: '#F5F3FF', border: '1.5px solid #DDD6FE', position: 'relative' }}>
+            <div style={{ fontSize: 13, color: '#4C1D95', lineHeight: 1.55, fontWeight: 500 }}>{nudge.body}</div>
+          </div>
         </div>
 
         {/* Progress bar — compact */}
@@ -135,8 +151,6 @@ export default function Timeline({ profile, moves, openGuide }: Props) {
           <div style={{ height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.2)' }}>
             <div style={{ height: '100%', borderRadius: 3, background: '#F97316', width: `${pct}%`, transition: 'width 0.5s ease' }} />
           </div>
-          {/* Nudge message inside progress card, compact */}
-          <div style={{ marginTop: 10, fontSize: 12, color: 'rgba(255,255,255,0.75)', lineHeight: 1.4 }}>{nudge.body}</div>
         </div>
 
         {/* Act Now */}
