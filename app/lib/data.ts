@@ -21,6 +21,10 @@ export const initialMoves: Record<string, Move> = {
     ifWrong: 'If the portal is down, call Admissions directly and ask them to note the date you attempted.',
     peerInsight: '"I assumed May 1 was soft. It was not. I had to appeal for two weeks." — Transfer student, RISD',
     ai: 'First-gen students miss this more than any other step — because no one tells you that confirming admission and paying a deposit are two separate things.',
+    contacts: [
+      { office: 'Admissions Office', role: 'Enrollment deposits, portal access, and spot confirmation', emailFormat: 'admissions@[school].edu', responseTime: '1–2 business days', tip: 'Reference your applicant ID in the subject line.' },
+      { office: 'Enrollment Services', role: 'Deposit receipt issues and next-step unlocks', emailFormat: 'enrollment@[school].edu', responseTime: '2–3 business days' },
+    ],
   },
 
   fafsa: {
@@ -44,6 +48,10 @@ export const initialMoves: Record<string, Move> = {
     ifWrong: 'If selected for verification, go to your school\'s financial aid office in person — email queues are slow.',
     peerInsight: '"My aid was frozen for verification and I only found out by logging in by accident." — First-gen student, Brown',
     ai: 'The federal deadline is June 30. Your school\'s priority deadline — when institutional grants are distributed — is almost always February or March.',
+    contacts: [
+      { office: 'Financial Aid Office', role: 'Priority deadlines, verification, and aid appeals', emailFormat: 'finaid@[school].edu', responseTime: '3–5 business days', tip: 'In-person visits move 3× faster than email for verification issues.' },
+      { office: 'Federal Student Aid Help', role: 'FAFSA submission errors and FSA ID problems', emailFormat: 'studentaid@ed.gov', responseTime: '5–7 business days', tip: 'Call 1-800-433-3243 for faster help with FSA ID lockouts.' },
+    ],
   },
 
   aidaccept: {
@@ -67,6 +75,10 @@ export const initialMoves: Record<string, Move> = {
     ifWrong: 'If your package is insufficient, write a formal appeal to the financial aid office with documentation of what changed.',
     peerInsight: '"I accepted all my loans because I thought I had to take everything offered." — First-gen student, UCLA',
     ai: '"Self-help aid" means loans. "Expected family contribution" does not mean your family will actually pay that amount. Call if anything is unclear.',
+    contacts: [
+      { office: 'Financial Aid Office', role: 'Award packages, loan counseling, and appeals', emailFormat: 'finaid@[school].edu', responseTime: '3–5 business days', tip: 'For appeals, attach documentation of what changed (job loss, medical bills, etc.).' },
+      { office: 'Student Accounts', role: 'Billing holds, payment plans, and disbursement', emailFormat: 'studentaccounts@[school].edu', responseTime: '2–3 business days' },
+    ],
   },
 
   housingdeposit: {
@@ -88,6 +100,10 @@ export const initialMoves: Record<string, Move> = {
     ifWrong: 'If waitlisted, start looking at off-campus options immediately and contact housing weekly for cancellations.',
     peerInsight: '"I submitted one day late and ended up in a temporary triple for a month." — International student, RISD',
     ai: 'International students: apply before your visa is confirmed. You can cancel penalty-free if your visa is denied. The off-campus market near universities is scam-heavy — prioritize on-campus.',
+    contacts: [
+      { office: 'Housing & Residential Life', role: 'Deposits, room preferences, and waitlist updates', emailFormat: 'housing@[school].edu', responseTime: '2–4 business days', tip: 'If waitlisted, email weekly — cancellations open spots constantly.' },
+      { office: 'Off-Campus Housing Office', role: 'Verified listings and tenant rights resources', emailFormat: 'offcampus@[school].edu', responseTime: '3–5 business days' },
+    ],
   },
 
   orientation: {
@@ -109,6 +125,10 @@ export const initialMoves: Record<string, Move> = {
     ifWrong: 'If you miss orientation, contact the Dean of Students office directly — they can connect you to an advisor for course registration.',
     peerInsight: '"International orientation covered things general orientation assumed you already knew. Go to both." — Columbia',
     ai: 'The best course sections fill within hours of registration opening. Arrive with a list of courses already prepared.',
+    contacts: [
+      { office: 'New Student Programs', role: 'Session registration, schedule conflicts, and pre-orientation tasks', emailFormat: 'orientation@[school].edu', responseTime: '2–3 business days', tip: 'Mention your cohort (international, transfer) — sessions may differ.' },
+      { office: 'International Student Services', role: 'International orientation registration and I-20 check-in', emailFormat: 'iss@[school].edu', responseTime: '2–4 business days' },
+    ],
   },
 
   i20: {
@@ -131,6 +151,10 @@ export const initialMoves: Record<string, Move> = {
     ifWrong: 'If your I-20 has errors, request a corrected one before your visa interview — never attend with an incorrect I-20.',
     peerInsight: '"The subject line formula got me a response in 36 hours. My roommate waited three weeks." — Min-jun K., RISD',
     ai: 'Peak I-20 season is June–July. Emailing now puts you ahead of that queue. Students from India, China, and Nigeria especially: visa appointments book 60+ days out.',
+    contacts: [
+      { office: 'Designated School Official (DSO)', role: 'I-20 issuance, corrections, and SEVIS status', emailFormat: 'iso@[school].edu', responseTime: '3–5 business days', tip: 'Use the exact subject line format: "I-20 Request — [Name] — [Student ID] — arriving [date]"' },
+      { office: 'International Students Office', role: 'General visa guidance and document verification', emailFormat: 'iss@[school].edu', responseTime: '3–5 business days' },
+    ],
   },
 
   sevis: {
@@ -153,6 +177,10 @@ export const initialMoves: Record<string, Move> = {
     ifWrong: 'If you paid a scam site, pay again at fmjfee.com and dispute the charge with your bank. Contact your DSO for a support letter.',
     peerInsight: '"Fake SEVIS sites look identical to the real one. Only fmjfee.com. Bookmark it before you need it." — RISD international student',
     ai: 'Fraudulent SEVIS payment sites appear in paid search results. Always type fmjfee.com directly — never click a link from an email.',
+    contacts: [
+      { office: 'International Students Office (DSO)', role: 'SEVIS issues, fraud support letters, and I-901 questions', emailFormat: 'iso@[school].edu', responseTime: '2–3 business days', tip: 'If you paid a fraudulent site, your DSO can write a support letter for disputing the charge.' },
+      { office: 'SEVIS Help Desk (DHS)', role: 'Official SEVIS fee payment problems', emailFormat: 'sevis@ice.dhs.gov', responseTime: '5–7 business days', tip: 'For urgent issues, call 1-800-892-4829.' },
+    ],
   },
 
   visaapp: {
@@ -175,6 +203,10 @@ export const initialMoves: Record<string, Move> = {
     ifWrong: 'If denied, ask for the specific reason before leaving the consulate. Consult your DSO before reapplying.',
     peerInsight: '"Book the same day your I-20 arrives. In summer, consulate appointments were booking 10 weeks out." — Columbia student',
     ai: 'Book your appointment before finishing the DS-160 — slots disappear faster than forms are completed. The DS-160 can be finished after you have a slot.',
+    contacts: [
+      { office: 'Designated School Official (DSO)', role: 'DS-160 questions, denial letters, and reapplication support', emailFormat: 'iso@[school].edu', responseTime: '2–3 business days', tip: 'After a denial, consult your DSO before reapplying — they can write a support letter.' },
+      { office: 'U.S. Embassy / Consulate', role: 'Interview scheduling, MRV fee receipts, and visa status', emailFormat: 'usembassy.gov/contact', responseTime: 'Varies by country', tip: 'Find your specific embassy at usembassy.gov — contact information varies.' },
+    ],
   },
 
   healthinsurance: {
@@ -196,6 +228,10 @@ export const initialMoves: Record<string, Move> = {
     ifWrong: 'If you miss the waiver deadline, call the student health insurance office immediately — some schools allow a one-time exception.',
     peerInsight: '"I did not know I was enrolled until I saw a $2,400 charge on my bill." — Transfer student, RISD',
     ai: 'International F-1 students often cannot waive the school plan unless they have U.S.-equivalent coverage. Check with your ISS office first.',
+    contacts: [
+      { office: 'Student Health Insurance Office', role: 'Waiver submissions, enrollment, and plan comparisons', emailFormat: 'insurance@[school].edu', responseTime: '2–3 business days', tip: 'If you miss the waiver deadline, call — don\'t email. Some schools allow a one-time phone exception.' },
+      { office: 'Student Health Center', role: 'Appointments, in-network coverage, and referrals', emailFormat: 'studenthealth@[school].edu', responseTime: '1–2 business days' },
+    ],
   },
 
   credittransfer: {
@@ -218,6 +254,10 @@ export const initialMoves: Record<string, Move> = {
     ifWrong: 'If all department appeals fail, file a formal academic petition with the Dean of Students office — document every step with dates and names.',
     peerInsight: '"Nobody told me I needed to advocate for my credits. I lost a semester because I waited." — Kathryn, Cal State to RISD',
     ai: 'Most schools allow credit appeals only within the first semester. Starting before classes begin gives you the maximum leverage.',
+    contacts: [
+      { office: 'Office of the Registrar', role: 'Credit evaluations, transfer credit reports, and transcript requests', emailFormat: 'registrar@[school].edu', responseTime: '3–5 business days', tip: 'Request your official credit evaluation before emailing any department.' },
+      { office: 'Dean of Students Office', role: 'Formal academic petitions and escalated appeals', emailFormat: 'deanofstudents@[school].edu', responseTime: '3–5 business days', tip: 'Document every prior contact (dates, names, outcomes) before escalating.' },
+    ],
   },
 
 }

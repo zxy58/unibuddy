@@ -13,6 +13,14 @@ export interface Step {
   link?: StepLink       // direct link button
 }
 
+export interface Contact {
+  office: string        // "Financial Aid Office"
+  role: string          // "For aid packages, verification, and appeals"
+  emailFormat: string   // "finaid@[school].edu" — filled at render time
+  responseTime: string  // "3–5 business days"
+  tip?: string          // insider note
+}
+
 export interface Move {
   title: string
   subtitle: string                // 5–7 word summary shown on the card
@@ -27,6 +35,7 @@ export interface Move {
   ai: string
   done: boolean
   urgency: 'critical' | 'soon' | 'upcoming'
+  contacts: Contact[]
 }
 
 export interface AppCallbacks {
