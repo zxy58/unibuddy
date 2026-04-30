@@ -84,8 +84,19 @@ export default function UnibuddyApp() {
   const guideOpen = activeGuide && moves[activeGuide]
 
   const criticalCount = Object.values(moves).filter(m => !m.done && m.urgency === 'critical').length
-  const allDone = Object.values(moves).every(m => m.done)
+  const completedCount = Object.values(moves).filter(m => m.done).length
+  const totalCount = Object.values(moves).length
+  const allDone = completedCount === totalCount
   const buddyMood: BuddyMood = allDone ? 'celebrate' : criticalCount > 0 ? 'urgent' : 'happy'
+
+  const pct = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
+  const evolutionLevel = (
+    allDone ? 5 :
+    pct > 75 ? 4 :
+    pct > 50 ? 3 :
+    pct > 25 ? 2 :
+    pct > 0  ? 1 : 0
+  ) as 0 | 1 | 2 | 3 | 4 | 5
 
   const phoneFrame = (children: React.ReactNode, showNav = false) => (
     <div style={{
@@ -132,7 +143,7 @@ export default function UnibuddyApp() {
   const headerBar = (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 18px 8px', flexShrink: 0 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <BuddyAvatar mood={buddyMood} size={36} />
+        <BuddyAvatar mood={buddyMood} size={36} evolutionLevel={evolutionLevel} />
         <div style={{ fontSize: 17, fontWeight: 800, color: '#7C3AED', letterSpacing: '-0.5px' }}>UniBuddy</div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -182,6 +193,7 @@ export default function UnibuddyApp() {
                   profile={profile}
                   moves={moves}
                   openGuide={openGuide}
+                  evolutionLevel={evolutionLevel}
                 />
               )}
               {activeTab === 'guides' && (

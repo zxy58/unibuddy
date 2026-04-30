@@ -4,6 +4,9 @@ import { useState } from 'react'
 import type { Move } from '@/app/lib/types'
 import type { UserProfile } from '@/app/lib/profile'
 import { getGuideAI } from '@/app/lib/recommendations'
+import FormGuide from '@/app/components/ui/FormGuide'
+
+const FORM_GUIDE_MOVES = new Set(['i20', 'fafsa', 'enrolldeposit'])
 
 interface Props {
   moveKey: string
@@ -195,6 +198,11 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
             </div>
           )}
         </button>
+
+        {/* Form Guide — for moves that have fillable forms */}
+        {FORM_GUIDE_MOVES.has(moveKey) && !move.done && (
+          <FormGuide moveKey={moveKey} profile={profile} />
+        )}
 
         {/* Mark done */}
         {!move.done && (

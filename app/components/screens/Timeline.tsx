@@ -4,12 +4,13 @@ import type { Move } from '@/app/lib/types'
 import type { UserProfile } from '@/app/lib/profile'
 import { cohortColors, getDashboardNudge, getPrioritizedMoves } from '@/app/lib/recommendations'
 import BuddyAvatar from '@/app/components/ui/BuddyAvatar'
-import type { BuddyMood } from '@/app/components/ui/BuddyAvatar'
+import type { BuddyMood, BuddyEvolutionLevel } from '@/app/components/ui/BuddyAvatar'
 
 interface Props {
   profile: UserProfile
   moves: Record<string, Move>
   openGuide: (key: string) => void
+  evolutionLevel?: BuddyEvolutionLevel
 }
 
 const categoryIcon: Record<string, string> = {
@@ -93,7 +94,7 @@ function ActNowCard({ moveKey, move, openGuide }: { moveKey: string; move: Move;
   )
 }
 
-export default function Timeline({ profile, moves, openGuide }: Props) {
+export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0 }: Props) {
   const nudge = getDashboardNudge(profile)
   const ordered = getPrioritizedMoves(profile, moves)
 
@@ -128,7 +129,7 @@ export default function Timeline({ profile, moves, openGuide }: Props) {
             )}
           </div>
           <div style={{ flexShrink: 0 }}>
-            <BuddyAvatar mood={buddyMood} size={56} />
+            <BuddyAvatar mood={buddyMood} size={56} evolutionLevel={evolutionLevel} />
           </div>
         </div>
 
