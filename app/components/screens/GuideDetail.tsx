@@ -618,12 +618,183 @@ function RecoveryBlock({ moveKey, move, profile }: { moveKey: string; move: Move
   )
 }
 
+// ── Bruno prompt builder ──────────────────────────────────────────────────────
+
+interface Q1Data { question: string; options: string[] }
+
+const q1Data: Record<string, Q1Data> = {
+  enrolldeposit:  { question: 'What part of the enrollment deposit are you working on?', options: ['Finding where to pay', 'Payment declined or errored', 'Portal not updating after payment', 'Not sure of the deadline or amount', 'Something else'] },
+  fafsa:          { question: 'What part of the FAFSA are you working on?', options: ['Creating my FSA ID / logging in', 'Filling out the application questions', 'Linking my tax information', 'Checking if my submission went through', 'Understanding my Student Aid Index', 'Something else'] },
+  aidaccept:      { question: 'What part of accepting your aid are you stuck on?', options: ['Finding the accept/decline option in my portal', 'Understanding what each item in my award means', 'Deciding whether to take out loans', 'The deadline to respond', 'Something else'] },
+  housingdeposit: { question: 'What part of the housing deposit are you stuck on?', options: ['Finding where to pay', 'Not sure when to pay vs. visa timeline', 'Deposit paid but no confirmation', 'Understanding the cancellation policy', 'Something else'] },
+  orientation:    { question: 'What part of orientation are you stuck on?', options: ['Registering for a session', 'International vs. general orientation difference', 'Pre-orientation requirements', 'When course registration opens', 'Something else'] },
+  i20:            { question: 'What part of the I-20 request are you stuck on?', options: ['What documents to attach to my email', 'Writing or sending the request email', 'Following up — school has not responded', 'My I-20 has an error on it', 'Something else'] },
+  sevis:          { question: 'What part of the SEVIS fee are you stuck on?', options: ['Finding the official payment site', 'Entering my SEVIS ID correctly', 'Payment failed or was declined', 'Confirming my receipt is valid', 'Worried I paid the wrong site', 'Something else'] },
+  visaapp:        { question: 'What part of the visa application are you stuck on?', options: ['Scheduling my interview appointment', 'Completing the DS-160 form', 'Preparing documents for the interview', 'My visa was denied or put on hold', 'Something else'] },
+  healthinsurance:{ question: 'What part of health insurance are you stuck on?', options: ['Understanding my plan options', 'How to submit a waiver', 'Checking if my current coverage qualifies to waive', 'Finding the waiver deadline', 'Something else'] },
+  credittransfer: { question: 'What part of the credit transfer are you stuck on?', options: ['Reading my official evaluation', 'Identifying which courses to appeal', 'Writing the appeal letter', 'Escalating after a denial', 'Something else'] },
+}
+
+const q2Data = {
+  question: 'What kind of help do you need?',
+  options: ['Walk me through what to do step by step', 'I hit an error or problem I cannot solve', 'I completed it but need to check I did it right', 'This is urgent — my deadline is very soon'],
+}
+
+function assemblePrompt(moveKey: string, move: Move, profile: UserProfile, q1: string, q2: string): string {
+  const school   = profile.schoolName || 'my school'
+  const isInt    = profile.cohorts?.includes('international')
+  const isTransfer = profile.cohorts?.includes('transfer')
+  const cohort   = isInt ? 'international' : isTransfer ? 'transfer' : 'incoming'
+
+  const helpMap: Record<string, string> = {
+    'Walk me through what to do step by step': 'Can you walk me through exactly what to do?',
+    'I hit an error or problem I cannot solve': 'I ran into a specific problem and need help troubleshooting it.',
+    'I completed it but need to check I did it right': 'I think I finished this step but I want to make sure I did it correctly.',
+    'This is urgent — my deadline is very soon': 'This is urgent — my deadline is very soon and I need clear, actionable guidance right now.',
+  }
+
+  const helpText = helpMap[q2] ?? q2
+
+  return `I'm a${isInt ? 'n' : ''} ${cohort} student at ${school} working on ${move.title.toLowerCase()}. Specifically, I'm stuck on: "${q1}". ${helpText}`
+}
+
+function BrunoPromptBuilder({ moveKey, move, profile, onSubmit, onDismiss }: {
+  moveKey: string
+  move: Move
+  profile: UserProfile
+  onSubmit: (prompt: string) => void
+  onDismiss: () => void
+}) {
+  const q1 = q1Data[moveKey] ?? { question: `What part of "${move.title}" are you stuck on?`, options: ['Understanding what to do', 'A technical issue or error', 'Not sure if I did it right', 'Something else'] }
+
+  type Step = 'q1' | 'q2' | 'preview'
+  const [step, setStep]       = useState<Step>('q1')
+  const [q1Answer, setQ1]     = useState('')
+  const [q2Answer, setQ2]     = useState('')
+  const [editedPrompt, setEditedPrompt] = useState('')
+
+  const selectQ1 = (opt: string) => { setQ1(opt); setStep('q2') }
+  const selectQ2 = (opt: string) => {
+    setQ2(opt)
+    setEditedPrompt(assemblePrompt(moveKey, move, profile, q1Answer, opt))
+    setStep('preview')
+  }
+
+  const stepNum  = step === 'q1' ? 1 : step === 'q2' ? 2 : 3
+  const stepPct  = (stepNum / 3) * 100
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        onClick={onDismiss}
+        style={{ position: 'absolute', inset: 0, background: 'rgba(78,54,41,0.45)', zIndex: 20 }}
+      />
+
+      {/* Sheet */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 30, borderRadius: '20px 20px 0 0', background: 'white', overflow: 'hidden' }}>
+
+        {/* Sheet header */}
+        <div style={{ padding: '14px 16px 10px', borderBottom: '1px solid #F3F4F6' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <BuddyAvatar mood="thinking" size={28} />
+              <span style={{ fontSize: 13, fontWeight: 800, color: BROWN }}>
+                {step === 'preview' ? 'Your question is ready' : `Question ${stepNum} of 2`}
+              </span>
+            </div>
+            <button onClick={onDismiss} style={{ width: 28, height: 28, borderRadius: '50%', border: '1px solid #E5E7EB', background: '#F9FAFB', cursor: 'pointer', fontSize: 14, color: '#6B7280', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+          </div>
+          {/* Progress bar */}
+          <div style={{ height: 3, borderRadius: 2, background: '#F3F4F6', overflow: 'hidden' }}>
+            <div style={{ height: '100%', borderRadius: 2, background: RED, width: `${stepPct}%`, transition: 'width 0.25s ease' }} />
+          </div>
+        </div>
+
+        <div style={{ padding: '14px 16px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+          {/* Q1 */}
+          {step === 'q1' && (
+            <>
+              <div style={{ fontSize: 14, fontWeight: 700, color: BROWN, lineHeight: 1.4, marginBottom: 2 }}>{q1.question}</div>
+              {q1.options.map(opt => (
+                <button
+                  key={opt}
+                  onClick={() => selectQ1(opt)}
+                  style={{ width: '100%', textAlign: 'left', padding: '11px 13px', borderRadius: 10, border: '1.5px solid #E5E7EB', background: 'white', fontSize: 13, color: BROWN, fontWeight: 500, cursor: 'pointer' }}
+                >
+                  {opt}
+                </button>
+              ))}
+            </>
+          )}
+
+          {/* Q2 */}
+          {step === 'q2' && (
+            <>
+              <div style={{ padding: '8px 10px', borderRadius: 8, background: '#FFF5F5', border: '1px solid #FECACA' }}>
+                <div style={{ fontSize: 11, color: '#6B7280' }}>You said:</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: BROWN, marginTop: 2 }}>{q1Answer}</div>
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: BROWN, lineHeight: 1.4, marginBottom: 2 }}>{q2Data.question}</div>
+              {q2Data.options.map(opt => (
+                <button
+                  key={opt}
+                  onClick={() => selectQ2(opt)}
+                  style={{ width: '100%', textAlign: 'left', padding: '11px 13px', borderRadius: 10, border: '1.5px solid #E5E7EB', background: 'white', fontSize: 13, color: BROWN, fontWeight: 500, cursor: 'pointer' }}
+                >
+                  {opt}
+                </button>
+              ))}
+              <button
+                onClick={() => setStep('q1')}
+                style={{ background: 'none', border: 'none', fontSize: 12, color: '#9CA3AF', cursor: 'pointer', textAlign: 'left', padding: '2px 0' }}
+              >
+                ← Back
+              </button>
+            </>
+          )}
+
+          {/* Preview */}
+          {step === 'preview' && (
+            <>
+              <div style={{ fontSize: 12, color: '#6B7280', lineHeight: 1.5 }}>
+                Bruno will see this question. Edit it if you want, then send.
+              </div>
+              <textarea
+                value={editedPrompt}
+                onChange={e => setEditedPrompt(e.target.value)}
+                rows={4}
+                style={{ width: '100%', padding: '11px 12px', borderRadius: 10, border: `1.5px solid #FECACA`, fontSize: 13, color: BROWN, lineHeight: 1.6, fontFamily: 'inherit', resize: 'none', outline: 'none', background: '#FFF5F5', boxSizing: 'border-box' }}
+              />
+              <button
+                onClick={() => onSubmit(editedPrompt)}
+                style={{ width: '100%', padding: '13px', borderRadius: 12, background: RED, border: 'none', color: 'white', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}
+              >
+                Send to Bruno →
+              </button>
+              <button
+                onClick={() => { setStep('q1'); setQ1(''); setQ2('') }}
+                style={{ background: 'none', border: 'none', fontSize: 12, color: '#9CA3AF', cursor: 'pointer', textAlign: 'center' }}
+              >
+                Start over
+              </button>
+            </>
+          )}
+
+        </div>
+      </div>
+    </>
+  )
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone, onAskBruno }: Props) {
   const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({})
   const [decoderOpen,  setDecoderOpen]  = useState(false)
   const [showPeer,     setShowPeer]     = useState(false)
+  const [showBuilder,  setShowBuilder]  = useState(false)
 
   const col     = categoryColor[move.category] || categoryColor.enrollment
   const overdue = !move.done && move.daysUntil !== null && move.daysUntil < 0
@@ -636,6 +807,16 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
   const allChecked   = checkedCount === move.steps.length
 
   return (
+    <div style={{ flex: 1, overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+    {showBuilder && (
+      <BrunoPromptBuilder
+        moveKey={moveKey}
+        move={move}
+        profile={profile}
+        onSubmit={(prompt) => { setShowBuilder(false); onAskBruno(prompt) }}
+        onDismiss={() => setShowBuilder(false)}
+      />
+    )}
     <div className="no-scroll" style={{ flex: 1, overflowY: 'auto' }}>
 
       {/* Sticky header */}
@@ -712,7 +893,7 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.7px' }}>Steps</div>
             <button
-              onClick={() => onAskBruno(buildBrunoPrompt(moveKey, move, profile))}
+              onClick={() => setShowBuilder(true)}
               style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, border: `1.5px solid #FECACA`, background: 'white', color: BROWN, fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
             >
               <BuddyAvatar mood="wave" size={18} />
@@ -851,6 +1032,7 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
         )}
 
       </div>
+    </div>
     </div>
   )
 }
