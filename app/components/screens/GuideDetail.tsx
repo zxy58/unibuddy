@@ -6,6 +6,9 @@ import type { UserProfile } from '@/app/lib/profile'
 import { getGuideAI } from '@/app/lib/recommendations'
 import BuddyAvatar from '@/app/components/ui/BuddyAvatar'
 
+const RED   = '#ED1C24'
+const BROWN = '#4E3629'
+
 interface Props {
   moveKey: string
   move: Move
@@ -20,7 +23,7 @@ const categoryIcon: Record<string, string> = {
 }
 
 const categoryColor: Record<string, { bg: string; text: string; border: string }> = {
-  enrollment: { bg: '#EDE9FE', text: '#5B21B6', border: '#C4B5FD' },
+  enrollment: { bg: '#FFF5F5', text: BROWN,     border: '#FECACA' },
   financial:  { bg: '#D1FAE5', text: '#065F46', border: '#6EE7B7' },
   visa:       { bg: '#E0E7FF', text: '#3730A3', border: '#A5B4FC' },
   housing:    { bg: '#FEF3C7', text: '#92400E', border: '#FCD34D' },
@@ -28,27 +31,171 @@ const categoryColor: Record<string, { bg: string; text: string; border: string }
   academic:   { bg: '#DBEAFE', text: '#1E40AF', border: '#BFDBFE' },
 }
 
-// Build the school email from the profile (best-effort)
+// ── Recovery guide content ──────────────────────────────────────────────────
+
+type RecoveryPath = 'grace' | 'appeal' | 'damage'
+
+interface RecoveryGuide {
+  label: string
+  icon: string
+  headline: string
+  reality: string
+  steps: string[]
+  callToAction: string
+}
+
+function getRecoveryGuides(moveKey: string, profile: UserProfile): Record<RecoveryPath, RecoveryGuide> {
+  const school = profile.schoolName || 'your school'
+  const isInt  = profile.cohorts?.includes('international')
+
+  const titles: Record<string, string> = {
+    enrolldeposit: 'enrollment deposit',
+    fafsa:         'FAFSA filing',
+    aidaccept:     'financial aid acceptance',
+    housingdeposit:'housing deposit',
+    orientation:   'orientation registration',
+    i20:           'I-20 request',
+    sevis:         'SEVIS fee payment',
+    visaapp:       'visa application',
+    healthinsurance:'health insurance enrollment',
+  }
+  const task = titles[moveKey] ?? 'this task'
+
+  return {
+    grace: {
+      label: '< 48 hours',
+      icon: '🟡',
+      headline: 'Grace period window — act in the next hour',
+      reality: `Most offices have an informal 24–48 hour grace period that is never advertised. You are still inside this window. The key is to call, not email — calls get answered immediately and create a human moment that emails cannot.`,
+      steps: [
+        `Call the relevant office right now. Do not email.`,
+        `Say exactly: "I just realized I missed the ${task} deadline. Is there any way to still process this today?"`,
+        `Have payment / documents ready before you call so you can act immediately if they say yes.`,
+        `If they say the deadline has passed, ask: "Is there a formal extension request process I can start right now?"`,
+        `Follow up with an email the same day summarizing what you discussed and who you spoke with.`,
+      ],
+      callToAction: 'Open email draft ↓',
+    },
+    appeal: {
+      label: '3 – 14 days',
+      icon: '🟠',
+      headline: 'Appeal window — write a strong, honest explanation',
+      reality: `${school} almost certainly has a formal deadline extension or appeal process. Offices expect appeals — they have forms for it. The students who do not get extensions are the ones who do not ask. Your job is to explain what happened and show that you are taking it seriously now.`,
+      steps: [
+        `Email the office today with subject: "Deadline Extension Request — ${profile.name || '[Your Name]'} — [Student ID]"`,
+        `In 2–3 sentences, state clearly what happened (no over-explanation) and when you discovered the issue.`,
+        `If there were extenuating circumstances (medical, family, technical), mention them briefly and offer to provide documentation.`,
+        `State that you are ready to complete the ${task} immediately upon approval.`,
+        `Call the office the next morning to confirm they received your email and ask about turnaround time.`,
+        `If denied, ask: "Is there a formal appeals committee I can petition?" — there often is.`,
+      ],
+      callToAction: 'Open appeal email draft ↓',
+    },
+    damage: {
+      label: '> 2 weeks',
+      icon: '🔴',
+      headline: 'Damage control — understand your remaining options',
+      reality: `The original ${task} deadline is almost certainly final at this point. But "this deadline" is not necessarily the end of the road — it depends on what the deadline was for. Your goal now is to understand exactly what you have lost and what alternative paths still exist.`,
+      steps: [
+        `Email the office today asking directly: "What are my options given that I missed the ${task} deadline?"`,
+        `Ask specifically: (1) Is there a late penalty vs. full disqualification? (2) Is there a next cycle or waitlist? (3) What is the latest I can still act?`,
+        isInt
+          ? `For immigration-related tasks, contact the DSO (Designated School Official) at the International Students Office immediately — some timelines have legal implications.`
+          : `If this affects financial aid, ask whether you can still be considered for non-priority institutional funds or emergency grants.`,
+        `Document every conversation: save emails, note names and dates of phone calls.`,
+        `Once you know the outcome, update your timeline on UniBuddy so dependent tasks reflect the new reality.`,
+      ],
+      callToAction: 'Open status inquiry email ↓',
+    },
+  }
+}
+
+// ── Document decoder content ─────────────────────────────────────────────────
+
+interface DocField {
+  term: string
+  plain: string
+  watchFor?: string
+}
+
+const docDecoder: Partial<Record<string, DocField[]>> = {
+  fafsa: [
+    { term: 'Student Aid Index (SAI)', plain: 'The number the government calculated your family can contribute toward college costs this year. Lower = more aid eligibility. A negative SAI means maximum need.', watchFor: 'If it looks wrong, you can file a professional judgment appeal with the Financial Aid office.' },
+    { term: 'Cost of Attendance (COA)', plain: 'The school\'s estimate of everything you\'ll spend in one year: tuition, fees, room, board, books, transportation, and personal expenses.', watchFor: 'This is an estimate — your actual costs may differ, especially for off-campus living.' },
+    { term: 'Grants (Federal Pell, Institutional)', plain: 'Free money. You never repay grants. Pell comes from the federal government; institutional grants come from the school.', watchFor: 'Grants are usually renewable each year if you meet satisfactory academic progress requirements.' },
+    { term: 'Subsidized Loans', plain: 'Money you borrow where the government pays the interest while you\'re in school. Repayment starts 6 months after you graduate or drop below half-time.', watchFor: 'These are always better than unsubsidized — accept these first.' },
+    { term: 'Unsubsidized Loans', plain: 'Money you borrow where interest starts accumulating immediately, even while you\'re in school. You can let it capitalize (add to principal) or pay it while enrolled.', watchFor: 'The longer you wait to pay interest, the more you\'ll owe overall.' },
+    { term: 'Work-Study', plain: 'A part-time campus job allocation. It\'s NOT deposited into your account — you earn it via paychecks from an on-campus job. You must apply for and get a job to access it.', watchFor: 'Apply for work-study jobs as early as possible — positions fill up fast.' },
+    { term: 'Verification Selected', plain: 'The government randomly selected your application to verify the information you provided. You\'ll need to submit additional documents (tax transcripts, etc.) before aid is finalized.' },
+  ],
+  i20: [
+    { term: 'SEVIS ID (N-number)', plain: 'Your unique US immigration tracking number. Starts with "N" followed by 10 digits. This appears on every immigration document you\'ll ever have.', watchFor: 'Must match exactly on your visa application, SEVIS payment, and at the port of entry.' },
+    { term: 'Program of Study', plain: 'Your degree level and major as reported to the US government. Must match what you told your consulate.', watchFor: 'If your major changes significantly, your DSO must update your I-20 — don\'t change programs without telling the international office.' },
+    { term: 'Program Dates', plain: 'Start and end dates of your authorized stay. Your F-1 status is technically D/S (Duration of Status) — you can stay as long as you\'re in valid status, but these dates define your program.', watchFor: 'If you need more time to complete your degree, request a program extension before the end date.' },
+    { term: 'Financial Resources', plain: 'Dollar amounts proving you can fund your education. The government requires proof you can cover the full Cost of Attendance for at least one year.', watchFor: 'This is what your consulate officer reviews during your visa interview.' },
+    { term: 'English Proficiency', plain: 'How the school verified you can study in English — usually a test score (TOEFL/IELTS) or a waiver.', watchFor: 'Some programs have conditional English requirements — check if you have any language course obligations.' },
+    { term: 'DSO Signature / School Certification', plain: 'Your Designated School Official\'s signature certifying this is a valid I-20. The school is accepting legal responsibility for your enrollment status.', watchFor: 'An unsigned or expired I-20 is invalid — do not travel with one.' },
+  ],
+  sevis: [
+    { term: 'I-901 SEVIS Fee Receipt', plain: 'Your proof that you paid the $350 fee that registers you in the Student and Exchange Visitor Information System. You must show this at your visa interview.', watchFor: 'Only pay at fmjfee.com — there are many scam sites that look official.' },
+    { term: 'SEVIS ID on Receipt', plain: 'Should exactly match the N-number on your I-20. If they don\'t match, contact your DSO immediately — you may have paid for the wrong record.', watchFor: 'A mismatch will cause your visa application to be rejected.' },
+    { term: 'Payment Date', plain: 'Must be before your visa interview date. There is usually a 3 business day processing delay before it appears in the State Department\'s system.', watchFor: 'Don\'t schedule your visa interview for the same day you pay — wait 3 business days.' },
+    { term: 'School Code', plain: 'Your school\'s SEVIS school code (format: NYC214F00XXX). This links your fee payment to your specific I-20 issuing school.', watchFor: 'Verify this matches the code on your I-20.' },
+  ],
+  healthinsurance: [
+    { term: 'Premium', plain: 'The monthly cost of having insurance, regardless of whether you use it. Usually deducted from your student account each semester.', watchFor: 'Student plans are often billed per semester, not per month — check the total before waiving.' },
+    { term: 'Deductible', plain: 'The amount you pay out-of-pocket before insurance starts covering costs. If your deductible is $500, you pay the first $500 of medical bills yourself each year.', watchFor: 'A high-deductible plan is cheaper monthly but risky if you need unexpected care.' },
+    { term: 'Copay / Copayment', plain: 'A fixed amount you pay per visit, regardless of the total bill. "Office visit: $25 copay" means you pay $25, insurance pays the rest (after deductible).', watchFor: 'Copays at in-network providers are much lower — always check before going to a new doctor.' },
+    { term: 'In-Network vs. Out-of-Network', plain: 'In-network providers have negotiated rates with your insurance. Out-of-network means you pay much more — sometimes the full cost.', watchFor: 'Campus health centers and local urgent care clinics are almost always in-network for student plans.' },
+    { term: 'Out-of-Pocket Maximum', plain: 'The most you will ever pay in a single year, even if your medical bills are enormous. Once you hit this limit, insurance covers 100%.', watchFor: 'Look at this number when comparing plans — it\'s the worst-case scenario figure.' },
+    { term: 'Waiver', plain: 'The process to opt out of the school plan because you already have qualifying insurance (e.g., parent\'s plan). Must be done by the waiver deadline each year.', watchFor: 'Waivers don\'t roll over — you must reapply every academic year.' },
+  ],
+}
+
+// ── Inline Bruno AI advice ───────────────────────────────────────────────────
+
+function getBrunoAdvice(moveKey: string, profile: UserProfile): string {
+  const school   = profile.schoolName || 'your school'
+  const isInt    = profile.cohorts?.includes('international')
+  const isTransfer = profile.cohorts?.includes('transfer')
+  const cohortLabel = isInt ? 'international student' : isTransfer ? 'transfer student' : 'incoming student'
+
+  const advice: Record<string, string> = {
+    enrolldeposit: `As an ${cohortLabel} at ${school}, pay your deposit the same day you decide — not "later this week." Seats and housing priority are assigned in real time. Once you pay, take a screenshot of the confirmation page (not just the email) and save it. If the portal shows "pending" after 24 hours, call Admissions directly. Do not wait for an email to resolve itself.`,
+    fafsa: `For ${school}: FAFSA opens October 1st for the following academic year. Filing in October vs. February can mean the difference between $15,000 in grants and $5,000 — most institutional money goes to early filers. Use the IRS Direct Data Exchange to pull in tax info automatically, it takes 30 seconds and eliminates the #1 source of errors. If your family\'s income changed significantly from the tax year used, file first and then contact the Financial Aid office about a professional judgment review.`,
+    aidaccept: `When reviewing your ${school} award letter, separate the offer into two columns: money you don\'t repay (grants, scholarships) vs. money you do (loans). Most students over-focus on the total package number and miss that $8k of it might be loans. If you\'re comparing offers from multiple schools, use the actual net cost — COA minus grants and scholarships only. ${isInt ? 'International students: check whether aid is renewable and what the GPA/credit requirements are each year.' : 'Ask explicitly whether your merit scholarship is renewable and what the renewal criteria are.'}`,
+    housingdeposit: `At ${school}, the housing queue typically works on deposit timestamp — the earlier you pay, the more room/building options you get. ${isInt ? 'As an international student, submit your housing deposit before your visa is confirmed if possible. Most schools hold your assignment and release it if you can\'t enroll — do not wait for visa approval to pay.' : ''} When you get to select rooms, avoid choosing based solely on the floor plan — read student reviews for the specific building. AC, laundry location, and distance to campus matter more than square footage.`,
+    orientation: `${school} likely has a separate ${isInt ? 'International Student Orientation that is required and separate from general orientation.' : isTransfer ? 'transfer orientation that covers different ground than first-year orientation.' : 'new student orientation.'} Attend both if there are two. The most valuable part isn\'t the sessions — it\'s meeting your academic advisor and getting your class registration hold lifted. Find out exactly when advising appointments open and book one immediately. Registration order matters for getting into required courses.`,
+    i20: `Your I-20 is the most important document in your F-1 student life. Get it early — DSO processing times vary from 3 days to 3 weeks depending on ${school}\'s office. After you receive it, verify three things immediately: (1) your name spelling exactly matches your passport, (2) your SEVIS ID starts with N and is 10 digits, (3) your program start date is correct. Any error requires a corrected I-20 before you can get a visa — catching it now saves weeks later.`,
+    sevis: `Pay your SEVIS fee only at fmjfee.com — there are dozens of scam sites. After paying, download and save your I-901 receipt as a PDF. The State Department\'s system takes 3 business days to reflect payment, so don\'t schedule your visa interview until after that window. At your interview, bring your printed I-901 receipt alongside your I-20 — some consulates ask for it physically even if it\'s in their system. ${school}\'s international office can confirm your payment was processed correctly.`,
+    visaapp: `The single best way to prepare for your F-1 visa interview is to be able to explain your specific program at ${school} in 2–3 clear sentences. Officers are checking whether you have genuine academic intent and ties to your home country. Common questions: "Why this school?", "What will you do after graduation?", "Who is funding your studies?" Prepare honest, specific answers — vague answers raise flags. Bring every document in an organized folder. If you get a 221(g) administrative processing notice, that\'s normal — it\'s not a denial. Contact ${school}\'s international office and wait.`,
+    healthinsurance: `${school}\'s student health plan is usually better than it looks on paper for campus services — the campus health center is often free or very low copay with the school plan. Before waiving, check whether your current coverage (parent\'s plan, home country coverage) is actually accepted by US providers in ${school}\'s area. Home country insurance typically doesn\'t work in the US. ${isInt ? 'International students: many consulates technically require health insurance for your visa — the school plan satisfies this requirement automatically.' : ''} The waiver deadline is strict — missing it means you\'re enrolled and charged for the full year.`,
+    credittransfer: `Transfer credit evaluations at ${school} are almost always negotiable, but the window is narrow — most schools only accept appeals in the first semester. Get your official evaluation in writing, then identify every course you believe was mis-classified. Pull the syllabi from your previous institution and write one paragraph per course explaining the content overlap with ${school}\'s equivalent requirement. Bring this to a meeting with your academic advisor, not just the registrar — faculty can sometimes approve equivalencies that the registrar can\'t.`,
+  }
+
+  return advice[moveKey] ?? getGuideAI(profile, moveKey) ?? `Here\'s what matters most for this step as an ${cohortLabel} at ${school}: read the instructions on the official portal carefully before starting, complete this when you have 30 uninterrupted minutes, and save/screenshot every confirmation you receive.`
+}
+
+// ── Email draft templates ────────────────────────────────────────────────────
+
 function resolveEmail(emailFormat: string, profile: UserProfile): string {
   const school = profile.schoolName?.toLowerCase().replace(/\s+/g, '') || 'yourschool'
-  // Common domain mappings
   const domainMap: Record<string, string> = {
     ucla: 'ucla.edu', 'utaustin': 'utexas.edu', nyu: 'nyu.edu',
     columbia: 'columbia.edu', risd: 'risd.edu', mit: 'mit.edu',
-    stanford: 'stanford.edu', caltech: 'caltech.edu',
+    stanford: 'stanford.edu', caltech: 'caltech.edu', brown: 'brown.edu',
     'universityofmichigan': 'umich.edu', uchicago: 'uchicago.edu',
   }
   const domain = domainMap[school] || `${school}.edu`
   return emailFormat.replace('[school]', domain.split('.')[0])
 }
 
-// Email draft templates per moveKey
 function buildEmailDraft(
   moveKey: string,
   contact: Contact,
   profile: UserProfile
 ): { subject: string; body: string } {
-  const name = profile.name || '[Your Name]'
+  const name   = profile.name || '[Your Name]'
   const school = profile.schoolName || '[Your School]'
 
   const templates: Record<string, { subject: string; body: string }> = {
@@ -206,7 +353,7 @@ ${profile.email || '[your email]'}`,
       subject: `Health Insurance Waiver Request — ${name} — [Student ID]`,
       body: `Dear ${contact.office},
 
-My name is ${name}, and I am an incoming student at ${school}. I am writing to submit a health insurance waiver request, as I am currently covered under [your insurance plan / parent's plan].
+My name is ${name}, and I am an incoming student at ${school}. I am writing to submit a health insurance waiver request, as I am currently covered under [your insurance plan / parent\'s plan].
 
 My coverage details:
   • Insurance provider: [provider name]
@@ -248,18 +395,19 @@ ${profile.email || '[your email]'}`,
   }
 }
 
-// Contact card with expandable email draft
+// ── Contact card ─────────────────────────────────────────────────────────────
+
 function ContactCard({ contact, moveKey, profile, col }: {
   contact: Contact
   moveKey: string
   profile: UserProfile
   col: { bg: string; text: string; border: string }
 }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen]     = useState(false)
   const [copied, setCopied] = useState<'subject' | 'body' | 'all' | null>(null)
 
   const resolvedEmail = resolveEmail(contact.emailFormat, profile)
-  const draft = buildEmailDraft(moveKey, contact, profile)
+  const draft         = buildEmailDraft(moveKey, contact, profile)
 
   const copy = (type: 'subject' | 'body' | 'all') => {
     const text = type === 'subject' ? draft.subject
@@ -273,7 +421,6 @@ function ContactCard({ contact, moveKey, profile, col }: {
 
   return (
     <div style={{ borderRadius: 12, border: `1.5px solid ${open ? col.border : 'var(--border-secondary)'}`, overflow: 'hidden', transition: 'border-color 0.15s' }}>
-      {/* Contact header */}
       <div style={{ padding: '12px 14px', background: open ? col.bg : 'white' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
           <div style={{ flex: 1 }}>
@@ -297,7 +444,6 @@ function ContactCard({ contact, moveKey, profile, col }: {
             {open ? 'Close' : '✉ Draft email'}
           </button>
         </div>
-
         {contact.tip && (
           <div style={{ marginTop: 8, display: 'flex', gap: 6, padding: '6px 10px', borderRadius: 8, background: 'rgba(0,0,0,0.04)' }}>
             <span style={{ fontSize: 11 }}>💡</span>
@@ -306,28 +452,22 @@ function ContactCard({ contact, moveKey, profile, col }: {
         )}
       </div>
 
-      {/* Email draft — expanded */}
       {open && (
         <div style={{ borderTop: `1px solid ${col.border}`, background: '#FAFAFA' }}>
-          {/* Buddy intro */}
           <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '12px 14px 0' }}>
             <BuddyAvatar mood="thinking" size={30} />
-            <div style={{ flex: 1, padding: '8px 11px', borderRadius: '4px 12px 12px 12px', background: '#F5F3FF', border: '1.5px solid #DDD6FE' }}>
-              <div style={{ fontSize: 12, color: '#4C1D95', lineHeight: 1.5 }}>
+            <div style={{ flex: 1, padding: '8px 11px', borderRadius: '4px 12px 12px 12px', background: '#FFF5F5', border: '1.5px solid #FECACA' }}>
+              <div style={{ fontSize: 12, color: BROWN, lineHeight: 1.5 }}>
                 Here&apos;s a ready-to-send draft. Fill in the bracketed parts, then copy and send from your email.
               </div>
             </div>
           </div>
 
           <div style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {/* Subject line */}
             <div style={{ borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', overflow: 'hidden' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 10px', borderBottom: '1px solid #E2E8F0', background: '#F8FAFC' }}>
                 <span style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Subject</span>
-                <button
-                  onClick={() => copy('subject')}
-                  style={{ fontSize: 10, fontWeight: 700, color: col.text, border: 'none', cursor: 'pointer', padding: '2px 6px', borderRadius: 4, background: col.bg }}
-                >
+                <button onClick={() => copy('subject')} style={{ fontSize: 10, fontWeight: 700, color: col.text, border: 'none', cursor: 'pointer', padding: '2px 6px', borderRadius: 4, background: col.bg }}>
                   {copied === 'subject' ? '✓ Copied' : 'Copy'}
                 </button>
               </div>
@@ -336,14 +476,10 @@ function ContactCard({ contact, moveKey, profile, col }: {
               </div>
             </div>
 
-            {/* Body */}
             <div style={{ borderRadius: 8, border: '1px solid #E2E8F0', background: 'white', overflow: 'hidden' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 10px', borderBottom: '1px solid #E2E8F0', background: '#F8FAFC' }}>
                 <span style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Body</span>
-                <button
-                  onClick={() => copy('body')}
-                  style={{ fontSize: 10, fontWeight: 700, color: col.text, background: col.bg, border: 'none', cursor: 'pointer', padding: '2px 6px', borderRadius: 4 }}
-                >
+                <button onClick={() => copy('body')} style={{ fontSize: 10, fontWeight: 700, color: col.text, background: col.bg, border: 'none', cursor: 'pointer', padding: '2px 6px', borderRadius: 4 }}>
                   {copied === 'body' ? '✓ Copied' : 'Copy'}
                 </button>
               </div>
@@ -352,11 +488,10 @@ function ContactCard({ contact, moveKey, profile, col }: {
               </div>
             </div>
 
-            {/* Copy all + open mail */}
             <div style={{ display: 'flex', gap: 8 }}>
               <button
                 onClick={() => copy('all')}
-                style={{ flex: 1, padding: '10px', borderRadius: 9, background: copied === 'all' ? 'linear-gradient(135deg, #059669, #047857)' : `linear-gradient(135deg, ${col.text}, ${col.text}dd)`, border: 'none', color: 'white', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                style={{ flex: 1, padding: '10px', borderRadius: 9, background: copied === 'all' ? '#059669' : col.text, border: 'none', color: 'white', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
               >
                 {copied === 'all' ? '✓ Copied everything' : 'Copy full email'}
               </button>
@@ -374,26 +509,120 @@ function ContactCard({ contact, moveKey, profile, col }: {
   )
 }
 
+// ── Recovery triage block ────────────────────────────────────────────────────
+
+function RecoveryBlock({ moveKey, move, profile }: { moveKey: string; move: Move; profile: UserProfile }) {
+  const [selected, setSelected] = useState<RecoveryPath | null>(null)
+  const overdueDays = move.daysUntil !== null ? Math.abs(move.daysUntil) : 0
+  const guides = getRecoveryGuides(moveKey, profile)
+
+  const options: { path: RecoveryPath; label: string; icon: string; hint: string }[] = [
+    { path: 'grace',  icon: '🟡', label: 'Less than 48 hours',  hint: 'Grace period window' },
+    { path: 'appeal', icon: '🟠', label: '3 – 14 days ago',     hint: 'Appeal territory' },
+    { path: 'damage', icon: '🔴', label: 'More than 2 weeks',   hint: 'Damage control' },
+  ]
+
+  const active = selected ? guides[selected] : null
+
+  return (
+    <div style={{ borderRadius: 14, border: `2px solid ${RED}`, overflow: 'hidden' }}>
+      {/* Header */}
+      <div style={{ padding: '11px 14px', background: RED, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <BuddyAvatar mood="urgent" size={36} />
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 800, color: 'white' }}>
+            This task is {overdueDays} day{overdueDays !== 1 ? 's' : ''} overdue
+          </div>
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', marginTop: 1 }}>
+            Select when the deadline passed to get your recovery plan
+          </div>
+        </div>
+      </div>
+
+      {/* Triage buttons */}
+      <div style={{ padding: '12px 14px', background: '#FFF5F5', display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: BROWN, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 2 }}>
+          When did the deadline pass?
+        </div>
+        {options.map(opt => (
+          <button
+            key={opt.path}
+            onClick={() => setSelected(s => s === opt.path ? null : opt.path)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10,
+              border: selected === opt.path ? `2px solid ${RED}` : '1.5px solid #FECACA',
+              background: selected === opt.path ? '#FFF0F0' : 'white',
+              cursor: 'pointer', textAlign: 'left',
+            }}
+          >
+            <span style={{ fontSize: 16 }}>{opt.icon}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: BROWN }}>{opt.label}</div>
+              <div style={{ fontSize: 11, color: '#6B7280' }}>{opt.hint}</div>
+            </div>
+            <span style={{ fontSize: 12, color: selected === opt.path ? RED : '#9CA3AF' }}>
+              {selected === opt.path ? '▲' : '▼'}
+            </span>
+          </button>
+        ))}
+
+        {/* Recovery guide */}
+        {active && (
+          <div style={{ marginTop: 4, borderRadius: 10, background: 'white', border: `1px solid #FECACA`, overflow: 'hidden' }}>
+            <div style={{ padding: '10px 12px', borderBottom: '1px solid #FEE2E2', background: '#FEF2F2' }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: BROWN }}>{active.headline}</div>
+            </div>
+            <div style={{ padding: '11px 12px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <p style={{ margin: 0, fontSize: 12, color: '#374151', lineHeight: 1.6 }}>{active.reality}</p>
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: BROWN, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
+                  Your action steps
+                </div>
+                {active.steps.map((step, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
+                    <div style={{ width: 18, height: 18, borderRadius: '50%', background: RED, color: 'white', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                      {i + 1}
+                    </div>
+                    <span style={{ fontSize: 12, color: '#374151', lineHeight: 1.5 }}>{step}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+
 export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone }: Props) {
   const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({})
-  const [aiOpen, setAiOpen] = useState(false)
-  const [showPeer, setShowPeer] = useState(false)
+  const [brunoOpen,    setBrunoOpen]    = useState(false)
+  const [decoderOpen,  setDecoderOpen]  = useState(false)
+  const [showPeer,     setShowPeer]     = useState(false)
 
-  const personalizedAI = getGuideAI(profile, moveKey)
-  const col = categoryColor[move.category] || categoryColor.enrollment
+  const col      = categoryColor[move.category] || categoryColor.enrollment
+  const overdue  = !move.done && move.daysUntil !== null && move.daysUntil < 0
+  const brunoAI  = getBrunoAdvice(moveKey, profile)
+  const decoder  = docDecoder[moveKey]
 
   const toggleStep = (i: number) =>
     setCheckedSteps(prev => ({ ...prev, [i]: !prev[i] }))
 
   const checkedCount = Object.values(checkedSteps).filter(Boolean).length
-  const allChecked = checkedCount === move.steps.length
+  const allChecked   = checkedCount === move.steps.length
 
   return (
     <div className="no-scroll" style={{ flex: 1, overflowY: 'auto' }}>
 
       {/* Sticky header */}
       <div style={{ padding: '10px 18px 14px', borderBottom: '1px solid var(--border-tertiary)', background: 'var(--bg-primary)', position: 'sticky', top: 0, zIndex: 10 }}>
-        <button onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', color: '#7C3AED', fontSize: 13, fontWeight: 600, padding: 0, marginBottom: 12 }}>
+        <button
+          onClick={onBack}
+          style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', color: RED, fontSize: 13, fontWeight: 600, padding: 0, marginBottom: 12 }}
+        >
           ← Back
         </button>
 
@@ -403,7 +632,12 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.25, letterSpacing: '-0.2px' }}>{move.title}</div>
-            {!move.done && move.daysUntil !== null && (
+            {overdue && move.daysUntil !== null && (
+              <div style={{ fontSize: 11, color: RED, fontWeight: 700, marginTop: 3 }}>
+                {Math.abs(move.daysUntil)}d overdue — recovery plan below
+              </div>
+            )}
+            {!overdue && !move.done && move.daysUntil !== null && (
               <div style={{ fontSize: 11, color: move.daysUntil <= 7 ? '#DC2626' : '#EA580C', fontWeight: 700, marginTop: 3 }}>
                 {move.daysUntil === 0 ? 'Due today' : `${move.daysUntil} days left`}
               </div>
@@ -416,10 +650,10 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
           <div style={{ marginTop: 10 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
               <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Steps</span>
-              <span style={{ fontSize: 11, color: '#7C3AED', fontWeight: 600 }}>{checkedCount} / {move.steps.length}</span>
+              <span style={{ fontSize: 11, color: RED, fontWeight: 600 }}>{checkedCount} / {move.steps.length}</span>
             </div>
-            <div style={{ height: 4, borderRadius: 2, background: '#E9E4FF', overflow: 'hidden' }}>
-              <div style={{ height: '100%', borderRadius: 2, background: '#7C3AED', width: `${(checkedCount / move.steps.length) * 100}%`, transition: 'width 0.25s ease' }} />
+            <div style={{ height: 4, borderRadius: 2, background: BROWN, overflow: 'hidden' }}>
+              <div style={{ height: '100%', borderRadius: 2, background: RED, width: `${(checkedCount / move.steps.length) * 100}%`, transition: 'width 0.25s ease' }} />
             </div>
           </div>
         )}
@@ -427,15 +661,20 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
 
       <div style={{ padding: '16px 18px 36px', display: 'flex', flexDirection: 'column', gap: 16 }}>
 
-        {/* Consequence */}
-        {!move.done && (
+        {/* ── Recovery triage (overdue only) ── */}
+        {overdue && (
+          <RecoveryBlock moveKey={moveKey} move={move} profile={profile} />
+        )}
+
+        {/* ── Consequence (non-overdue, non-done) ── */}
+        {!move.done && !overdue && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 12px', borderRadius: 10, background: '#FEF2F2', border: '1px solid #FECACA' }}>
             <span style={{ fontSize: 15, flexShrink: 0 }}>⚠</span>
             <span style={{ fontSize: 12, color: '#991B1B', lineHeight: 1.4 }}>If missed: <strong>{move.consequence}</strong></span>
           </div>
         )}
 
-        {/* Gather chips */}
+        {/* ── Have ready ── */}
         <div>
           <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 8 }}>Have ready</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -447,9 +686,34 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
           </div>
         </div>
 
-        {/* Steps */}
+        {/* ── Steps + inline Bruno ── */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 8 }}>Steps</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.7px' }}>Steps</div>
+            <button
+              onClick={() => setBrunoOpen(o => !o)}
+              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, border: `1.5px solid ${brunoOpen ? RED : '#FECACA'}`, background: brunoOpen ? '#FFF5F5' : 'white', color: brunoOpen ? RED : BROWN, fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+            >
+              <BuddyAvatar mood={brunoOpen ? 'thinking' : 'wave'} size={18} />
+              <span>? Ask Bruno</span>
+            </button>
+          </div>
+
+          {/* Bruno speech bubble */}
+          {brunoOpen && (
+            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 10 }}>
+              <BuddyAvatar mood="thinking" size={36} />
+              <div style={{ flex: 1, padding: '10px 13px', borderRadius: '4px 14px 14px 14px', background: '#FFF5F5', border: `1.5px solid #FECACA` }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: RED, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 5 }}>
+                  Bruno&apos;s advice for {profile.schoolName || 'your school'}
+                </div>
+                <div style={{ fontSize: 12, color: BROWN, lineHeight: 1.65 }}>
+                  {brunoAI}
+                </div>
+              </div>
+            </div>
+          )}
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {move.steps.map((step, i) => {
               const checked = !!checkedSteps[i]
@@ -491,7 +755,43 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
           </div>
         </div>
 
-        {/* If wrong */}
+        {/* ── Document decoder ── */}
+        {decoder && (
+          <div style={{ borderRadius: 12, border: `1.5px solid #D1D5DB`, overflow: 'hidden' }}>
+            <button
+              onClick={() => setDecoderOpen(o => !o)}
+              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 13px', background: decoderOpen ? BROWN : '#F9FAFB', border: 'none', cursor: 'pointer' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 16 }}>📄</span>
+                <div style={{ textAlign: 'left' }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: decoderOpen ? 'white' : BROWN }}>Decode this document</div>
+                  <div style={{ fontSize: 11, color: decoderOpen ? 'rgba(255,255,255,0.75)' : '#6B7280' }}>Plain English, field by field</div>
+                </div>
+              </div>
+              <span style={{ fontSize: 12, color: decoderOpen ? 'white' : '#9CA3AF' }}>{decoderOpen ? '▲' : '▼'}</span>
+            </button>
+
+            {decoderOpen && (
+              <div style={{ borderTop: '1px solid #E5E7EB', background: 'white' }}>
+                {decoder.map((field, i) => (
+                  <div key={i} style={{ padding: '11px 13px', borderBottom: i < decoder.length - 1 ? '1px solid #F3F4F6' : 'none' }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: BROWN, marginBottom: 3 }}>{field.term}</div>
+                    <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.55 }}>{field.plain}</div>
+                    {field.watchFor && (
+                      <div style={{ marginTop: 5, display: 'flex', gap: 5, padding: '5px 8px', borderRadius: 6, background: '#FFF5F5', border: '1px solid #FECACA' }}>
+                        <span style={{ fontSize: 11, flexShrink: 0 }}>👀</span>
+                        <span style={{ fontSize: 11, color: '#991B1B', lineHeight: 1.4 }}>{field.watchFor}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── If something goes wrong ── */}
         <div style={{ padding: '11px 13px', borderRadius: 12, background: '#F9FAFB', border: '1px solid #E5E7EB', display: 'flex', gap: 8 }}>
           <span style={{ fontSize: 14, flexShrink: 0 }}>🔧</span>
           <div>
@@ -500,7 +800,7 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
           </div>
         </div>
 
-        {/* Contacts + email generation */}
+        {/* ── Contacts ── */}
         {move.contacts && move.contacts.length > 0 && (
           <div>
             <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 8 }}>
@@ -514,7 +814,7 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
           </div>
         )}
 
-        {/* Peer insight */}
+        {/* ── From a peer ── */}
         <button
           onClick={() => setShowPeer(p => !p)}
           style={{ width: '100%', textAlign: 'left', padding: '11px 13px', borderRadius: 12, background: col.bg, border: `1px solid ${col.border}`, cursor: 'pointer' }}
@@ -528,33 +828,13 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
           )}
         </button>
 
-        {/* Ask UniBuddy AI */}
-        <button
-          onClick={() => setAiOpen(o => !o)}
-          style={{ width: '100%', textAlign: 'left', borderRadius: 12, overflow: 'hidden', border: '1.5px solid #7C3AED', cursor: 'pointer', background: 'none' }}
-        >
-          <div style={{ padding: '11px 13px', background: '#7C3AED', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: 'white' }}>✦ Ask UniBuddy</span>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>{aiOpen ? '▲' : '▼'}</span>
-          </div>
-          {aiOpen && (
-            <div style={{ padding: '12px 13px', background: '#F5F3FF' }}>
-              <div style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.6, textAlign: 'left' }}>
-                {personalizedAI || move.ai}
-              </div>
-            </div>
-          )}
-        </button>
-
-        {/* Mark done */}
+        {/* ── Mark done ── */}
         {!move.done && (
           <button
             onClick={() => onMarkDone(moveKey)}
             style={{
               width: '100%', padding: '15px', borderRadius: 14,
-              background: allChecked
-                ? 'linear-gradient(135deg, #059669, #047857)'
-                : 'linear-gradient(135deg, #7C3AED, #5B21B6)',
+              background: allChecked ? '#059669' : RED,
               color: 'white', border: 'none', cursor: 'pointer',
               fontSize: 15, fontWeight: 800, letterSpacing: '-0.2px',
               transition: 'background 0.3s ease',
