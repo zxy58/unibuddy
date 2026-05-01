@@ -9,6 +9,7 @@ interface Props {
   profile: UserProfile
   moves: Record<string, Move>
   openGuide: (key: string) => void
+  initialInput?: string
 }
 
 interface Message {
@@ -251,7 +252,7 @@ function generateResponse(
 
 // ── Component ──────────────────────────────────────────────────────────────
 
-export default function AskScreen({ profile, moves, openGuide }: Props) {
+export default function AskScreen({ profile, moves, openGuide, initialInput = '' }: Props) {
   const name = profile.name.split(' ')[0]
   const urgent = Object.entries(moves).filter(([, m]) => !m.done && m.urgency === 'critical')
 
@@ -267,8 +268,16 @@ export default function AskScreen({ profile, moves, openGuide }: Props) {
   }
 
   const [messages, setMessages] = useState<Message[]>([initialMessage])
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState(initialInput)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const inputRef  = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (initialInput) {
+      setInput(initialInput)
+      setTimeout(() => inputRef.current?.focus(), 100)
+    }
+  }, [initialInput])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -306,7 +315,7 @@ export default function AskScreen({ profile, moves, openGuide }: Props) {
               )}
               <div style={{
                 maxWidth: '78%', padding: '10px 13px', borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                background: msg.role === 'user' ? 'linear-gradient(135deg, #7C3AED, #5B21B6)' : 'white',
+                background: msg.role === 'user' ? '#4E3629' : 'white',
                 border: msg.role === 'assistant' ? '1px solid var(--border-secondary)' : 'none',
                 fontSize: 13, color: msg.role === 'user' ? 'white' : 'var(--text-primary)',
                 lineHeight: 1.55, whiteSpace: 'pre-wrap',
@@ -320,14 +329,14 @@ export default function AskScreen({ profile, moves, openGuide }: Props) {
               <div style={{ marginLeft: 36, marginBottom: 6 }}>
                 <button
                   onClick={() => openGuide(msg.guideKey!)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 13px', borderRadius: 12, background: '#F5F3FF', border: '1.5px solid #C4B5FD', cursor: 'pointer', textAlign: 'left', width: '100%' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 13px', borderRadius: 12, background: '#FFF5F5', border: '1.5px solid #FECACA', cursor: 'pointer', textAlign: 'left', width: '100%' }}
                 >
                   <span style={{ fontSize: 18 }}>📋</span>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: '#5B21B6' }}>{moves[msg.guideKey].title}</div>
-                    <div style={{ fontSize: 11, color: '#7C3AED', marginTop: 2 }}>{moves[msg.guideKey].steps.length} steps · Tap to open</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#4E3629' }}>{moves[msg.guideKey].title}</div>
+                    <div style={{ fontSize: 11, color: '#ED1C24', marginTop: 2 }}>{moves[msg.guideKey].steps.length} steps · Tap to open</div>
                   </div>
-                  <span style={{ color: '#7C3AED', fontSize: 14 }}>→</span>
+                  <span style={{ color: '#ED1C24', fontSize: 14 }}>→</span>
                 </button>
               </div>
             )}
@@ -339,7 +348,7 @@ export default function AskScreen({ profile, moves, openGuide }: Props) {
                   <button
                     key={qr}
                     onClick={() => send(qr)}
-                    style={{ padding: '6px 12px', borderRadius: 20, background: 'white', border: '1.5px solid #C4B5FD', fontSize: 12, fontWeight: 600, color: '#7C3AED', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                    style={{ padding: '6px 12px', borderRadius: 20, background: 'white', border: '1.5px solid #FECACA', fontSize: 12, fontWeight: 600, color: '#4E3629', cursor: 'pointer', whiteSpace: 'nowrap' }}
                   >
                     {qr}
                   </button>
@@ -354,6 +363,7 @@ export default function AskScreen({ profile, moves, openGuide }: Props) {
       {/* Input bar */}
       <div style={{ padding: '10px 14px 16px', borderTop: '1px solid var(--border-tertiary)', background: 'var(--bg-primary)', flexShrink: 0, display: 'flex', gap: 8 }}>
         <input
+          ref={inputRef}
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), send(input))}
@@ -363,7 +373,7 @@ export default function AskScreen({ profile, moves, openGuide }: Props) {
         <button
           onClick={() => send(input)}
           disabled={!input.trim()}
-          style={{ width: 42, height: 42, borderRadius: 12, background: input.trim() ? 'linear-gradient(135deg, #7C3AED, #5B21B6)' : '#E9E4FF', border: 'none', cursor: input.trim() ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}
+          style={{ width: 42, height: 42, borderRadius: 12, background: input.trim() ? '#ED1C24' : '#FFF5F5', border: 'none', cursor: input.trim() ? 'pointer' : 'not-allowed', color: input.trim() ? 'white' : '#FECACA', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}
         >
           ↑
         </button>

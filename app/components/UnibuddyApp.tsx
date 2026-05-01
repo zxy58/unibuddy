@@ -21,6 +21,7 @@ export default function UnibuddyApp() {
   const [profileLoaded, setProfileLoaded] = useState(false)
   const [activeTab, setActiveTab] = useState<TabName>('timeline')
   const [activeGuide, setActiveGuide] = useState<string | null>(null)
+  const [askPrompt, setAskPrompt] = useState('')
   const [toast, setToast] = useState<string | null>(null)
   const [moves, setMoves] = useState<Record<string, Move>>(initialMoves)
   const [streak, setStreak] = useState(1)
@@ -73,6 +74,12 @@ export default function UnibuddyApp() {
 
   const closeGuide = useCallback(() => {
     setActiveGuide(null)
+  }, [])
+
+  const navigateToAsk = useCallback((prompt: string) => {
+    setAskPrompt(prompt)
+    setActiveGuide(null)
+    setActiveTab('ask')
   }, [])
 
   const markDone = useCallback((key: string) => {
@@ -184,6 +191,7 @@ export default function UnibuddyApp() {
             profile={profile}
             onBack={closeGuide}
             onMarkDone={markDone}
+            onAskBruno={navigateToAsk}
           />
         ) : (
           <>
@@ -208,6 +216,7 @@ export default function UnibuddyApp() {
                   profile={profile}
                   moves={moves}
                   openGuide={openGuide}
+                  initialInput={askPrompt}
                 />
               )}
               {activeTab === 'profile' && (

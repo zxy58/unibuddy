@@ -15,6 +15,7 @@ interface Props {
   profile: UserProfile
   onBack: () => void
   onMarkDone: (key: string) => void
+  onAskBruno: (prompt: string) => void
 }
 
 const categoryIcon: Record<string, string> = {
@@ -150,6 +151,28 @@ const docDecoder: Partial<Record<string, DocField[]>> = {
     { term: 'Out-of-Pocket Maximum', plain: 'The most you will ever pay in a single year, even if your medical bills are enormous. Once you hit this limit, insurance covers 100%.', watchFor: 'Look at this number when comparing plans — it\'s the worst-case scenario figure.' },
     { term: 'Waiver', plain: 'The process to opt out of the school plan because you already have qualifying insurance (e.g., parent\'s plan). Must be done by the waiver deadline each year.', watchFor: 'Waivers don\'t roll over — you must reapply every academic year.' },
   ],
+}
+
+// ── Pre-drafted chat prompt per guide ────────────────────────────────────────
+
+function buildBrunoPrompt(moveKey: string, move: Move, profile: UserProfile): string {
+  const school = profile.schoolName || 'my school'
+  const isInt  = profile.cohorts?.includes('international')
+
+  const prompts: Record<string, string> = {
+    enrolldeposit: `I'm looking at the enrollment deposit for ${school}. What do I need to know before paying and what unlocks after I confirm my spot?`,
+    fafsa:         `I'm working on my FAFSA as an incoming student at ${school}. What are the most important things to know and when is the priority deadline?`,
+    aidaccept:     `I need to accept my financial aid offer at ${school}. What's the difference between grants and loans in my award letter and what should I watch out for?`,
+    housingdeposit:`I'm about to pay my housing deposit at ${school}. How does the room queue work and is there anything important to know before submitting?`,
+    orientation:   `I need to register for orientation at ${school}${isInt ? ' as an international student' : ''}. What's the most important thing to do at orientation and how does course registration work?`,
+    i20:           `I need to request my I-20 from ${school} as an F-1 student from ${profile.country || 'abroad'}. What information do I need to gather and how do I get it processed quickly?`,
+    sevis:         `I need to pay my SEVIS fee for my F-1 visa to attend ${school}. What's the safest way to pay, what could go wrong, and what do I do after paying?`,
+    visaapp:       `I'm applying for my F-1 student visa to attend ${school}. What documents do I need for the interview and what are the most common reasons for denial?`,
+    healthinsurance:`I'm deciding whether to waive ${school}'s student health insurance. What should I consider and when is the waiver deadline?`,
+    credittransfer: `I'm a transfer student at ${school} and I want to appeal my transfer credit evaluation. How do I make the strongest case?`,
+  }
+
+  return prompts[moveKey] ?? `I'm looking at the "${move.title}" step at ${school}. Can you walk me through what I need to know?`
 }
 
 // ── Inline Bruno AI advice ───────────────────────────────────────────────────
@@ -597,16 +620,14 @@ function RecoveryBlock({ moveKey, move, profile }: { moveKey: string; move: Move
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone }: Props) {
+export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone, onAskBruno }: Props) {
   const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({})
-  const [brunoOpen,    setBrunoOpen]    = useState(false)
   const [decoderOpen,  setDecoderOpen]  = useState(false)
   const [showPeer,     setShowPeer]     = useState(false)
 
-  const col      = categoryColor[move.category] || categoryColor.enrollment
-  const overdue  = !move.done && move.daysUntil !== null && move.daysUntil < 0
-  const brunoAI  = getBrunoAdvice(moveKey, profile)
-  const decoder  = docDecoder[moveKey]
+  const col     = categoryColor[move.category] || categoryColor.enrollment
+  const overdue = !move.done && move.daysUntil !== null && move.daysUntil < 0
+  const decoder = docDecoder[moveKey]
 
   const toggleStep = (i: number) =>
     setCheckedSteps(prev => ({ ...prev, [i]: !prev[i] }))
@@ -691,28 +712,13 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.7px' }}>Steps</div>
             <button
-              onClick={() => setBrunoOpen(o => !o)}
-              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, border: `1.5px solid ${brunoOpen ? RED : '#FECACA'}`, background: brunoOpen ? '#FFF5F5' : 'white', color: brunoOpen ? RED : BROWN, fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+              onClick={() => onAskBruno(buildBrunoPrompt(moveKey, move, profile))}
+              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, border: `1.5px solid #FECACA`, background: 'white', color: BROWN, fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
             >
-              <BuddyAvatar mood={brunoOpen ? 'thinking' : 'wave'} size={18} />
+              <BuddyAvatar mood="wave" size={18} />
               <span>? Ask Bruno</span>
             </button>
           </div>
-
-          {/* Bruno speech bubble */}
-          {brunoOpen && (
-            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 10 }}>
-              <BuddyAvatar mood="thinking" size={36} />
-              <div style={{ flex: 1, padding: '10px 13px', borderRadius: '4px 14px 14px 14px', background: '#FFF5F5', border: `1.5px solid #FECACA` }}>
-                <div style={{ fontSize: 10, fontWeight: 700, color: RED, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 5 }}>
-                  Bruno&apos;s advice for {profile.schoolName || 'your school'}
-                </div>
-                <div style={{ fontSize: 12, color: BROWN, lineHeight: 1.65 }}>
-                  {brunoAI}
-                </div>
-              </div>
-            </div>
-          )}
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {move.steps.map((step, i) => {
