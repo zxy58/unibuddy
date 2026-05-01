@@ -21,7 +21,7 @@ const categoryIcon: Record<string, string> = {
 const urgencyStyle = {
   critical: { accent: '#EF4444', badgeBg: '#FEE2E2', badgeText: '#DC2626', cardBorder: '#FECACA', cardBg: '#FFFAFA' },
   soon:     { accent: '#F97316', badgeBg: '#FFEDD5', badgeText: '#EA580C', cardBorder: '#FED7AA', cardBg: '#FFFAF5' },
-  upcoming: { accent: '#7C3AED', badgeBg: '#EDE9FE', badgeText: '#6D28D9', cardBorder: '#DDD6FE', cardBg: '#FDFCFF' },
+  upcoming: { accent: '#ED1C24', badgeBg: '#FFF5F5', badgeText: '#4E3629', cardBorder: '#FECACA', cardBg: '#FFFAFA' },
 }
 
 function DeadlineBadge({ days, urgency }: { days: number; urgency: 'critical' | 'soon' | 'upcoming' }) {
@@ -85,7 +85,7 @@ function ActNowCard({ moveKey, move, openGuide }: { moveKey: string; move: Move;
         {/* CTA */}
         <button
           onClick={() => openGuide(moveKey)}
-          style={{ width: '100%', padding: '13px', borderRadius: 12, background: 'linear-gradient(135deg, #7C3AED, #5B21B6)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
+          style={{ width: '100%', padding: '13px', borderRadius: 12, background: '#ED1C24', color: 'white', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
         >
           Do this now →
         </button>
@@ -135,13 +135,13 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
 
         {/* Buddy speech bubble */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-          <div style={{ flex: 1, padding: '11px 14px', borderRadius: '4px 16px 16px 16px', background: '#F5F3FF', border: '1.5px solid #DDD6FE', position: 'relative' }}>
-            <div style={{ fontSize: 13, color: '#4C1D95', lineHeight: 1.55, fontWeight: 500 }}>{nudge.body}</div>
+          <div style={{ flex: 1, padding: '11px 14px', borderRadius: '4px 16px 16px 16px', background: '#FFF5F5', border: '1.5px solid #FECACA', position: 'relative' }}>
+            <div style={{ fontSize: 13, color: '#4E3629', lineHeight: 1.55, fontWeight: 500 }}>{nudge.body}</div>
           </div>
         </div>
 
         {/* Progress bar — compact */}
-        <div style={{ padding: '14px 16px', borderRadius: 16, background: 'linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)', color: 'white' }}>
+        <div style={{ padding: '14px 16px', borderRadius: 16, background: '#4E3629', color: 'white' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <div>
               <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontWeight: 500, marginBottom: 1 }}>Pre-arrival checklist</div>
@@ -171,8 +171,8 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
         {comingUp.length > 0 && (
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#7C3AED' }} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#6D28D9', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Coming up</span>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#ED1C24' }} />
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#4E3629', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Coming up</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {comingUp.map(k => <CompactRow key={k} moveKey={k} move={moves[k]} openGuide={openGuide} />)}

@@ -9,7 +9,7 @@ export type BuddyEvolutionLevel = 0 | 1 | 2 | 3 | 4 | 5
 const FUR_DARK  = '#4A3728'
 const FUR_MID   = '#8B5E3C'
 const FUR_LIGHT = '#C8956C'
-const CAP_RED   = '#C00B0B'  // Brown University cardinal
+const CAP_RED   = '#ED1C24'  // Brown University cardinal
 const CAP_BROWN = '#4E3629'  // Brown University brown
 
 interface Props {

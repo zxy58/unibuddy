@@ -9,6 +9,11 @@ interface Props {
   onComplete: (profile: UserProfile) => void
 }
 
+const RED    = '#ED1C24'
+const BROWN  = '#4E3629'
+const RED_BG = '#FFF5F5'
+const RED_BR = '#FECACA'
+
 const cohortDescriptions: Record<CohortType, string> = {
   international: 'Coming from outside the U.S.',
   firstgen: 'First in your family to go to college',
@@ -23,8 +28,32 @@ const cohortIcons: Record<CohortType, string> = {
   transfer: '↗',
 }
 
+const SCHOOL_MAP: Record<string, string> = {
+  'brown.edu': 'Brown University',
+  'risd.edu': 'RISD',
+  'ucla.edu': 'UCLA',
+  'mit.edu': 'MIT',
+  'stanford.edu': 'Stanford University',
+  'harvard.edu': 'Harvard University',
+  'yale.edu': 'Yale University',
+  'columbia.edu': 'Columbia University',
+  'nyu.edu': 'New York University',
+  'uchicago.edu': 'University of Chicago',
+}
+
+function detectSchool(email: string): string {
+  const domain = email.split('@')[1]?.toLowerCase() ?? ''
+  if (SCHOOL_MAP[domain]) return SCHOOL_MAP[domain]
+  const part = domain.split('.')[0] ?? ''
+  return part.charAt(0).toUpperCase() + part.slice(1)
+}
+
+// TOTAL steps after SSO (steps 1–3 shown in progress bar)
+const POST_SSO_STEPS = 3
+
 export default function OnboardingFlow({ onComplete }: Props) {
-  const [step, setStep] = useState(0)
+  const [step, setStep] = useState(0)         // 0 = SSO, 1–3 = post-login
+  const [ssoLoading, setSsoLoading] = useState(false)
   const [name, setName] = useState('')
   const [cohorts, setCohorts] = useState<CohortType[]>([])
   const [schoolName, setSchoolName] = useState('')
@@ -32,19 +61,26 @@ export default function OnboardingFlow({ onComplete }: Props) {
   const [startDate, setStartDate] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
-  const [notifyEmail, setNotifyEmail] = useState(true)
   const [notifySMS, setNotifySMS] = useState(false)
 
-  const TOTAL = 5
   const isIntl = cohorts.includes('international')
 
   const canNext = () => {
-    if (step === 0) return name.trim().length >= 2 && email.includes('@')
-    if (step === 1) return cohorts.length > 0
-    if (step === 2) return schoolName.trim().length > 1 && country.trim().length > 1
-    if (step === 3) return startDate.length >= 4
-    if (step === 4) return true
+    if (step === 0) return email.includes('@') && email.includes('.')
+    if (step === 1) return name.trim().length >= 2 && cohorts.length > 0
+    if (step === 2) return country.trim().length > 1 && startDate.length >= 4
+    if (step === 3) return true
     return true
+  }
+
+  const handleSSO = () => {
+    if (!canNext()) return
+    setSsoLoading(true)
+    setSchoolName(detectSchool(email))
+    setTimeout(() => {
+      setSsoLoading(false)
+      setStep(1)
+    }, 1400)
   }
 
   const handleFinish = () => {
@@ -56,44 +92,112 @@ export default function OnboardingFlow({ onComplete }: Props) {
       startDate,
       email: email.trim(),
       phone: phone.trim(),
-      notifyEmail,
+      notifyEmail: true,
       notifySMS,
     })
   }
 
-  const pct = (step / TOTAL) * 100
+  const pct = step === 0 ? 0 : ((step - 1) / POST_SSO_STEPS) * 100
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '13px 14px', borderRadius: 12,
-    border: '1.5px solid var(--border-secondary)', fontSize: 15,
-    color: 'var(--text-primary)', background: 'white', outline: 'none',
+    width: '100%', padding: '13px 14px', borderRadius: 10,
+    border: `1.5px solid #E5E7EB`, fontSize: 15,
+    color: '#111827', background: 'white', outline: 'none',
     boxSizing: 'border-box', fontFamily: 'inherit',
+  }
+
+  const primaryBtn: React.CSSProperties = {
+    flex: 1, padding: '14px', borderRadius: 10, border: 'none',
+    cursor: 'pointer', background: RED, color: 'white',
+    fontSize: 15, fontWeight: 800, letterSpacing: '-0.2px',
+  }
+
+  const disabledBtn: React.CSSProperties = {
+    ...primaryBtn, background: '#E5E7EB', color: '#9CA3AF', cursor: 'not-allowed',
   }
 
   return (
     <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
-      {/* Progress bar */}
-      <div style={{ height: 4, background: '#EDE9FE', flexShrink: 0 }}>
-        <div style={{ height: '100%', background: '#7C3AED', width: `${pct}%`, transition: 'width 0.35s ease', borderRadius: '0 2px 2px 0' }} />
-      </div>
 
-      <div style={{ flex: 1, padding: '20px 22px 28px', display: 'flex', flexDirection: 'column' }}>
+      {/* Progress bar — only shown after SSO */}
+      {step > 0 && (
+        <div style={{ height: 3, background: '#F3F4F6', flexShrink: 0 }}>
+          <div style={{ height: '100%', background: RED, width: `${pct}%`, transition: 'width 0.35s ease' }} />
+        </div>
+      )}
 
-        {/* ── Step 0: Welcome + account creation ── */}
+      <div style={{ flex: 1, padding: step === 0 ? '0' : '20px 22px 28px', display: 'flex', flexDirection: 'column' }}>
+
+        {/* ── Step 0: SSO login ── */}
         {step === 0 && (
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-            <div style={{ marginBottom: 16, marginTop: 8 }}>
-              <BuddyAvatar mood="wave" size={100} />
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            {/* Top band */}
+            <div style={{ background: BROWN, padding: '32px 28px 28px', flexShrink: 0 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 6 }}>UniBuddy</div>
+              <div style={{ fontSize: 26, fontWeight: 900, color: 'white', letterSpacing: '-0.5px', lineHeight: 1.2 }}>
+                Sign in with your<br />school account
+              </div>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginTop: 8, lineHeight: 1.5 }}>
+                We&apos;ll connect to your institution&apos;s SSO — no new password needed.
+              </div>
             </div>
-            <div style={{ fontSize: 24, fontWeight: 900, color: 'var(--text-primary)', letterSpacing: '-0.5px', marginBottom: 6 }}>
-              Meet UniBuddy
-            </div>
-            <div style={{ fontSize: 13, color: 'var(--text-tertiary)', lineHeight: 1.6, marginBottom: 24, maxWidth: 270 }}>
-              Your personal guide through college bureaucracy — deadlines, steps, and reminders all in one place.
-            </div>
-            <div style={{ width: '100%', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+            {/* Form */}
+            <div style={{ flex: 1, padding: '28px 24px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
               <div>
-                <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8, display: 'block' }}>Your first name</label>
+                <label style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8, display: 'block' }}>
+                  Institutional email
+                </label>
+                <input
+                  style={inputStyle}
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="you@brown.edu"
+                  type="email"
+                  autoFocus
+                  onKeyDown={e => e.key === 'Enter' && canNext() && handleSSO()}
+                />
+                <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 6 }}>
+                  Use your university-issued email address.
+                </div>
+              </div>
+
+              <button
+                onClick={handleSSO}
+                disabled={!canNext() || ssoLoading}
+                style={canNext() && !ssoLoading ? primaryBtn : disabledBtn}
+              >
+                {ssoLoading ? 'Connecting to school SSO…' : 'Continue with school SSO →'}
+              </button>
+
+              <div style={{ borderTop: '1px solid #F3F4F6', paddingTop: 16 }}>
+                <div style={{ fontSize: 11, color: '#9CA3AF', lineHeight: 1.6, textAlign: 'center' }}>
+                  UniBuddy uses your school&apos;s authentication.<br />
+                  We never store your password.<br />
+                  <span style={{ color: '#6B7280' }}>Don&apos;t see your school? Contact us.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Step 1: Name + who you are ── */}
+        {step === 1 && (
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <div style={{ marginBottom: 4 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: RED, textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 4 }}>
+                {schoolName}
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 800, color: '#111827', letterSpacing: '-0.4px' }}>
+                Tell us about yourself
+              </div>
+              <div style={{ fontSize: 13, color: '#6B7280', marginTop: 4, marginBottom: 20 }}>
+                Personalizes your deadline checklist from day one.
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+              <div>
+                <label style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8, display: 'block' }}>First name</label>
                 <input
                   style={inputStyle}
                   value={name}
@@ -103,141 +207,110 @@ export default function OnboardingFlow({ onComplete }: Props) {
                 />
               </div>
               <div>
-                <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8, display: 'block' }}>Email for deadline reminders</label>
-                <input
-                  style={inputStyle}
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  type="email"
-                  onKeyDown={e => e.key === 'Enter' && canNext() && setStep(1)}
-                />
-                <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 6 }}>
-                  We&apos;ll send reminders 7, 3, and 1 day before each deadline.
+                <label style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8, display: 'block' }}>Which describes you?</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {(Object.keys(cohortLabels) as CohortType[]).map(c => {
+                    const selected = cohorts.includes(c)
+                    return (
+                      <button
+                        key={c}
+                        onClick={() => setCohorts(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c])}
+                        style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 10, cursor: 'pointer', textAlign: 'left', border: `2px solid ${selected ? RED : '#E5E7EB'}`, background: selected ? RED_BG : 'white' }}
+                      >
+                        <span style={{ fontSize: 18, flexShrink: 0 }}>{cohortIcons[c]}</span>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{cohortLabels[c]}</div>
+                          <div style={{ fontSize: 11, color: '#6B7280', marginTop: 1 }}>{cohortDescriptions[c]}</div>
+                        </div>
+                        <div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${selected ? RED : '#D1D5DB'}`, background: selected ? RED : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          {selected && <span style={{ color: 'white', fontSize: 11, fontWeight: 700 }}>✓</span>}
+                        </div>
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* ── Step 1: Student type ── */}
-        {step === 1 && (
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.4px', marginBottom: 4 }}>
-              Hi {name}! Which describes you?
-            </div>
-            <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginBottom: 18 }}>Select all that apply — this personalizes your entire checklist.</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: 1 }}>
-              {(Object.keys(cohortLabels) as CohortType[]).map(c => {
-                const selected = cohorts.includes(c)
-                return (
-                  <button
-                    key={c}
-                    onClick={() => setCohorts(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c])}
-                    style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px', borderRadius: 14, cursor: 'pointer', textAlign: 'left', border: `2px solid ${selected ? '#7C3AED' : 'var(--border-secondary)'}`, background: selected ? '#F5F3FF' : 'white', transition: 'all 0.15s' }}
-                  >
-                    <span style={{ fontSize: 22, flexShrink: 0 }}>{cohortIcons[c]}</span>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{cohortLabels[c]}</div>
-                      <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>{cohortDescriptions[c]}</div>
-                    </div>
-                    <div style={{ width: 22, height: 22, borderRadius: '50%', border: `2px solid ${selected ? '#7C3AED' : '#D1D5DB'}`, background: selected ? '#7C3AED' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.15s' }}>
-                      {selected && <span style={{ color: 'white', fontSize: 12, fontWeight: 700 }}>✓</span>}
-                    </div>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* ── Step 2: School + origin ── */}
+        {/* ── Step 2: Background + start date ── */}
         {step === 2 && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.4px', marginBottom: 4 }}>
-              Where are you headed?
+            <div style={{ fontSize: 22, fontWeight: 800, color: '#111827', letterSpacing: '-0.4px', marginBottom: 4 }}>
+              A bit more context
             </div>
-            <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginBottom: 20 }}>I use this to surface school-specific deadlines and info.</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+            <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 20 }}>Used to surface the right deadlines and contacts.</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20, flex: 1 }}>
               <div>
-                <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8, display: 'block' }}>School name</label>
-                <input style={inputStyle} value={schoolName} onChange={e => setSchoolName(e.target.value)} placeholder="e.g. UCLA, RISD, UT Austin" />
-              </div>
-              <div>
-                <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8, display: 'block' }}>
+                <label style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8, display: 'block' }}>
                   {isIntl ? 'Home country' : 'Home state'}
                 </label>
-                <input style={inputStyle} value={country} onChange={e => setCountry(e.target.value)} placeholder={isIntl ? 'e.g. Nigeria, South Korea, Brazil' : 'e.g. California, Texas'} />
+                <input
+                  style={inputStyle}
+                  value={country}
+                  onChange={e => setCountry(e.target.value)}
+                  placeholder={isIntl ? 'e.g. Nigeria, South Korea, Brazil' : 'e.g. California, Texas'}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8, display: 'block' }}>When do you start?</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {[
+                    { label: 'Fall 2025', sub: 'August / September 2025', value: '2025-09' },
+                    { label: 'Spring 2026', sub: 'January 2026', value: '2026-01' },
+                    { label: 'Fall 2026', sub: 'August / September 2026', value: '2026-09' },
+                    { label: 'Other / not sure yet', sub: '', value: '2025-08' },
+                  ].map(opt => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setStartDate(opt.value)}
+                      style={{ padding: '12px 14px', borderRadius: 10, cursor: 'pointer', textAlign: 'left', border: `2px solid ${startDate === opt.value ? RED : '#E5E7EB'}`, background: startDate === opt.value ? RED_BG : 'white', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                    >
+                      <div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{opt.label}</div>
+                        {opt.sub && <div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>{opt.sub}</div>}
+                      </div>
+                      {startDate === opt.value && <span style={{ color: RED, fontSize: 16 }}>✓</span>}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* ── Step 3: Start date ── */}
+        {/* ── Step 3: Notifications + welcome ── */}
         {step === 3 && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.4px', marginBottom: 4 }}>
-              When do you start?
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12, marginTop: 4 }}>
+              <BuddyAvatar mood="wave" size={80} />
             </div>
-            <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginBottom: 20 }}>
-              I use this to count down your deadlines and show what&apos;s urgent right now.
+            <div style={{ fontSize: 22, fontWeight: 800, color: '#111827', letterSpacing: '-0.4px', marginBottom: 4, textAlign: 'center' }}>
+              You&apos;re almost in, {name.split(' ')[0]}
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: 1 }}>
-              {[
-                { label: 'Fall 2025', sub: 'August / September 2025', value: '2025-09' },
-                { label: 'Spring 2026', sub: 'January 2026', value: '2026-01' },
-                { label: 'Fall 2026', sub: 'August / September 2026', value: '2026-09' },
-                { label: 'Other / not sure yet', sub: '', value: '2025-08' },
-              ].map(opt => (
-                <button
-                  key={opt.value}
-                  onClick={() => setStartDate(opt.value)}
-                  style={{ padding: '14px 16px', borderRadius: 14, cursor: 'pointer', textAlign: 'left', border: `2px solid ${startDate === opt.value ? '#7C3AED' : 'var(--border-secondary)'}`, background: startDate === opt.value ? '#F5F3FF' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-                >
-                  <div>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>{opt.label}</div>
-                    {opt.sub && <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>{opt.sub}</div>}
-                  </div>
-                  {startDate === opt.value && <span style={{ color: '#7C3AED', fontSize: 16 }}>✓</span>}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── Step 4: SMS reminders ── */}
-        {step === 4 && (
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14 }}>
-              <BuddyAvatar mood="happy" size={80} />
-            </div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.4px', marginBottom: 4, textAlign: 'center' }}>
-              Want text reminders too?
-            </div>
-            <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginBottom: 6, textAlign: 'center', lineHeight: 1.55 }}>
-              Email is already set up. Text reminders are a second line of defense.
+            <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 16, textAlign: 'center', lineHeight: 1.55 }}>
+              Want a text reminder before each deadline?
             </div>
 
-            {/* Email confirmed */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 13px', borderRadius: 10, background: '#F0FDF4', border: '1px solid #BBF7D0', marginBottom: 18 }}>
-              <span style={{ fontSize: 16 }}>✉️</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 13px', borderRadius: 10, background: '#F0FDF4', border: '1px solid #BBF7D0', marginBottom: 16 }}>
+              <span style={{ fontSize: 15 }}>✉️</span>
               <span style={{ fontSize: 12, color: '#15803D', fontWeight: 600 }}>Email reminders on — {email}</span>
-              <span style={{ marginLeft: 'auto', fontSize: 14 }}>✓</span>
+              <span style={{ marginLeft: 'auto', fontSize: 13 }}>✓</span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, flex: 1 }}>
-              {/* SMS */}
-              <div style={{ borderRadius: 14, border: `2px solid ${notifySMS ? '#7C3AED' : 'var(--border-secondary)'}`, overflow: 'hidden', transition: 'border-color 0.15s' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ borderRadius: 10, border: `2px solid ${notifySMS ? RED : '#E5E7EB'}`, overflow: 'hidden' }}>
                 <button
                   onClick={() => setNotifySMS(v => !v)}
-                  style={{ width: '100%', padding: '13px 15px', display: 'flex', alignItems: 'center', gap: 12, background: notifySMS ? '#F5F3FF' : 'white', border: 'none', cursor: 'pointer', borderBottom: notifySMS ? '1px solid #DDD6FE' : 'none' }}
+                  style={{ width: '100%', padding: '13px 15px', display: 'flex', alignItems: 'center', gap: 12, background: notifySMS ? RED_BG : 'white', border: 'none', cursor: 'pointer', borderBottom: notifySMS ? `1px solid ${RED_BR}` : 'none' }}
                 >
-                  <span style={{ fontSize: 22 }}>💬</span>
+                  <span style={{ fontSize: 20 }}>💬</span>
                   <div style={{ flex: 1, textAlign: 'left' }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>Add text / SMS reminders</div>
-                    <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Quick nudges before each deadline</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>Add text / SMS reminders</div>
+                    <div style={{ fontSize: 12, color: '#6B7280' }}>Quick nudges before each deadline</div>
                   </div>
-                  <div style={{ width: 44, height: 26, borderRadius: 13, background: notifySMS ? '#7C3AED' : '#D1D5DB', position: 'relative', flexShrink: 0, transition: 'background 0.2s' }}>
+                  <div style={{ width: 44, height: 26, borderRadius: 13, background: notifySMS ? RED : '#D1D5DB', position: 'relative', flexShrink: 0 }}>
                     <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'white', position: 'absolute', top: 3, left: notifySMS ? 21 : 3, transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
                   </div>
                 </button>
@@ -250,14 +323,14 @@ export default function OnboardingFlow({ onComplete }: Props) {
                       type="tel"
                       style={{ ...inputStyle, padding: '10px 12px', fontSize: 14 }}
                     />
-                    <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 6 }}>Reply STOP anytime to unsubscribe.</div>
+                    <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 6 }}>Reply STOP anytime to unsubscribe.</div>
                   </div>
                 )}
               </div>
 
-              <div style={{ padding: '11px 14px', borderRadius: 12, background: '#F5F3FF', border: '1px solid #DDD6FE' }}>
-                <div style={{ fontSize: 12, color: '#4C1D95', lineHeight: 1.55 }}>
-                  I&apos;ll remind you <strong>7 days, 3 days, and the day before</strong> each deadline — with a direct link to the guide.
+              <div style={{ padding: '11px 14px', borderRadius: 10, background: RED_BG, border: `1px solid ${RED_BR}` }}>
+                <div style={{ fontSize: 12, color: BROWN, lineHeight: 1.55 }}>
+                  I&apos;ll remind you <strong>7 days, 3 days, and the day before</strong> each deadline — with a direct link to your guide.
                 </div>
               </div>
             </div>
@@ -265,39 +338,39 @@ export default function OnboardingFlow({ onComplete }: Props) {
         )}
 
         {/* Nav */}
-        <div style={{ marginTop: 20, display: 'flex', gap: 10 }}>
-          {step > 0 && (
+        {step > 0 && (
+          <div style={{ marginTop: 20, display: 'flex', gap: 10 }}>
             <button
               onClick={() => setStep(s => s - 1)}
-              style={{ padding: '13px 18px', borderRadius: 12, background: 'var(--bg-secondary)', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)' }}
+              style={{ padding: '13px 18px', borderRadius: 10, background: '#F3F4F6', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, color: '#6B7280' }}
             >←</button>
-          )}
-          {step < TOTAL - 1 && (
-            <button
-              onClick={() => setStep(s => s + 1)}
-              disabled={!canNext()}
-              style={{ flex: 1, padding: '14px', borderRadius: 12, border: 'none', cursor: canNext() ? 'pointer' : 'not-allowed', background: canNext() ? 'linear-gradient(135deg, #7C3AED, #5B21B6)' : '#E5E7EB', color: canNext() ? 'white' : '#9CA3AF', fontSize: 15, fontWeight: 800, letterSpacing: '-0.2px', transition: 'all 0.15s' }}
-            >
-              Continue →
-            </button>
-          )}
-          {step === TOTAL - 1 && (
-            <button
-              onClick={handleFinish}
-              disabled={!canNext()}
-              style={{ flex: 1, padding: '14px', borderRadius: 12, border: 'none', cursor: canNext() ? 'pointer' : 'not-allowed', background: canNext() ? 'linear-gradient(135deg, #7C3AED, #5B21B6)' : '#E5E7EB', color: canNext() ? 'white' : '#9CA3AF', fontSize: 15, fontWeight: 800, letterSpacing: '-0.2px' }}
-            >
-              Build my timeline →
-            </button>
-          )}
-        </div>
+            {step < 3 ? (
+              <button
+                onClick={() => setStep(s => s + 1)}
+                disabled={!canNext()}
+                style={canNext() ? primaryBtn : disabledBtn}
+              >
+                Continue →
+              </button>
+            ) : (
+              <button
+                onClick={handleFinish}
+                style={primaryBtn}
+              >
+                Build my timeline →
+              </button>
+            )}
+          </div>
+        )}
 
-        {/* Dots */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 14 }}>
-          {Array.from({ length: TOTAL }).map((_, i) => (
-            <div key={i} style={{ width: i === step ? 20 : 6, height: 6, borderRadius: 3, background: i <= step ? '#7C3AED' : '#E9E4FF', transition: 'all 0.2s' }} />
-          ))}
-        </div>
+        {/* Step dots — post SSO only */}
+        {step > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 14 }}>
+            {Array.from({ length: POST_SSO_STEPS }).map((_, i) => (
+              <div key={i} style={{ width: (i + 1) === step ? 20 : 6, height: 6, borderRadius: 3, background: (i + 1) <= step ? RED : '#E5E7EB', transition: 'all 0.2s' }} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

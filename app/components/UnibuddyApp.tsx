@@ -101,7 +101,7 @@ export default function UnibuddyApp() {
   const phoneFrame = (children: React.ReactNode, showNav = false) => (
     <div style={{
       minHeight: '100dvh',
-      background: '#EEE9FF',
+      background: '#F8F4F0',
       display: 'flex',
       alignItems: 'flex-start',
       justifyContent: 'center',
@@ -117,7 +117,7 @@ export default function UnibuddyApp() {
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
-        boxShadow: '0 32px 80px rgba(124,58,237,0.18), 0 8px 32px rgba(0,0,0,0.08)',
+        boxShadow: '0 32px 80px rgba(78,54,41,0.18), 0 8px 32px rgba(0,0,0,0.08)',
       }}>
         {/* Status bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 24px 4px', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600, flexShrink: 0 }}>
@@ -144,7 +144,7 @@ export default function UnibuddyApp() {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 18px 8px', flexShrink: 0 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <BuddyAvatar mood={buddyMood} size={36} evolutionLevel={evolutionLevel} />
-        <div style={{ fontSize: 17, fontWeight: 800, color: '#7C3AED', letterSpacing: '-0.5px' }}>UniBuddy</div>
+        <div style={{ fontSize: 17, fontWeight: 800, color: '#4E3629', letterSpacing: '-0.5px' }}>UniBuddy</div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         {/* Streak counter */}
@@ -155,7 +155,7 @@ export default function UnibuddyApp() {
         <button
           onClick={handleSignOut}
           title="Sign out"
-          style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, #7C3AED, #5B21B6)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}
+          style={{ width: 32, height: 32, borderRadius: '50%', background: '#4E3629', color: 'white', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}
         >
           {profile.name?.[0]?.toUpperCase() || 'U'}
         </button>
@@ -164,8 +164,8 @@ export default function UnibuddyApp() {
   )
 
   return (
-    <div style={{ minHeight: '100dvh', background: '#EEE9FF', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '24px 0' }}>
-      <div style={{ width: 375, minHeight: 780, maxHeight: 'calc(100dvh - 48px)', background: 'var(--bg-primary)', borderRadius: 40, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: '0 32px 80px rgba(124,58,237,0.18), 0 8px 32px rgba(0,0,0,0.08)' }}>
+    <div style={{ minHeight: '100dvh', background: '#F8F4F0', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '24px 0' }}>
+      <div style={{ width: 375, minHeight: 780, maxHeight: 'calc(100dvh - 48px)', background: 'var(--bg-primary)', borderRadius: 40, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: '0 32px 80px rgba(78,54,41,0.18), 0 8px 32px rgba(0,0,0,0.08)' }}>
 
         {/* Status bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 24px 4px', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600, flexShrink: 0 }}>
