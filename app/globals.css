@@ -14,11 +14,19 @@
   --radius-lg: 16px;
   --radius-md: 10px;
 
-  /* Brand purple */
+  /* Brand purple (legacy) */
   --purple: #7C3AED;
   --purple-dark: #5B21B6;
   --purple-light: #EDE9FE;
   --purple-border: #C4B5FD;
+
+  /* School theme — Brown University default */
+  --clr-primary: #C00B0B;
+  --clr-primary-dark: #4E3629;
+  --clr-primary-light: #FFF5F5;
+  --clr-primary-border: #FECACA;
+  --clr-bg-outer: #F5EDE0;
+  --clr-shadow: rgba(192,11,11,0.18);
 
   /* CTA orange */
   --orange: #F97316;
@@ -48,6 +56,16 @@
   --red: #EF4444;
   --red-light: #FEE2E2;
   --red-dark: #DC2626;
+}
+
+/* RISD theme override */
+[data-theme="risd"] {
+  --clr-primary: #003DA5;
+  --clr-primary-dark: #1B2A4A;
+  --clr-primary-light: #EBF2FF;
+  --clr-primary-border: #BFCFFF;
+  --clr-bg-outer: #E8EEFF;
+  --clr-shadow: rgba(0,61,165,0.18);
 }
 
 * { box-sizing: border-box; }
