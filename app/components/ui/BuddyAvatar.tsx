@@ -12,20 +12,14 @@ const FUR_LIGHT = '#C8956C'
 const CAP_RED   = '#C00B0B'  // Brown University cardinal
 const CAP_BROWN = '#4E3629'  // Brown University brown
 
-const SCHOOL_CAPS: Record<string, { capColor: string; capDark: string; letter: string }> = {
-  brown: { capColor: '#C00B0B', capDark: '#4E3629', letter: 'B' },
-  risd:  { capColor: '#003DA5', capDark: '#1B2A4A', letter: 'R' },
-}
-
 interface Props {
   mood?: BuddyMood
   size?: number
   animate?: boolean
   evolutionLevel?: BuddyEvolutionLevel
-  school?: 'brown' | 'risd'
 }
 
-export default function BuddyAvatar({ mood = 'happy', size = 80, animate = false, evolutionLevel = 0, school = 'brown' }: Props) {
+export default function BuddyAvatar({ mood = 'happy', size = 80, animate = false, evolutionLevel = 0 }: Props) {
   const uid = useId().replace(/:/g, '_')
   const gradId = `brunoGrad_${uid}`
   const glowId = `brunoGlow_${uid}`
@@ -69,7 +63,6 @@ export default function BuddyAvatar({ mood = 'happy', size = 80, animate = false
   }
 
   const m = moods[mood]
-  const cap         = SCHOOL_CAPS[school] ?? SCHOOL_CAPS.brown
   const tassleColor = evolutionLevel >= 2 ? '#FFD700' : FUR_LIGHT
   const capOffset   = evolutionLevel === 5 ? -8 : 0
 
@@ -134,11 +127,11 @@ export default function BuddyAvatar({ mood = 'happy', size = 80, animate = false
       {/* Graduation cap — floats at level 5 */}
       <g transform={`translate(0, ${capOffset})`}>
         {/* Cap body */}
-        <rect x="33" y="9"  width="34" height="12" rx="3" fill={cap.capDark} />
+        <rect x="33" y="9"  width="34" height="12" rx="3" fill={CAP_BROWN} />
         {/* Mortarboard brim */}
-        <rect x="22" y="19" width="56" height="7"  rx="2" fill={cap.capColor} />
-        {/* School letter on cap */}
-        <text x="44" y="19" fontSize="9" fill={cap.capColor} fontWeight="900">{cap.letter}</text>
+        <rect x="22" y="19" width="56" height="7"  rx="2" fill={CAP_RED} />
+        {/* "B" on cap */}
+        <text x="44" y="19" fontSize="9" fill={CAP_RED} fontWeight="900">B</text>
         {/* Tassel */}
         <line x1="72" y1="13" x2="83" y2="27" stroke={tassleColor} strokeWidth="2.2" />
         <circle cx="84" cy="29" r="4.5" fill={tassleColor} />

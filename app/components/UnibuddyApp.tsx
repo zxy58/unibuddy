@@ -16,13 +16,7 @@ import type { TabName, Move } from '@/app/lib/types'
 import type { UserProfile } from '@/app/lib/profile'
 import { loadProfile, saveProfile, clearProfile } from '@/app/lib/profile'
 
-interface AppProps {
-  theme?: 'brown' | 'risd'
-  embed?: boolean
-  demoProfile?: UserProfile
-}
-
-export default function UnibuddyApp({ theme = 'brown', embed = false, demoProfile }: AppProps) {
+export default function UnibuddyApp() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [profileLoaded, setProfileLoaded] = useState(false)
   const [activeTab, setActiveTab] = useState<TabName>('timeline')
@@ -40,13 +34,6 @@ export default function UnibuddyApp({ theme = 'brown', embed = false, demoProfil
   }, [])
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    if (demoProfile) {
-      setProfile(demoProfile)
-      setProfileLoaded(true)
-      setStreak(1)
-      return
-    }
     setProfile(loadProfile())
     setProfileLoaded(true)
     // Streak tracking
@@ -148,19 +135,6 @@ export default function UnibuddyApp({ theme = 'brown', embed = false, demoProfil
     </div>
   )
 
-  const phoneFrameStyle: React.CSSProperties = {
-    width: 375,
-    minHeight: embed ? 780 : 780,
-    maxHeight: embed ? 780 : 'calc(100dvh - 48px)',
-    background: 'var(--bg-primary)',
-    borderRadius: 40,
-    overflow: 'hidden',
-    display: 'flex',
-    flexDirection: 'column',
-    position: 'relative',
-    boxShadow: '0 32px 80px var(--clr-shadow), 0 8px 32px rgba(0,0,0,0.08)',
-  }
-
   if (!profileLoaded) return null
   if (!profile) {
     return phoneFrame(<OnboardingFlow onComplete={handleProfileComplete} />)
@@ -169,8 +143,8 @@ export default function UnibuddyApp({ theme = 'brown', embed = false, demoProfil
   const headerBar = (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 18px 8px', flexShrink: 0 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <BuddyAvatar mood={buddyMood} size={36} evolutionLevel={evolutionLevel} school={theme} />
-        <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--clr-primary)', letterSpacing: '-0.5px' }}>UniBuddy</div>
+        <BuddyAvatar mood={buddyMood} size={36} evolutionLevel={evolutionLevel} />
+        <div style={{ fontSize: 17, fontWeight: 800, color: '#7C3AED', letterSpacing: '-0.5px' }}>UniBuddy</div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         {/* Streak counter */}
@@ -181,7 +155,7 @@ export default function UnibuddyApp({ theme = 'brown', embed = false, demoProfil
         <button
           onClick={handleSignOut}
           title="Sign out"
-          style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, var(--clr-primary), var(--clr-primary-dark))', color: 'white', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}
+          style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg, #7C3AED, #5B21B6)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}
         >
           {profile.name?.[0]?.toUpperCase() || 'U'}
         </button>
@@ -189,8 +163,9 @@ export default function UnibuddyApp({ theme = 'brown', embed = false, demoProfil
     </div>
   )
 
-  const phoneContent = (
-    <div data-theme={theme} style={phoneFrameStyle}>
+  return (
+    <div style={{ minHeight: '100dvh', background: '#EEE9FF', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '24px 0' }}>
+      <div style={{ width: 375, minHeight: 780, maxHeight: 'calc(100dvh - 48px)', background: 'var(--bg-primary)', borderRadius: 40, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: '0 32px 80px rgba(124,58,237,0.18), 0 8px 32px rgba(0,0,0,0.08)' }}>
 
         {/* Status bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 24px 4px', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600, flexShrink: 0 }}>
@@ -249,14 +224,7 @@ export default function UnibuddyApp({ theme = 'brown', embed = false, demoProfil
             />
           </>
         )}
-    </div>
-  )
-
-  if (embed) return phoneContent
-
-  return (
-    <div data-theme={theme} style={{ minHeight: '100dvh', background: 'var(--clr-bg-outer)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '24px 0' }}>
-      {phoneContent}
+      </div>
     </div>
   )
 }

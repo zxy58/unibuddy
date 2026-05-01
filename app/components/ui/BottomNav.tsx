@@ -28,12 +28,12 @@ export default function BottomNav({ active, onNavigate }: BottomNavProps) {
             {isActive && (
               <div style={{ position: 'absolute', top: -8, left: '50%', transform: 'translateX(-50%)', width: 20, height: 3, borderRadius: 2, background: '#F97316' }} />
             )}
-            <div style={{ width: 40, height: 28, borderRadius: 9, background: isActive ? 'var(--clr-primary-light)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}>
-              <span style={{ fontSize: 17, color: isActive ? 'var(--clr-primary)' : 'var(--text-tertiary)', transition: 'color 0.15s', lineHeight: 1 }}>
+            <div style={{ width: 40, height: 28, borderRadius: 9, background: isActive ? '#EDE9FE' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}>
+              <span style={{ fontSize: 17, color: isActive ? '#7C3AED' : 'var(--text-tertiary)', transition: 'color 0.15s', lineHeight: 1 }}>
                 {isActive ? tab.activeIcon : tab.icon}
               </span>
             </div>
-            <span style={{ fontSize: 10, color: isActive ? 'var(--clr-primary)' : 'var(--text-tertiary)', fontWeight: isActive ? 700 : 400 }}>
+            <span style={{ fontSize: 10, color: isActive ? '#7C3AED' : 'var(--text-tertiary)', fontWeight: isActive ? 700 : 400 }}>
               {tab.label}
             </span>
           </button>
