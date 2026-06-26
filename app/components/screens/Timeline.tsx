@@ -225,53 +225,77 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
   const buddyMood: BuddyMood = completedCount === totalCount ? 'celebrate' : overdue.length > 0 ? 'urgent' : 'happy'
 
   return (
-    <div className="no-scroll" style={{ flex: 1, overflowY: 'auto' }}>
-      <div style={{ padding: '4px 16px 32px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+    <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', background: 'white' }}>
 
-        {/* Greeting */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: '#111827', letterSpacing: '-0.4px' }}>
-              Hi {profile.name?.split(' ')[0] || 'there'} 👋
+      {/* ── Hero banner ── */}
+      <div style={{ background: '#0A0A0A', padding: '16px 18px 20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <div>
+            <div style={{ fontSize: 26, fontWeight: 900, color: 'white', letterSpacing: '-0.6px', lineHeight: 1.15 }}>
+              {overdue.length > 0 ? 'Action needed' : completedCount === totalCount ? 'All done! 🎉' : `Hi ${profile.name?.split(' ')[0] || 'there'}.`}
             </div>
-            {profile.cohorts.length > 0 && (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 6 }}>
-                {profile.cohorts.map(c => (
-                  <span key={c} style={{ padding: '3px 9px', borderRadius: 20, fontSize: 10, fontWeight: 600, background: cohortColors[c].bg, color: cohortColors[c].text, border: `1px solid ${cohortColors[c].border}` }}>
-                    {c === 'international' ? '🌐 International' : c === 'firstgen' ? '⭐ First-gen' : c === 'lowincome' ? '💛 Financial aid' : '↗ Transfer'}
-                  </span>
-                ))}
-              </div>
-            )}
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 3 }}>
+              {nudge.body}
+            </div>
           </div>
-          <BuddyAvatar mood={buddyMood} size={52} evolutionLevel={evolutionLevel} />
+          <BuddyAvatar mood={buddyMood} size={54} evolutionLevel={evolutionLevel} />
         </div>
 
-        {/* Bruno speech bubble */}
-        <div style={{ padding: '11px 14px', borderRadius: '4px 14px 14px 14px', background: '#FFF5F5', border: `1.5px solid #FECACA` }}>
-          <div style={{ fontSize: 13, color: BROWN, lineHeight: 1.55, fontWeight: 500 }}>{nudge.body}</div>
-        </div>
-
-        {/* Progress bar */}
-        <div style={{ padding: '14px 16px', borderRadius: 14, background: BROWN, color: 'white' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', fontWeight: 500, marginBottom: 1 }}>Pre-arrival checklist</div>
-              <div style={{ fontSize: 19, fontWeight: 800 }}>{completedCount} of {totalCount} done</div>
-            </div>
-            <div style={{ fontSize: 32, fontWeight: 900 }}>{pct}%</div>
-          </div>
-          <div style={{ height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.2)' }}>
+        {/* Progress pill */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ flex: 1, height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.12)', overflow: 'hidden' }}>
             <div style={{ height: '100%', borderRadius: 3, background: RED, width: `${pct}%`, transition: 'width 0.5s ease' }} />
           </div>
+          <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.6)', flexShrink: 0 }}>
+            {completedCount}/{totalCount}
+          </span>
         </div>
+      </div>
+
+      {/* ── Category chips ── */}
+      <div style={{ padding: '14px 16px 0', borderBottom: '1px solid #F5F5F5' }}>
+        <div className="filter-row" style={{ paddingBottom: 12 }}>
+          {overdue.length > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 13px', borderRadius: 20, background: '#FEE2E2', border: '1.5px solid #FECACA', flexShrink: 0 }}>
+              <span style={{ fontSize: 14 }}>🚨</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#DC2626' }}>Overdue</span>
+            </div>
+          )}
+          {actNow.length > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 13px', borderRadius: 20, background: '#FFF5F5', border: '1.5px solid #FECACA', flexShrink: 0 }}>
+              <span style={{ fontSize: 14 }}>⚡</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: RED }}>Act Now</span>
+            </div>
+          )}
+          {comingUp.length > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 13px', borderRadius: 20, background: '#F5F5F5', border: '1.5px solid #E5E5E5', flexShrink: 0 }}>
+              <span style={{ fontSize: 14 }}>📅</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#0A0A0A' }}>Coming Up</span>
+            </div>
+          )}
+          {locked.length > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 13px', borderRadius: 20, background: '#F5F5F5', border: '1.5px solid #E5E5E5', flexShrink: 0 }}>
+              <span style={{ fontSize: 14 }}>🔒</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#6B7280' }}>Locked</span>
+            </div>
+          )}
+          {done.length > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 13px', borderRadius: 20, background: '#F0FDF4', border: '1.5px solid #BBF7D0', flexShrink: 0 }}>
+              <span style={{ fontSize: 14 }}>✅</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#15803D' }}>Done</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div style={{ padding: '16px 16px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
         {/* Overdue */}
         {overdue.length > 0 && (
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: RED }} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#991B1B', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Overdue — get help now</span>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#0A0A0A', letterSpacing: '-0.4px', marginBottom: 10 }}>
+              Overdue
+              <span style={{ marginLeft: 6, fontSize: 13, fontWeight: 700, color: '#EF4444', background: '#FEE2E2', padding: '2px 8px', borderRadius: 20 }}>{overdue.length}</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {overdue.map(k => <OverdueCard key={k} moveKey={k} move={moves[k]} openGuide={openGuide} />)}
@@ -282,9 +306,8 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
         {/* Act now */}
         {actNow.length > 0 && (
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444' }} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#DC2626', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Act now</span>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#0A0A0A', letterSpacing: '-0.4px', marginBottom: 10 }}>
+              Act now
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {actNow.map(k => <ActNowCard key={k} moveKey={k} move={moves[k]} openGuide={openGuide} />)}
@@ -295,9 +318,8 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
         {/* Coming up */}
         {comingUp.length > 0 && (
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: RED }} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: BROWN, textTransform: 'uppercase', letterSpacing: '0.8px' }}>Coming up</span>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#0A0A0A', letterSpacing: '-0.4px', marginBottom: 10 }}>
+              Coming up
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
               {comingUp.map(k => <CompactRow key={k} moveKey={k} move={moves[k]} openGuide={openGuide} />)}
@@ -308,19 +330,12 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
         {/* Locked */}
         {locked.length > 0 && (
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-              <span style={{ fontSize: 12 }}>🔒</span>
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Waiting on dependencies</span>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#0A0A0A', letterSpacing: '-0.4px', marginBottom: 10 }}>
+              Locked
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
               {locked.map(k => (
-                <LockedCard
-                  key={k}
-                  moveKey={k}
-                  move={moves[k]}
-                  blockers={getBlockers(k, moves)}
-                  openGuide={openGuide}
-                />
+                <LockedCard key={k} moveKey={k} move={moves[k]} blockers={getBlockers(k, moves)} openGuide={openGuide} />
               ))}
             </div>
           </div>
@@ -329,12 +344,16 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
         {/* Done */}
         {done.length > 0 && (
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#10B981', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 6 }}>Done ✓</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            <div style={{ fontSize: 18, fontWeight: 900, color: '#0A0A0A', letterSpacing: '-0.4px', marginBottom: 10 }}>
+              Completed
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {done.map(k => (
-                <button key={k} onClick={() => openGuide(k)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, background: '#F9FAFB', border: '1px solid #E5E7EB', cursor: 'pointer', opacity: 0.65, textAlign: 'left' }}>
-                  <span style={{ fontSize: 15, color: '#10B981' }}>✓</span>
-                  <span style={{ fontSize: 13, color: '#6B7280', textDecoration: 'line-through', flex: 1 }}>{moves[k].title}</span>
+                <button key={k} onClick={() => openGuide(k)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', borderRadius: 14, background: '#F5F5F5', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 8, background: '#D1FAE5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ fontSize: 14, color: '#059669' }}>✓</span>
+                  </div>
+                  <span style={{ fontSize: 13, color: '#6B7280', flex: 1 }}>{moves[k].title}</span>
                 </button>
               ))}
             </div>

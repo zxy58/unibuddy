@@ -14,6 +14,13 @@ const BROWN  = '#4E3629'
 const RED_BG = '#FFF5F5'
 const RED_BR = '#FECACA'
 
+// Dark-mode constants (step 0)
+const D_BG      = '#000000'
+const D_CARD    = '#1C1C1E'
+const D_BORDER  = 'rgba(255,255,255,0.1)'
+const D_TEXT    = '#FFFFFF'
+const D_MUTED   = 'rgba(255,255,255,0.45)'
+
 const cohortDescriptions: Record<CohortType, string> = {
   international: 'Coming from outside the U.S.',
   firstgen: 'First in your family to go to college',
@@ -100,14 +107,14 @@ export default function OnboardingFlow({ onComplete }: Props) {
   const pct = step === 0 ? 0 : ((step - 1) / POST_SSO_STEPS) * 100
 
   const inputStyle: React.CSSProperties = {
-    width: '100%', padding: '13px 14px', borderRadius: 10,
+    width: '100%', padding: '14px 16px', borderRadius: 14,
     border: `1.5px solid #E5E7EB`, fontSize: 15,
     color: '#111827', background: 'white', outline: 'none',
     boxSizing: 'border-box', fontFamily: 'inherit',
   }
 
   const primaryBtn: React.CSSProperties = {
-    flex: 1, padding: '14px', borderRadius: 10, border: 'none',
+    flex: 1, padding: '15px', borderRadius: 14, border: 'none',
     cursor: 'pointer', background: RED, color: 'white',
     fontSize: 15, fontWeight: 800, letterSpacing: '-0.2px',
   }
@@ -117,7 +124,7 @@ export default function OnboardingFlow({ onComplete }: Props) {
   }
 
   return (
-    <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+    <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', background: step === 0 ? D_BG : 'white' }}>
 
       {/* Progress bar — only shown after SSO */}
       {step > 0 && (
@@ -126,56 +133,60 @@ export default function OnboardingFlow({ onComplete }: Props) {
         </div>
       )}
 
-      <div style={{ flex: 1, padding: step === 0 ? '0' : '20px 22px 28px', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, padding: step === 0 ? '20px 22px 28px' : '20px 22px 28px', display: 'flex', flexDirection: 'column' }}>
 
-        {/* ── Step 0: SSO login ── */}
+        {/* ── Step 0: SSO login (dark) ── */}
         {step === 0 && (
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            {/* Top band */}
-            <div style={{ background: BROWN, padding: '32px 28px 28px', flexShrink: 0 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: 6 }}>UniBuddy</div>
-              <div style={{ fontSize: 26, fontWeight: 900, color: 'white', letterSpacing: '-0.5px', lineHeight: 1.2 }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: D_BG, margin: '-20px -22px -28px', padding: 0 }}>
+            {/* Illustration tray */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 28px 0' }}>
+              <div style={{ width: 200, height: 160, borderRadius: 28, background: D_CARD, border: `1px solid ${D_BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 32, boxShadow: '0 20px 60px rgba(0,0,0,0.6)' }}>
+                <BuddyAvatar mood="wave" size={110} />
+              </div>
+
+              <div style={{ fontSize: 30, fontWeight: 900, color: D_TEXT, letterSpacing: '-0.8px', lineHeight: 1.15, textAlign: 'center', marginBottom: 10 }}>
                 Sign in with your<br />school account
               </div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginTop: 8, lineHeight: 1.5 }}>
-                We&apos;ll connect to your institution&apos;s SSO — no new password needed.
+              <div style={{ fontSize: 14, color: D_MUTED, textAlign: 'center', lineHeight: 1.55 }}>
+                We&apos;ll connect to your institution&apos;s SSO.<br />No new password needed.
               </div>
             </div>
 
-            {/* Form */}
-            <div style={{ flex: 1, padding: '28px 24px 24px', display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <div>
-                <label style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8, display: 'block' }}>
-                  Institutional email
-                </label>
-                <input
-                  style={inputStyle}
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="you@brown.edu"
-                  type="email"
-                  autoFocus
-                  onKeyDown={e => e.key === 'Enter' && canNext() && handleSSO()}
-                />
-                <div style={{ fontSize: 11, color: '#9CA3AF', marginTop: 6 }}>
-                  Use your university-issued email address.
-                </div>
-              </div>
+            {/* Form area */}
+            <div style={{ padding: '32px 24px 36px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <input
+                style={{
+                  width: '100%', padding: '16px', borderRadius: 14,
+                  border: `1px solid ${D_BORDER}`, fontSize: 15,
+                  color: D_TEXT, background: D_CARD, outline: 'none',
+                  boxSizing: 'border-box', fontFamily: 'inherit',
+                }}
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="you@brown.edu"
+                type="email"
+                autoFocus
+                onKeyDown={e => e.key === 'Enter' && canNext() && handleSSO()}
+              />
 
               <button
                 onClick={handleSSO}
                 disabled={!canNext() || ssoLoading}
-                style={canNext() && !ssoLoading ? primaryBtn : disabledBtn}
+                style={{
+                  padding: '16px', borderRadius: 14, border: 'none',
+                  cursor: canNext() && !ssoLoading ? 'pointer' : 'not-allowed',
+                  background: canNext() && !ssoLoading ? D_TEXT : 'rgba(255,255,255,0.12)',
+                  color: canNext() && !ssoLoading ? '#000000' : 'rgba(255,255,255,0.25)',
+                  fontSize: 15, fontWeight: 800, letterSpacing: '-0.2px',
+                  transition: 'background 0.2s, color 0.2s',
+                }}
               >
                 {ssoLoading ? 'Connecting to school SSO…' : 'Continue with school SSO →'}
               </button>
 
-              <div style={{ borderTop: '1px solid #F3F4F6', paddingTop: 16 }}>
-                <div style={{ fontSize: 11, color: '#9CA3AF', lineHeight: 1.6, textAlign: 'center' }}>
-                  UniBuddy uses your school&apos;s authentication.<br />
-                  We never store your password.<br />
-                  <span style={{ color: '#6B7280' }}>Don&apos;t see your school? Contact us.</span>
-                </div>
+              <div style={{ fontSize: 11, color: D_MUTED, textAlign: 'center', lineHeight: 1.7 }}>
+                UniBuddy uses your school&apos;s authentication.<br />
+                We never store your password.
               </div>
             </div>
           </div>
@@ -184,20 +195,20 @@ export default function OnboardingFlow({ onComplete }: Props) {
         {/* ── Step 1: Name + who you are ── */}
         {step === 1 && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ marginBottom: 4 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: RED, textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 4 }}>
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: RED, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 6 }}>
                 {schoolName}
               </div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#111827', letterSpacing: '-0.4px' }}>
+              <div style={{ fontSize: 28, fontWeight: 900, color: '#0A0A0A', letterSpacing: '-0.6px', lineHeight: 1.2 }}>
                 Tell us about yourself
               </div>
-              <div style={{ fontSize: 13, color: '#6B7280', marginTop: 4, marginBottom: 20 }}>
+              <div style={{ fontSize: 14, color: '#6B7280', marginTop: 6, lineHeight: 1.5 }}>
                 Personalizes your deadline checklist from day one.
               </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, flex: 1 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18, flex: 1 }}>
               <div>
-                <label style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8, display: 'block' }}>First name</label>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#0A0A0A', marginBottom: 8, display: 'block' }}>Your first name</label>
                 <input
                   style={inputStyle}
                   value={name}
@@ -207,7 +218,7 @@ export default function OnboardingFlow({ onComplete }: Props) {
                 />
               </div>
               <div>
-                <label style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8, display: 'block' }}>Which describes you?</label>
+                <label style={{ fontSize: 12, fontWeight: 700, color: '#0A0A0A', marginBottom: 8, display: 'block' }}>Which best describes you?</label>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {(Object.keys(cohortLabels) as CohortType[]).map(c => {
                     const selected = cohorts.includes(c)
@@ -215,15 +226,15 @@ export default function OnboardingFlow({ onComplete }: Props) {
                       <button
                         key={c}
                         onClick={() => setCohorts(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c])}
-                        style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 10, cursor: 'pointer', textAlign: 'left', border: `2px solid ${selected ? RED : '#E5E7EB'}`, background: selected ? RED_BG : 'white' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', borderRadius: 14, cursor: 'pointer', textAlign: 'left', border: `2px solid ${selected ? RED : '#E5E7EB'}`, background: selected ? RED_BG : '#FAFAFA', transition: 'all 0.15s' }}
                       >
-                        <span style={{ fontSize: 18, flexShrink: 0 }}>{cohortIcons[c]}</span>
+                        <span style={{ fontSize: 20, flexShrink: 0 }}>{cohortIcons[c]}</span>
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: '#111827' }}>{cohortLabels[c]}</div>
-                          <div style={{ fontSize: 11, color: '#6B7280', marginTop: 1 }}>{cohortDescriptions[c]}</div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0A0A' }}>{cohortLabels[c]}</div>
+                          <div style={{ fontSize: 12, color: '#6B7280', marginTop: 1 }}>{cohortDescriptions[c]}</div>
                         </div>
-                        <div style={{ width: 20, height: 20, borderRadius: '50%', border: `2px solid ${selected ? RED : '#D1D5DB'}`, background: selected ? RED : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                          {selected && <span style={{ color: 'white', fontSize: 11, fontWeight: 700 }}>✓</span>}
+                        <div style={{ width: 22, height: 22, borderRadius: '50%', border: `2px solid ${selected ? RED : '#D1D5DB'}`, background: selected ? RED : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          {selected && <span style={{ color: 'white', fontSize: 12, fontWeight: 700, lineHeight: 1 }}>✓</span>}
                         </div>
                       </button>
                     )
@@ -237,10 +248,10 @@ export default function OnboardingFlow({ onComplete }: Props) {
         {/* ── Step 2: Background + start date ── */}
         {step === 2 && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: '#111827', letterSpacing: '-0.4px', marginBottom: 4 }}>
+            <div style={{ fontSize: 28, fontWeight: 900, color: '#0A0A0A', letterSpacing: '-0.6px', lineHeight: 1.2, marginBottom: 6 }}>
               A bit more context
             </div>
-            <div style={{ fontSize: 13, color: '#6B7280', marginBottom: 20 }}>Used to surface the right deadlines and contacts.</div>
+            <div style={{ fontSize: 14, color: '#6B7280', marginBottom: 20, lineHeight: 1.5 }}>Used to surface the right deadlines and contacts.</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20, flex: 1 }}>
               <div>
                 <label style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8, display: 'block' }}>

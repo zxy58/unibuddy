@@ -108,7 +108,7 @@ export default function UnibuddyApp() {
   const phoneFrame = (children: React.ReactNode, showNav = false) => (
     <div style={{
       minHeight: '100dvh',
-      background: '#F8F4F0',
+      background: '#0A0A0A',
       display: 'flex',
       alignItems: 'flex-start',
       justifyContent: 'center',
@@ -118,16 +118,16 @@ export default function UnibuddyApp() {
         width: 375,
         minHeight: 780,
         maxHeight: 'calc(100dvh - 48px)',
-        background: 'var(--bg-primary)',
-        borderRadius: 40,
+        background: '#000000',
+        borderRadius: 48,
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
-        boxShadow: '0 32px 80px rgba(78,54,41,0.18), 0 8px 32px rgba(0,0,0,0.08)',
+        boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06)',
       }}>
         {/* Status bar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 24px 4px', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600, flexShrink: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 24px 4px', fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600, flexShrink: 0 }}>
           <span>9:41</span>
           <span style={{ letterSpacing: 2 }}>●●●</span>
         </div>
@@ -148,21 +148,20 @@ export default function UnibuddyApp() {
   }
 
   const headerBar = (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 18px 8px', flexShrink: 0 }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 18px 10px', flexShrink: 0, borderBottom: '1px solid #F5F5F5' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <BuddyAvatar mood={buddyMood} size={36} evolutionLevel={evolutionLevel} />
-        <div style={{ fontSize: 17, fontWeight: 800, color: '#4E3629', letterSpacing: '-0.5px' }}>UniBuddy</div>
+        <BuddyAvatar mood={buddyMood} size={32} evolutionLevel={evolutionLevel} />
+        <div style={{ fontSize: 16, fontWeight: 900, color: '#0A0A0A', letterSpacing: '-0.5px' }}>UniBuddy</div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        {/* Streak counter */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 20, background: '#FFF7ED', border: '1.5px solid #FED7AA' }}>
-          <span style={{ fontSize: 14 }}>🔥</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 11px', borderRadius: 20, background: '#FFF7ED', border: '1px solid #FED7AA' }}>
+          <span style={{ fontSize: 13 }}>🔥</span>
           <span style={{ fontSize: 12, fontWeight: 800, color: '#EA580C' }}>{streak}</span>
         </div>
         <button
           onClick={handleSignOut}
           title="Sign out"
-          style={{ width: 32, height: 32, borderRadius: '50%', background: '#4E3629', color: 'white', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}
+          style={{ width: 32, height: 32, borderRadius: '50%', background: '#0A0A0A', color: 'white', border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 800, letterSpacing: '-0.3px' }}
         >
           {profile.name?.[0]?.toUpperCase() || 'U'}
         </button>
@@ -171,11 +170,11 @@ export default function UnibuddyApp() {
   )
 
   return (
-    <div style={{ minHeight: '100dvh', background: '#F8F4F0', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '24px 0' }}>
-      <div style={{ width: 375, minHeight: 780, maxHeight: 'calc(100dvh - 48px)', background: 'var(--bg-primary)', borderRadius: 40, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: '0 32px 80px rgba(78,54,41,0.18), 0 8px 32px rgba(0,0,0,0.08)' }}>
+    <div style={{ minHeight: '100dvh', background: '#0A0A0A', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '24px 0' }}>
+      <div style={{ width: 375, minHeight: 780, maxHeight: 'calc(100dvh - 48px)', background: 'var(--bg-primary)', borderRadius: 48, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06)' }}>
 
         {/* Status bar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 24px 4px', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600, flexShrink: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 24px 4px', fontSize: 12, color: '#A1A1AA', fontWeight: 600, flexShrink: 0 }}>
           <span>9:41</span>
           <span style={{ letterSpacing: 2 }}>●●●</span>
         </div>
