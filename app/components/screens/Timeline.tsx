@@ -72,7 +72,7 @@ function TimelineItem({
         )}
       </div>
       {/* Card */}
-      <div style={{ flex: 1, paddingBottom: isLast ? 0 : 10 }}>
+      <div style={{ flex: 1, minWidth: 0, paddingBottom: isLast ? 0 : 10 }}>
         {children}
       </div>
     </div>
@@ -220,7 +220,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
   const buddyMood: BuddyMood = completedCount === totalCount ? 'celebrate' : overdue.length > 0 ? 'urgent' : 'happy'
 
   return (
-    <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', background: '#F7F7F8' }}>
+    <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#F7F7F8' }}>
 
       {/* ── Greeting ── */}
       <div style={{ background: 'white', padding: '18px 18px 16px', borderBottom: '1px solid #F0F0F0' }}>

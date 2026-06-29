@@ -109,15 +109,15 @@ export default function UnibuddyApp() {
     <div style={{ minHeight: '100dvh', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '28px 0' }}>
       <div style={{ position: 'relative' }}>
         {/* Left side buttons */}
-        <div style={{ position: 'absolute', left: -3, top: 96,  width: 3, height: 28, background: '#3A3A3A', borderRadius: '2px 0 0 2px' }} />
-        <div style={{ position: 'absolute', left: -3, top: 140, width: 3, height: 56, background: '#3A3A3A', borderRadius: '2px 0 0 2px' }} />
-        <div style={{ position: 'absolute', left: -3, top: 210, width: 3, height: 56, background: '#3A3A3A', borderRadius: '2px 0 0 2px' }} />
+        <div style={{ position: 'absolute', left: -3, top: 102, width: 3, height: 28, background: '#3A3A3A', borderRadius: '2px 0 0 2px' }} />
+        <div style={{ position: 'absolute', left: -3, top: 148, width: 3, height: 58, background: '#3A3A3A', borderRadius: '2px 0 0 2px' }} />
+        <div style={{ position: 'absolute', left: -3, top: 220, width: 3, height: 58, background: '#3A3A3A', borderRadius: '2px 0 0 2px' }} />
         {/* Right side button */}
-        <div style={{ position: 'absolute', right: -3, top: 155, width: 3, height: 80, background: '#3A3A3A', borderRadius: '0 2px 2px 0' }} />
+        <div style={{ position: 'absolute', right: -3, top: 162, width: 3, height: 84, background: '#3A3A3A', borderRadius: '0 2px 2px 0' }} />
         {/* Bezel */}
-        <div style={{ background: '#1C1C1E', borderRadius: 54, padding: 10, boxShadow: '0 28px 80px rgba(0,0,0,0.22), 0 0 0 1px rgba(255,255,255,0.06)' }}>
-          {/* Screen */}
-          <div style={{ width: 375, minHeight: 762, maxHeight: 'calc(100dvh - 96px)', background: 'white', borderRadius: 46, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+        <div style={{ background: '#1C1C1E', borderRadius: 56, padding: 10, boxShadow: '0 28px 80px rgba(0,0,0,0.22), 0 0 0 1px rgba(255,255,255,0.06)' }}>
+          {/* Screen — iPhone 17 logical resolution 393×852 pt */}
+          <div style={{ width: 393, height: 'min(852px, calc(100dvh - 96px))', background: 'white', borderRadius: 48, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative' }}>
             {/* Dynamic Island + status bar */}
             <div style={{ flexShrink: 0, background: 'white', paddingTop: 12 }}>
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 22px', height: 34 }}>
@@ -166,10 +166,6 @@ export default function UnibuddyApp() {
         <div style={{ fontSize: 16, fontWeight: 900, color: '#0A0A0A', letterSpacing: '-0.5px' }}>UniBuddy</div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 11px', borderRadius: 20, background: '#FFF7ED', border: '1px solid #FED7AA' }}>
-          <span style={{ fontSize: 13 }}>🔥</span>
-          <span style={{ fontSize: 12, fontWeight: 800, color: '#EA580C' }}>{streak}</span>
-        </div>
         <button
           onClick={handleSignOut}
           title="Sign out"

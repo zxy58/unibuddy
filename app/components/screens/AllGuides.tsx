@@ -10,22 +10,77 @@ interface Props {
   openGuide: (key: string) => void
 }
 
-const categoryIcons: Record<MoveCategory, string> = {
-  enrollment: '🎓',
-  financial:  '💰',
-  visa:       '🛂',
-  housing:    '🏠',
-  health:     '🏥',
-  academic:   '📚',
+const NEUTRAL = { bg: '#F5F5F5', text: '#1A1A1A', border: '#E5E5E5' }
+
+function EnrollmentIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 7l10-4 10 4-10 4z" />
+      <path d="M6 9.5V15c0 1.5 2.7 3 6 3s6-1.5 6-3V9.5" />
+      <line x1="22" y1="7" x2="22" y2="13" />
+    </svg>
+  )
 }
 
-const categoryColors: Record<MoveCategory, { bg: string; text: string; border: string }> = {
-  enrollment: { bg: '#EDE9FE', text: '#5B21B6', border: '#C4B5FD' },
-  financial:  { bg: '#D1FAE5', text: '#065F46', border: '#6EE7B7' },
-  visa:       { bg: '#E0E7FF', text: '#3730A3', border: '#A5B4FC' },
-  housing:    { bg: '#FEF3C7', text: '#92400E', border: '#FCD34D' },
-  health:     { bg: '#FCE7F3', text: '#9D174D', border: '#FBCFE8' },
-  academic:   { bg: '#DBEAFE', text: '#1E40AF', border: '#BFDBFE' },
+function FinancialIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9 16c0 1.1 1.3 2 3 2s3-.9 3-2-1.3-1.8-3-2-3-.9-3-2 1.3-2 3-2 3 .9 3 2" />
+      <line x1="12" y1="6" x2="12" y2="8" />
+      <line x1="12" y1="16" x2="12" y2="18" />
+    </svg>
+  )
+}
+
+function VisaIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <circle cx="8" cy="12" r="2.2" />
+      <line x1="13" y1="10" x2="18" y2="10" />
+      <line x1="13" y1="14" x2="18" y2="14" />
+    </svg>
+  )
+}
+
+function HousingIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 11l9-7 9 7" />
+      <path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9" />
+      <line x1="10" y1="20" x2="10" y2="14" />
+      <line x1="14" y1="20" x2="14" y2="14" />
+    </svg>
+  )
+}
+
+function HealthIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 12h4l2-5 4 10 2-5h8" />
+    </svg>
+  )
+}
+
+function AcademicIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+      <line x1="9" y1="7" x2="15" y2="7" />
+      <line x1="9" y1="11" x2="13" y2="11" />
+    </svg>
+  )
+}
+
+const categoryIcons: Record<MoveCategory, () => JSX.Element> = {
+  enrollment: EnrollmentIcon,
+  financial:  FinancialIcon,
+  visa:       VisaIcon,
+  housing:    HousingIcon,
+  health:     HealthIcon,
+  academic:   AcademicIcon,
 }
 
 export default function AllGuides({ moves, profile, openGuide }: Props) {
@@ -52,15 +107,15 @@ export default function AllGuides({ moves, profile, openGuide }: Props) {
 
         {categories.map(cat => {
           const keys = byCategory[cat]!
-          const col = categoryColors[cat]
+          const Icon = categoryIcons[cat]
           return (
             <div key={cat}>
               {/* Category header */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                <div style={{ width: 30, height: 30, borderRadius: 8, background: col.bg, border: `1px solid ${col.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
-                  {categoryIcons[cat]}
+                <div style={{ width: 30, height: 30, borderRadius: 8, background: NEUTRAL.bg, border: `1px solid ${NEUTRAL.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon />
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: col.text, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: NEUTRAL.text, textTransform: 'uppercase', letterSpacing: '0.4px' }}>
                   {cat.charAt(0).toUpperCase() + cat.slice(1)}
                 </div>
               </div>
@@ -76,7 +131,7 @@ export default function AllGuides({ moves, profile, openGuide }: Props) {
                       style={{
                         width: '100%', textAlign: 'left', padding: '13px 14px',
                         borderRadius: 14, background: move.done ? '#F9FAFB' : 'white',
-                        border: `1px solid ${move.done ? '#E5E7EB' : col.border}`,
+                        border: `1px solid ${move.done ? '#E5E7EB' : NEUTRAL.border}`,
                         cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12,
                         opacity: move.done ? 0.7 : 1,
                       }}

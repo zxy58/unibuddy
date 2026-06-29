@@ -23,13 +23,15 @@ const categoryIcon: Record<string, string> = {
   housing: '🏠', health: '🏥', academic: '📚',
 }
 
+const NEUTRAL = { bg: '#F5F5F5', text: '#1A1A1A', border: '#E5E5E5' }
+
 const categoryColor: Record<string, { bg: string; text: string; border: string }> = {
-  enrollment: { bg: '#FFF5F5', text: BROWN,     border: '#FECACA' },
-  financial:  { bg: '#D1FAE5', text: '#065F46', border: '#6EE7B7' },
-  visa:       { bg: '#E0E7FF', text: '#3730A3', border: '#A5B4FC' },
-  housing:    { bg: '#FEF3C7', text: '#92400E', border: '#FCD34D' },
-  health:     { bg: '#FCE7F3', text: '#9D174D', border: '#FBCFE8' },
-  academic:   { bg: '#DBEAFE', text: '#1E40AF', border: '#BFDBFE' },
+  enrollment: NEUTRAL,
+  financial:  NEUTRAL,
+  visa:       NEUTRAL,
+  housing:    NEUTRAL,
+  health:     NEUTRAL,
+  academic:   NEUTRAL,
 }
 
 // ── Recovery guide content ──────────────────────────────────────────────────
