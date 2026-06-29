@@ -105,42 +105,54 @@ export default function UnibuddyApp() {
     pct > 0  ? 1 : 0
   ) as 0 | 1 | 2 | 3 | 4 | 5
 
-  const phoneFrame = (children: React.ReactNode, showNav = false) => (
-    <div style={{
-      minHeight: '100dvh',
-      background: '#0A0A0A',
-      display: 'flex',
-      alignItems: 'flex-start',
-      justifyContent: 'center',
-      padding: '24px 0',
-    }}>
-      <div style={{
-        width: 375,
-        minHeight: 780,
-        maxHeight: 'calc(100dvh - 48px)',
-        background: '#000000',
-        borderRadius: 48,
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06)',
-      }}>
-        {/* Status bar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 24px 4px', fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600, flexShrink: 0 }}>
-          <span>9:41</span>
-          <span style={{ letterSpacing: 2 }}>●●●</span>
+  const iPhoneFrame = (children: React.ReactNode) => (
+    <div style={{ minHeight: '100dvh', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '28px 0' }}>
+      <div style={{ position: 'relative' }}>
+        {/* Left side buttons */}
+        <div style={{ position: 'absolute', left: -3, top: 96,  width: 3, height: 28, background: '#3A3A3A', borderRadius: '2px 0 0 2px' }} />
+        <div style={{ position: 'absolute', left: -3, top: 140, width: 3, height: 56, background: '#3A3A3A', borderRadius: '2px 0 0 2px' }} />
+        <div style={{ position: 'absolute', left: -3, top: 210, width: 3, height: 56, background: '#3A3A3A', borderRadius: '2px 0 0 2px' }} />
+        {/* Right side button */}
+        <div style={{ position: 'absolute', right: -3, top: 155, width: 3, height: 80, background: '#3A3A3A', borderRadius: '0 2px 2px 0' }} />
+        {/* Bezel */}
+        <div style={{ background: '#1C1C1E', borderRadius: 54, padding: 10, boxShadow: '0 28px 80px rgba(0,0,0,0.22), 0 0 0 1px rgba(255,255,255,0.06)' }}>
+          {/* Screen */}
+          <div style={{ width: 375, minHeight: 762, maxHeight: 'calc(100dvh - 96px)', background: 'white', borderRadius: 46, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+            {/* Dynamic Island + status bar */}
+            <div style={{ flexShrink: 0, background: 'white', paddingTop: 12 }}>
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 22px', height: 34 }}>
+                <span style={{ fontSize: 15, fontWeight: 700, color: '#000', letterSpacing: '-0.3px', zIndex: 2 }}>9:41</span>
+                <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', width: 120, height: 34, background: 'black', borderRadius: 50, zIndex: 1 }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, zIndex: 2 }}>
+                  <svg width="16" height="11" viewBox="0 0 16 11" fill="none">
+                    <rect x="0"    y="6" width="2.5" height="5"  rx="0.6" fill="black" opacity="0.35"/>
+                    <rect x="4.5"  y="4" width="2.5" height="7"  rx="0.6" fill="black" opacity="0.55"/>
+                    <rect x="9"    y="2" width="2.5" height="9"  rx="0.6" fill="black" opacity="0.8"/>
+                    <rect x="13.5" y="0" width="2.5" height="11" rx="0.6" fill="black"/>
+                  </svg>
+                  <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+                    <circle cx="8" cy="10.5" r="1.2" fill="black"/>
+                    <path d="M5.2 7.8C6 7 7 6.6 8 6.6s2 .4 2.8 1.2" stroke="black" strokeWidth="1.3" strokeLinecap="round"/>
+                    <path d="M2.5 5.2C4 3.6 5.9 2.7 8 2.7s4 .9 5.5 2.5" stroke="black" strokeWidth="1.3" strokeLinecap="round" opacity="0.5"/>
+                  </svg>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ width: 23, height: 11, border: '1.5px solid black', borderRadius: 3, padding: '1.5px 2px', display: 'flex', alignItems: 'center' }}>
+                      <div style={{ width: '78%', height: '100%', background: 'black', borderRadius: 1.5 }} />
+                    </div>
+                    <div style={{ width: 2, height: 5, background: 'black', borderRadius: '0 1px 1px 0', opacity: 0.35, marginLeft: 1 }} />
+                  </div>
+                </div>
+              </div>
+              <div style={{ height: 8 }} />
+            </div>
+            {children}
+          </div>
         </div>
-        {children}
-        {showNav && (
-          <BottomNav
-            active={activeTab}
-            onNavigate={(tab) => setActiveTab(tab)}
-          />
-        )}
       </div>
     </div>
   )
+
+  const phoneFrame = (children: React.ReactNode) => iPhoneFrame(children)
 
   if (!profileLoaded) return null
   if (!profile) {
@@ -169,70 +181,32 @@ export default function UnibuddyApp() {
     </div>
   )
 
-  return (
-    <div style={{ minHeight: '100dvh', background: '#0A0A0A', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '24px 0' }}>
-      <div style={{ width: 375, minHeight: 780, maxHeight: 'calc(100dvh - 48px)', background: 'var(--bg-primary)', borderRadius: 48, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: '0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06)' }}>
-
-        {/* Status bar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 24px 4px', fontSize: 12, color: '#A1A1AA', fontWeight: 600, flexShrink: 0 }}>
-          <span>9:41</span>
-          <span style={{ letterSpacing: 2 }}>●●●</span>
-        </div>
-
-        {headerBar}
-        <Toast message={toast} />
-
-        {/* Guide overlay */}
-        {guideOpen ? (
-          <GuideDetail
-            moveKey={activeGuide}
-            move={moves[activeGuide]}
-            profile={profile}
-            onBack={closeGuide}
-            onMarkDone={markDone}
-            onAskBruno={navigateToAsk}
-          />
-        ) : (
-          <>
-            <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
-              {activeTab === 'timeline' && (
-                <Timeline
-                  profile={profile}
-                  moves={moves}
-                  openGuide={openGuide}
-                  evolutionLevel={evolutionLevel}
-                />
-              )}
-              {activeTab === 'guides' && (
-                <AllGuides
-                  moves={moves}
-                  profile={profile}
-                  openGuide={openGuide}
-                />
-              )}
-              {activeTab === 'ask' && (
-                <AskScreen
-                  profile={profile}
-                  moves={moves}
-                  openGuide={openGuide}
-                  initialInput={askPrompt}
-                />
-              )}
-              {activeTab === 'profile' && (
-                <ProfileScreen
-                  profile={profile}
-                  onSignOut={handleSignOut}
-                  onProfileUpdate={(p) => setProfile(p)}
-                />
-              )}
-            </div>
-            <BottomNav
-              active={activeTab}
-              onNavigate={(tab) => setActiveTab(tab)}
-            />
-          </>
-        )}
-      </div>
+  const screenContent = (
+    <div style={{ display: 'contents' }}>
+      {headerBar}
+      <Toast message={toast} />
+      {guideOpen ? (
+        <GuideDetail
+          moveKey={activeGuide}
+          move={moves[activeGuide]}
+          profile={profile}
+          onBack={closeGuide}
+          onMarkDone={markDone}
+          onAskBruno={navigateToAsk}
+        />
+      ) : (
+        <>
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+            {activeTab === 'timeline' && <Timeline profile={profile} moves={moves} openGuide={openGuide} evolutionLevel={evolutionLevel} />}
+            {activeTab === 'guides'   && <AllGuides moves={moves} profile={profile} openGuide={openGuide} />}
+            {activeTab === 'ask'      && <AskScreen profile={profile} moves={moves} openGuide={openGuide} initialInput={askPrompt} />}
+            {activeTab === 'profile'  && <ProfileScreen profile={profile} onSignOut={handleSignOut} onProfileUpdate={(p) => setProfile(p)} />}
+          </div>
+          <BottomNav active={activeTab} onNavigate={(tab) => setActiveTab(tab)} />
+        </>
+      )}
     </div>
   )
+
+  return iPhoneFrame(screenContent)
 }

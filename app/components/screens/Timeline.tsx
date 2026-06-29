@@ -90,11 +90,11 @@ function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A', lineHeight: 1.3 }}>{move.title}</div>
-          <div style={{ fontSize: 12, color: '#8A8A8A', marginTop: 2 }}>{move.subtitle}</div>
+          <div style={{ fontSize: 12, color: '#8A8A8A', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{move.subtitle}</div>
         </div>
         <DeadlineLabel days={move.daysUntil!} urgency="critical" />
       </div>
-      <div style={{ fontSize: 12, color: '#B91C1C', background: '#FEF2F2', borderRadius: 8, padding: '7px 10px', marginBottom: 10 }}>
+      <div style={{ fontSize: 12, color: '#B91C1C', background: '#FEF2F2', borderRadius: 8, padding: '7px 10px', marginBottom: 10, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         ⚠ {move.consequence}
       </div>
       <button
@@ -116,11 +116,11 @@ function ActNowCard({ moveKey, move, openGuide }: { moveKey: string; move: Move;
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A', lineHeight: 1.3 }}>{move.title}</div>
-          <div style={{ fontSize: 12, color: '#8A8A8A', marginTop: 2 }}>{move.subtitle}</div>
+          <div style={{ fontSize: 12, color: '#8A8A8A', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{move.subtitle}</div>
         </div>
         {move.daysUntil !== null && <DeadlineLabel days={move.daysUntil} urgency={move.urgency} />}
       </div>
-      <div style={{ fontSize: 12, color: '#92400E', background: '#FFFBEB', borderRadius: 8, padding: '7px 10px', marginBottom: 10 }}>
+      <div style={{ fontSize: 12, color: '#92400E', background: '#FFFBEB', borderRadius: 8, padding: '7px 10px', marginBottom: 10, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         If missed: {move.consequence}
       </div>
       <button
@@ -232,7 +232,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
                 : completedCount === totalCount ? 'All done! 🎉'
                 : `Hi ${profile.name?.split(' ')[0] || 'there'}`}
             </div>
-            <div style={{ fontSize: 13, color: '#8A8A8A', marginTop: 3, lineHeight: 1.4 }}>
+            <div style={{ fontSize: 13, color: '#8A8A8A', marginTop: 3, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
               {nudge.body}
             </div>
           </div>
