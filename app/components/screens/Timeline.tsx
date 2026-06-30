@@ -400,7 +400,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
           {/* Overdue */}
           {showOverdue && overdue.length > 0 && (
             <div>
-              <SectionLabel label="Overdue" sub="Complete these immediately" badge={{ n: overdue.length, color: RED }} />
+              <SectionLabel label="Overdue" badge={{ n: overdue.length, color: RED }} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {overdue.map(k => <OverdueCard key={k} moveKey={k} move={moves[k]} openGuide={openGuide} />)}
               </div>
@@ -410,7 +410,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
           {/* Act now */}
           {showActNow && actNow.length > 0 && (
             <div>
-              <SectionLabel label="Act now" sub="Deadlines approaching fast" />
+              <SectionLabel label="Act now" />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {actNow.map(k => <ActNowCard key={k} moveKey={k} move={moves[k]} openGuide={openGuide} />)}
               </div>
@@ -420,7 +420,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
           {/* Coming up */}
           {showComingUp && comingUp.length > 0 && (
             <div>
-              <SectionLabel label="Coming up" sub="Plan ahead for these" />
+              <SectionLabel label="Coming up" />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {comingUp.map(k => <ComingUpCard key={k} moveKey={k} move={moves[k]} openGuide={openGuide} />)}
               </div>
@@ -430,7 +430,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
           {/* Locked */}
           {showLocked && locked.length > 0 && (
             <div>
-              <SectionLabel label="Waiting on" sub="Blocked by other tasks" />
+              <SectionLabel label="Waiting on" />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {locked.map(k => <LockedCard key={k} moveKey={k} move={moves[k]} blockers={getBlockers(k, moves)} openGuide={openGuide} />)}
               </div>
@@ -440,7 +440,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
           {/* Done */}
           {showDone && done.length > 0 && (
             <div>
-              <SectionLabel label="Completed" sub="Great work so far!" badge={{ n: done.length, color: GREEN }} />
+              <SectionLabel label="Completed" badge={{ n: done.length, color: GREEN }} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {done.map(k => (
                   <button
