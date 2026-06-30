@@ -179,21 +179,23 @@ export default function UnibuddyApp() {
       {headerBar}
       <Toast message={toast} />
       {guideOpen ? (
-        <GuideDetail
-          moveKey={activeGuide}
-          move={moves[activeGuide]}
-          profile={profile}
-          onBack={closeGuide}
-          onMarkDone={markDone}
-          onAskBruno={navigateToAsk}
-        />
+        <div key={activeGuide} className="slide-in-right" style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <GuideDetail
+            moveKey={activeGuide}
+            move={moves[activeGuide]}
+            profile={profile}
+            onBack={closeGuide}
+            onMarkDone={markDone}
+            onAskBruno={navigateToAsk}
+          />
+        </div>
       ) : (
         <>
           <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', position: 'relative' }}>
-            {activeTab === 'timeline' && <Timeline profile={profile} moves={moves} openGuide={openGuide} evolutionLevel={evolutionLevel} />}
-            {activeTab === 'guides'   && <AllGuides moves={moves} profile={profile} openGuide={openGuide} />}
-            {activeTab === 'ask'      && <AskScreen profile={profile} moves={moves} openGuide={openGuide} initialInput={askPrompt} />}
-            {activeTab === 'profile'  && <ProfileScreen profile={profile} onSignOut={handleSignOut} onProfileUpdate={(p) => setProfile(p)} />}
+            {activeTab === 'timeline' && <div key="timeline" className="fade-up" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}><Timeline profile={profile} moves={moves} openGuide={openGuide} evolutionLevel={evolutionLevel} /></div>}
+            {activeTab === 'guides'   && <div key="guides"   className="fade-up" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}><AllGuides moves={moves} profile={profile} openGuide={openGuide} /></div>}
+            {activeTab === 'ask'      && <div key="ask"      className="fade-up" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}><AskScreen profile={profile} moves={moves} openGuide={openGuide} initialInput={askPrompt} /></div>}
+            {activeTab === 'profile'  && <div key="profile"  className="fade-up" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}><ProfileScreen profile={profile} onSignOut={handleSignOut} onProfileUpdate={(p) => setProfile(p)} /></div>}
             {/* Ambient glow behind nav */}
             <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 130, zIndex: 9, background: 'linear-gradient(to top, rgba(136,120,204,0.10) 0%, rgba(136,120,204,0.03) 55%, transparent 100%)', pointerEvents: 'none' }} />
             <BottomNav active={activeTab} onNavigate={(tab) => setActiveTab(tab)} />

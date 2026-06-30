@@ -122,7 +122,7 @@ function SectionLabel({ label, badge }: { label: string; badge?: { n: number; co
 function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move; openGuide: (k: string) => void }) {
   const days = Math.abs(move.daysUntil!)
   return (
-    <div style={{ background: RED, borderRadius: 24, padding: '20px 20px 18px' }}>
+    <div className="card-press" style={{ background: RED, borderRadius: 24, padding: '20px 20px 18px', cursor: 'pointer' }} onClick={() => openGuide(moveKey)}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
         <div style={{ flex: 1, paddingRight: 12 }}>
           <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.55)', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>Overdue</div>
@@ -149,7 +149,7 @@ function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move
 function ActNowCard({ moveKey, move, openGuide }: { moveKey: string; move: Move; openGuide: (k: string) => void }) {
   const days = move.daysUntil
   return (
-    <div style={{ background: PURPLE, borderRadius: 24, padding: '20px 20px 18px' }}>
+    <div className="card-press" style={{ background: PURPLE, borderRadius: 24, padding: '20px 20px 18px', cursor: 'pointer' }} onClick={() => openGuide(moveKey)}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
         <div style={{ flex: 1, paddingRight: 12 }}>
           <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>Act now</div>
@@ -180,6 +180,7 @@ function ComingUpCard({ moveKey, move, openGuide }: { moveKey: string; move: Mov
   return (
     <button
       onClick={() => openGuide(moveKey)}
+      className="card-press"
       style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px', borderRadius: 20, background: `${cat.bg}10`, border: `1.5px solid ${cat.bg}30`, cursor: 'pointer' }}
     >
       <div style={{ width: 46, height: 46, borderRadius: 14, background: cat.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -292,30 +293,18 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <div ref={greetingRef} style={{ padding: '20px 20px 22px', position: 'relative', overflow: 'hidden' }}>
 
-        {/* Decorative background shapes */}
+        {/* Ambient decorative sparkles (background) */}
         <svg aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', overflow: 'visible' }}>
-          {/* Top-left sparkle */}
-          <path d="M38 18 L40 12 L42 18 L48 20 L42 22 L40 28 L38 22 L32 20 Z" fill="#8878CC" opacity="0.55" />
-          {/* Top-center small sparkle */}
-          <path d="M168 10 L169.5 5 L171 10 L176 11.5 L171 13 L169.5 18 L168 13 L163 11.5 Z" fill={RED} opacity="0.45" />
-          {/* Top-right small circle */}
-          <circle cx="305" cy="16" r="5" fill={RED} opacity="0.35" />
-          {/* Far right mid circle */}
-          <circle cx="358" cy="58" r="7" fill="#F5C4B8" opacity="0.6" />
-          {/* Left-mid teal circle */}
-          <circle cx="22" cy="72" r="6" fill="#9AE4D4" opacity="0.55" />
-          {/* Bottom-left peach circle */}
-          <circle cx="55" cy="108" r="8" fill="#F5C4A0" opacity="0.5" />
-          {/* Bottom-left purple sparkle */}
-          <path d="M18 104 L19.5 99 L21 104 L26 105.5 L21 107 L19.5 112 L18 107 L13 105.5 Z" fill={PURPLE} opacity="0.45" />
-          {/* Bottom-right pink sparkle */}
-          <path d="M330 102 L331.5 97 L333 102 L338 103.5 L333 105 L331.5 110 L330 105 L325 103.5 Z" fill="#E89AAA" opacity="0.5" />
-          {/* Bottom-right grad cap accent */}
-          <rect x="340" y="80" width="18" height="13" rx="2" fill="#D4B896" opacity="0.45" transform="rotate(-12 349 86)" />
-          <polygon points="339,80 349,74 359,80 349,84" fill="#C8A47A" opacity="0.45" transform="rotate(-12 349 79)" />
-          {/* Small dot cluster top */}
-          <circle cx="130" cy="6" r="3" fill="#8878CC" opacity="0.3" />
-          <circle cx="258" cy="30" r="3.5" fill={RED} opacity="0.25" />
+          {/* Purple 4-pt sparkle top-left */}
+          <path d="M36 17 L37.6 12 L39.2 17 L44.2 18.6 L39.2 20.2 L37.6 25.2 L36 20.2 L31 18.6 Z" fill={PURPLE} opacity="0.5" />
+          {/* Red sparkle top-center */}
+          <path d="M166 9 L167.2 5 L168.4 9 L172.4 10.2 L168.4 11.4 L167.2 15.4 L166 11.4 L162 10.2 Z" fill={RED} opacity="0.4" />
+          {/* Tiny dot top */}
+          <circle cx="130" cy="7" r="2.5" fill={PURPLE} opacity="0.22" />
+          {/* Tiny dot upper-right */}
+          <circle cx="254" cy="18" r="2.5" fill={RED} opacity="0.18" />
+          {/* Purple sparkle bottom-left */}
+          <path d="M16 102 L17.3 98 L18.6 102 L22.6 103.3 L18.6 104.6 L17.3 108.6 L16 104.6 L12 103.3 Z" fill={PURPLE} opacity="0.4" />
         </svg>
 
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12, position: 'relative', zIndex: 1 }}>
@@ -330,12 +319,51 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
           <BuddyAvatar mood={buddyMood} size={60} evolutionLevel={evolutionLevel} />
         </div>
 
-        {/* Progress */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 14px 8px 10px', borderRadius: 50, background: 'rgba(0,0,0,0.06)' }}>
-          <div style={{ width: 72, height: 5, borderRadius: 5, background: 'rgba(0,0,0,0.10)', overflow: 'hidden' }}>
-            <div style={{ height: '100%', borderRadius: 5, background: completedCount === totalCount ? PURPLE : PURPLE, width: `${pct}%`, transition: 'width 0.6s ease' }} />
+        {/* Progress + 3-D shape pile */}
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 14px 8px 10px', borderRadius: 50, background: 'rgba(0,0,0,0.06)' }}>
+            <div style={{ width: 72, height: 5, borderRadius: 5, background: 'rgba(0,0,0,0.10)', overflow: 'hidden' }}>
+              <div style={{ height: '100%', borderRadius: 5, background: PURPLE, width: `${pct}%`, transition: 'width 0.6s ease' }} />
+            </div>
+            <span style={{ fontSize: 12, fontWeight: 700, color: DARK }}>{completedCount}/{totalCount} done</span>
           </div>
-          <span style={{ fontSize: 12, fontWeight: 700, color: DARK }}>{completedCount}/{totalCount} done</span>
+
+          {/* 3-D shape pile — focal point right of progress bar */}
+          <svg aria-hidden="true" width="100" height="72" viewBox="0 0 100 72" fill="none" style={{ pointerEvents: 'none', flexShrink: 0, marginRight: -4 }}>
+            {/* ── Pyramid (red) — top centre ── */}
+            <g transform="translate(32, 2)">
+              {/* drop shadow */}
+              <ellipse cx="17" cy="40" rx="17" ry="3.5" fill="rgba(0,0,0,0.09)" />
+              {/* left face (shadow) */}
+              <polygon points="17,0 0,40 17,40" fill="#B83418" />
+              {/* right face (lit) */}
+              <polygon points="17,0 34,40 17,40" fill="#E85028" />
+              {/* top-edge glint */}
+              <line x1="0" y1="40" x2="34" y2="40" stroke="rgba(255,210,190,0.45)" strokeWidth="1" />
+            </g>
+
+            {/* ── Dome (warm peach) — bottom left ── */}
+            <g transform="translate(2, 34)">
+              {/* shadow */}
+              <ellipse cx="15" cy="32" rx="15" ry="3" fill="rgba(0,0,0,0.07)" />
+              {/* dome body */}
+              <path d="M0,32 Q0,6 15,6 Q30,6 30,32" fill="#F5A87C" />
+              {/* specular highlight */}
+              <ellipse cx="10" cy="15" rx="4.5" ry="6" fill="rgba(255,255,255,0.28)" transform="rotate(-8 10 15)" />
+            </g>
+
+            {/* ── Cube (purple) — bottom right ── */}
+            <g transform="translate(56, 36)">
+              {/* shadow */}
+              <ellipse cx="15" cy="33" rx="15" ry="3" fill="rgba(0,0,0,0.08)" />
+              {/* top face */}
+              <polygon points="15,0 30,8 15,16 0,8" fill="#B8ACEC" />
+              {/* right face */}
+              <polygon points="30,8 30,30 15,38 15,16" fill="#8878CC" />
+              {/* left face */}
+              <polygon points="0,8 15,16 15,38 0,30" fill="#6450A8" />
+            </g>
+          </svg>
         </div>
       </div>
 
@@ -419,7 +447,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
                              : item.t === 'comingUp' ? <ComingUpCard moveKey={item.id} move={moves[item.id]} openGuide={openGuide} />
                              : item.t === 'locked'   ? <LockedCard   moveKey={item.id} move={moves[item.id]} blockers={getBlockers(item.id, moves)} openGuide={openGuide} />
                              : (
-                              <button onClick={() => openGuide(item.id)} style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 18, background: '#F2F0FB', border: '1.5px solid #D4CDEF', cursor: 'pointer' }}>
+                              <button onClick={() => openGuide(item.id)} className="card-press" style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 18, background: '#F2F0FB', border: '1.5px solid #D4CDEF', cursor: 'pointer' }}>
                                 <div style={{ width: 38, height: 38, borderRadius: 12, background: '#E8E4F8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={DARK} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                 </div>

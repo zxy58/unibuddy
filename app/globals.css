@@ -43,3 +43,21 @@ textarea { font-family: inherit; resize: none; }
 
 /* Smooth transitions */
 button { transition: background 0.15s, border-color 0.15s, opacity 0.15s; }
+
+/* Card press effect */
+.card-press { transition: transform 0.12s cubic-bezier(0.4,0,0.2,1), box-shadow 0.12s ease; }
+.card-press:active { transform: scale(0.965); }
+
+/* Page slide-in from right */
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0.85; }
+  to   { transform: translateX(0);    opacity: 1;    }
+}
+.slide-in-right { animation: slideInRight 0.28s cubic-bezier(0.35,0,0.25,1); }
+
+/* Subtle tab content fade */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+.fade-up { animation: fadeUp 0.22s cubic-bezier(0.4,0,0.2,1); }
