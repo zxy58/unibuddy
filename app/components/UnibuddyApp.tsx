@@ -106,7 +106,7 @@ export default function UnibuddyApp() {
   ) as 0 | 1 | 2 | 3 | 4 | 5
 
   const iPhoneFrame = (children: React.ReactNode) => (
-    <div style={{ minHeight: '100dvh', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '28px 0' }}>
+    <div style={{ minHeight: '100dvh', background: '#F0F0F0', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '28px 0' }}>
       <div style={{ position: 'relative' }}>
         {/* Left side buttons */}
         <div style={{ position: 'absolute', left: -3, top: 102, width: 3, height: 28, background: '#3A3A3A', borderRadius: '2px 0 0 2px' }} />
