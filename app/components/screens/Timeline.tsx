@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import type { Move } from '@/app/lib/types'
 import type { UserProfile } from '@/app/lib/profile'
 import { getDashboardNudge, getPrioritizedMoves } from '@/app/lib/recommendations'
@@ -219,118 +219,139 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
   const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
   const buddyMood: BuddyMood = completedCount === totalCount ? 'celebrate' : overdue.length > 0 ? 'urgent' : 'happy'
 
-  return (
-    <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#ECEAE4' }}>
+  const greetingRef = useRef<HTMLDivElement>(null)
+  const [greetingH, setGreetingH] = useState(136)
 
-      {/* ── Greeting ── */}
-      <div style={{ background: 'white', padding: '18px 18px 16px', borderRadius: '0 0 20px 20px', marginBottom: 4, boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
+  useEffect(() => {
+    if (greetingRef.current) setGreetingH(greetingRef.current.offsetHeight)
+  }, [])
+
+  return (
+    <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+
+      {/* ── Greeting — sits on the gradient background behind the scroll sheet ── */}
+      <div ref={greetingRef} style={{ padding: '18px 18px 20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-          <div>
+          <div style={{ flex: 1, minWidth: 0, paddingRight: 12 }}>
             <div style={{ fontSize: 24, fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.5px' }}>
               {overdue.length > 0
                 ? `${overdue.length} task${overdue.length > 1 ? 's' : ''} need attention`
                 : completedCount === totalCount ? 'All done! 🎉'
                 : `Hi ${profile.name?.split(' ')[0] || 'there'}`}
             </div>
-            <div style={{ fontSize: 13, color: '#8A8A8A', marginTop: 3, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            <div style={{ fontSize: 13, color: '#5C5C52', marginTop: 3, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
               {nudge.body}
             </div>
           </div>
           <BuddyAvatar mood={buddyMood} size={52} evolutionLevel={evolutionLevel} />
         </div>
-
         {/* Progress */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ flex: 1, height: 4, borderRadius: 4, background: '#EFEFEF', overflow: 'hidden' }}>
+          <div style={{ flex: 1, height: 4, borderRadius: 4, background: 'rgba(0,0,0,0.12)', overflow: 'hidden' }}>
             <div style={{ height: '100%', borderRadius: 4, background: completedCount === totalCount ? GREEN : ORANGE, width: `${pct}%`, transition: 'width 0.6s ease' }} />
           </div>
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#AAAAAA', flexShrink: 0 }}>
+          <span style={{ fontSize: 12, fontWeight: 600, color: '#7A7A6E', flexShrink: 0 }}>
             {completedCount} of {totalCount}
           </span>
         </div>
       </div>
 
-      {/* ── Content ── */}
-      <div style={{ padding: '20px 16px 96px', display: 'flex', flexDirection: 'column', gap: 28 }}>
+      {/* ── Scroll sheet — slides up over the greeting when scrolled ── */}
+      <div
+        className="no-scroll"
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflowY: 'auto', overflowX: 'hidden' }}
+      >
+        {/* Transparent spacer: greeting is visible through this */}
+        <div style={{ height: greetingH, flexShrink: 0 }} />
 
-        {/* Overdue */}
-        {overdue.length > 0 && (
-          <div>
-            <SectionLabel label="Overdue" color={RED} count={overdue.length} />
+        {/* White card sheet with rounded top corners */}
+        <div style={{
+          background: 'white',
+          borderRadius: '20px 20px 0 0',
+          minHeight: `calc(100% - ${greetingH}px)`,
+          padding: '20px 16px 96px',
+          display: 'flex', flexDirection: 'column', gap: 28,
+        }}>
+
+          {/* Overdue */}
+          {overdue.length > 0 && (
             <div>
-              {overdue.map((k, i) => (
-                <TimelineItem key={k} dotColor={RED} isLast={i === overdue.length - 1}>
-                  <OverdueCard moveKey={k} move={moves[k]} openGuide={openGuide} />
-                </TimelineItem>
-              ))}
+              <SectionLabel label="Overdue" color={RED} count={overdue.length} />
+              <div>
+                {overdue.map((k, i) => (
+                  <TimelineItem key={k} dotColor={RED} isLast={i === overdue.length - 1}>
+                    <OverdueCard moveKey={k} move={moves[k]} openGuide={openGuide} />
+                  </TimelineItem>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Act now */}
-        {actNow.length > 0 && (
-          <div>
-            <SectionLabel label="Act now" color={ORANGE} />
+          {/* Act now */}
+          {actNow.length > 0 && (
             <div>
-              {actNow.map((k, i) => (
-                <TimelineItem key={k} dotColor={ORANGE} isLast={i === actNow.length - 1}>
-                  <ActNowCard moveKey={k} move={moves[k]} openGuide={openGuide} />
-                </TimelineItem>
-              ))}
+              <SectionLabel label="Act now" color={ORANGE} />
+              <div>
+                {actNow.map((k, i) => (
+                  <TimelineItem key={k} dotColor={ORANGE} isLast={i === actNow.length - 1}>
+                    <ActNowCard moveKey={k} move={moves[k]} openGuide={openGuide} />
+                  </TimelineItem>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Coming up */}
-        {comingUp.length > 0 && (
-          <div>
-            <SectionLabel label="Coming up" color="#AAAAAA" />
+          {/* Coming up */}
+          {comingUp.length > 0 && (
             <div>
-              {comingUp.map((k, i) => (
-                <TimelineItem key={k} dotColor="#CCCCCC" dotFill={false} isLast={i === comingUp.length - 1}>
-                  <ComingUpCard moveKey={k} move={moves[k]} openGuide={openGuide} />
-                </TimelineItem>
-              ))}
+              <SectionLabel label="Coming up" color="#AAAAAA" />
+              <div>
+                {comingUp.map((k, i) => (
+                  <TimelineItem key={k} dotColor="#CCCCCC" dotFill={false} isLast={i === comingUp.length - 1}>
+                    <ComingUpCard moveKey={k} move={moves[k]} openGuide={openGuide} />
+                  </TimelineItem>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Locked */}
-        {locked.length > 0 && (
-          <div>
-            <SectionLabel label="Waiting on" color="#C0C0C0" />
+          {/* Locked */}
+          {locked.length > 0 && (
             <div>
-              {locked.map((k, i) => (
-                <TimelineItem key={k} dotColor="#D1D5DB" dotFill={false} isLast={i === locked.length - 1}>
-                  <LockedCard moveKey={k} move={moves[k]} blockers={getBlockers(k, moves)} openGuide={openGuide} />
-                </TimelineItem>
-              ))}
+              <SectionLabel label="Waiting on" color="#C0C0C0" />
+              <div>
+                {locked.map((k, i) => (
+                  <TimelineItem key={k} dotColor="#D1D5DB" dotFill={false} isLast={i === locked.length - 1}>
+                    <LockedCard moveKey={k} move={moves[k]} blockers={getBlockers(k, moves)} openGuide={openGuide} />
+                  </TimelineItem>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Done */}
-        {done.length > 0 && (
-          <div>
-            <SectionLabel label="Completed" color={GREEN} count={done.length} />
+          {/* Done */}
+          {done.length > 0 && (
             <div>
-              {done.map((k, i) => (
-                <TimelineItem key={k} dotColor={GREEN} isLast={i === done.length - 1}>
-                  <button
-                    onClick={() => openGuide(k)}
-                    style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', borderRadius: 13, background: 'white', border: '1px solid #F0F0F0', cursor: 'pointer' }}
-                  >
-                    <div style={{ width: 30, height: 30, borderRadius: 8, background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <span style={{ fontSize: 13, color: GREEN }}>✓</span>
-                    </div>
-                    <span style={{ fontSize: 13, color: '#AAAAAA', flex: 1 }}>{moves[k].title}</span>
-                  </button>
-                </TimelineItem>
-              ))}
+              <SectionLabel label="Completed" color={GREEN} count={done.length} />
+              <div>
+                {done.map((k, i) => (
+                  <TimelineItem key={k} dotColor={GREEN} isLast={i === done.length - 1}>
+                    <button
+                      onClick={() => openGuide(k)}
+                      style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', borderRadius: 13, background: 'white', border: '1px solid #F0F0F0', cursor: 'pointer' }}
+                    >
+                      <div style={{ width: 30, height: 30, borderRadius: 8, background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <span style={{ fontSize: 13, color: GREEN }}>✓</span>
+                      </div>
+                      <span style={{ fontSize: 13, color: '#AAAAAA', flex: 1 }}>{moves[k].title}</span>
+                    </button>
+                  </TimelineItem>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
+        </div>
       </div>
     </div>
   )
