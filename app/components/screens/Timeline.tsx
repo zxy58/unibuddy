@@ -293,18 +293,28 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <div ref={greetingRef} style={{ padding: '20px 20px 22px', position: 'relative', overflow: 'hidden' }}>
 
-        {/* Ambient decorative sparkles (background) */}
+        {/* Ambient organic leaf shapes (background) */}
         <svg aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', overflow: 'visible' }}>
-          {/* Purple 4-pt sparkle top-left */}
-          <path d="M36 17 L37.6 12 L39.2 17 L44.2 18.6 L39.2 20.2 L37.6 25.2 L36 20.2 L31 18.6 Z" fill={PURPLE} opacity="0.5" />
-          {/* Red sparkle top-center */}
-          <path d="M166 9 L167.2 5 L168.4 9 L172.4 10.2 L168.4 11.4 L167.2 15.4 L166 11.4 L162 10.2 Z" fill={RED} opacity="0.4" />
-          {/* Tiny dot top */}
-          <circle cx="130" cy="7" r="2.5" fill={PURPLE} opacity="0.22" />
-          {/* Tiny dot upper-right */}
-          <circle cx="254" cy="18" r="2.5" fill={RED} opacity="0.18" />
-          {/* Purple sparkle bottom-left */}
-          <path d="M16 102 L17.3 98 L18.6 102 L22.6 103.3 L18.6 104.6 L17.3 108.6 L16 104.6 L12 103.3 Z" fill={PURPLE} opacity="0.4" />
+          {/* Purple leaf — top-left, steep tilt */}
+          <g transform="translate(38,20) rotate(-38)">
+            <path d="M0,-13 C10,-6 10,6 0,13 C-10,6 -10,-6 0,-13Z" fill={PURPLE} opacity="0.42"/>
+          </g>
+          {/* Red leaf — top-center, nearly horizontal */}
+          <g transform="translate(168,11) rotate(72)">
+            <path d="M0,-8 C6,-4 6,4 0,8 C-6,4 -6,-4 0,-8Z" fill={RED} opacity="0.38"/>
+          </g>
+          {/* Purple outline leaf — upper-right, lopsided */}
+          <g transform="translate(292,22) rotate(-18)">
+            <path d="M0,-10 C8,-5 8,5 0,10 C-8,5 -8,-5 0,-10Z" fill="none" stroke={PURPLE} strokeWidth="2" opacity="0.35"/>
+          </g>
+          {/* Red leaf — bottom-left, off-axis */}
+          <g transform="translate(18,106) rotate(22)">
+            <path d="M0,-9 C7,-4.5 7,4.5 0,9 C-7,4.5 -7,-4.5 0,-9Z" fill={RED} opacity="0.3"/>
+          </g>
+          {/* Peach tiny leaf — mid-left */}
+          <g transform="translate(56,76) rotate(-55)">
+            <path d="M0,-6 C4.5,-3 4.5,3 0,6 C-4.5,3 -4.5,-3 0,-6Z" fill="#F5A87C" opacity="0.45"/>
+          </g>
         </svg>
 
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12, position: 'relative', zIndex: 1 }}>
@@ -328,41 +338,26 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
             <span style={{ fontSize: 12, fontWeight: 700, color: DARK }}>{completedCount}/{totalCount} done</span>
           </div>
 
-          {/* 3-D shape pile — focal point right of progress bar */}
-          <svg aria-hidden="true" width="100" height="72" viewBox="0 0 100 72" fill="none" style={{ pointerEvents: 'none', flexShrink: 0, marginRight: -4 }}>
-            {/* ── Pyramid (red) — top centre ── */}
-            <g transform="translate(32, 2)">
-              {/* drop shadow */}
-              <ellipse cx="17" cy="40" rx="17" ry="3.5" fill="rgba(0,0,0,0.09)" />
-              {/* left face (shadow) */}
-              <polygon points="17,0 0,40 17,40" fill="#B83418" />
-              {/* right face (lit) */}
-              <polygon points="17,0 34,40 17,40" fill="#E85028" />
-              {/* top-edge glint */}
-              <line x1="0" y1="40" x2="34" y2="40" stroke="rgba(255,210,190,0.45)" strokeWidth="1" />
+          {/* Leaf shape pile — focal point right of progress bar */}
+          <svg aria-hidden="true" width="104" height="68" viewBox="0 0 104 68" fill="none" style={{ pointerEvents: 'none', flexShrink: 0, marginRight: -2 }}>
+            {/* Large purple leaf — background anchor, tilted left */}
+            <g transform="translate(50,36) rotate(-28)">
+              <path d="M0,-28 C20,-14 20,14 0,28 C-20,14 -20,-14 0,-28Z" fill={PURPLE} opacity="0.82"/>
             </g>
-
-            {/* ── Dome (warm peach) — bottom left ── */}
-            <g transform="translate(2, 34)">
-              {/* shadow */}
-              <ellipse cx="15" cy="32" rx="15" ry="3" fill="rgba(0,0,0,0.07)" />
-              {/* dome body */}
-              <path d="M0,32 Q0,6 15,6 Q30,6 30,32" fill="#F5A87C" />
-              {/* specular highlight */}
-              <ellipse cx="10" cy="15" rx="4.5" ry="6" fill="rgba(255,255,255,0.28)" transform="rotate(-8 10 15)" />
+            {/* Red leaf — overlapping top-right, steep angle */}
+            <g transform="translate(76,22) rotate(48)">
+              <path d="M0,-20 C14,-10 14,10 0,20 C-14,10 -14,-10 0,-20Z" fill={RED} opacity="0.88"/>
             </g>
-
-            {/* ── Cube (purple) — bottom right ── */}
-            <g transform="translate(56, 36)">
-              {/* shadow */}
-              <ellipse cx="15" cy="33" rx="15" ry="3" fill="rgba(0,0,0,0.08)" />
-              {/* top face */}
-              <polygon points="15,0 30,8 15,16 0,8" fill="#B8ACEC" />
-              {/* right face */}
-              <polygon points="30,8 30,30 15,38 15,16" fill="#8878CC" />
-              {/* left face */}
-              <polygon points="0,8 15,16 15,38 0,30" fill="#6450A8" />
+            {/* Peach leaf — bottom-left, nearly sideways */}
+            <g transform="translate(22,52) rotate(78)">
+              <path d="M0,-14 C10,-7 10,7 0,14 C-10,7 -10,-7 0,-14Z" fill="#F5A87C" opacity="0.85"/>
             </g>
+            {/* Purple outline leaf — small, top-left, floaty */}
+            <g transform="translate(18,18) rotate(-52)">
+              <path d="M0,-10 C7,-5 7,5 0,10 C-7,5 -7,-5 0,-10Z" fill="none" stroke={PURPLE} strokeWidth="2.2" opacity="0.55"/>
+            </g>
+            {/* Tiny red dot accent */}
+            <circle cx="88" cy="54" r="4" fill={RED} opacity="0.35"/>
           </svg>
         </div>
       </div>
