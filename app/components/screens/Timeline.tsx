@@ -304,9 +304,9 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
 
   const filters: { id: Filter; label: string }[] = [
     { id: 'all',      label: 'All tasks' },
-    { id: 'urgent',   label: '🚨 Urgent' },
-    { id: 'upcoming', label: '📅 Upcoming' },
-    { id: 'done',     label: '✓ Done' },
+    { id: 'urgent',   label: 'Urgent' },
+    { id: 'upcoming', label: 'Upcoming' },
+    { id: 'done',     label: 'Done' },
   ]
 
   return (
