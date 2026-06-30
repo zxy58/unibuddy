@@ -82,24 +82,31 @@ function TimelineItem({
 // ── Item cards ───────────────────────────────────────────────────────────────
 
 function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move; openGuide: (k: string) => void }) {
+  const days = Math.abs(move.daysUntil!)
   return (
-    <div style={{ background: 'white', borderRadius: 16, padding: '14px 14px 12px', border: '1px solid #F0F0F0' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
-          {categoryIcon[move.category]}
+    <div style={{ background: 'linear-gradient(145deg, #FFFFFF 0%, #FFF3F2 100%)', borderRadius: 20, padding: '16px 16px 14px', border: '1px solid rgba(244,68,46,0.12)' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ display: 'flex', gap: 10, flex: 1, minWidth: 0 }}>
+          <div style={{ width: 38, height: 38, borderRadius: 11, background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
+            {categoryIcon[move.category]}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A', lineHeight: 1.3 }}>{move.title}</div>
+            <div style={{ fontSize: 12, color: '#666666', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{move.subtitle}</div>
+          </div>
         </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A', lineHeight: 1.3 }}>{move.title}</div>
-          <div style={{ fontSize: 12, color: '#666666', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{move.subtitle}</div>
+        <div style={{ textAlign: 'right', flexShrink: 0, paddingLeft: 14 }}>
+          <div style={{ fontSize: 42, fontWeight: 900, color: RED, lineHeight: 1, letterSpacing: '-2px' }}>{days}</div>
+          <div style={{ fontSize: 10, color: RED, fontWeight: 700, marginTop: 1, letterSpacing: '0.3px' }}>DAY{days !== 1 ? 'S' : ''} OVERDUE</div>
         </div>
-        <DeadlineLabel days={move.daysUntil!} urgency="critical" />
       </div>
-      <div style={{ fontSize: 12, color: '#B91C1C', background: '#FEF2F2', borderRadius: 8, padding: '7px 10px', marginBottom: 10, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-        ⚠ {move.consequence}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 7, marginBottom: 12, padding: '8px 10px', background: '#FEF2F2', borderRadius: 10 }}>
+        <span style={{ fontSize: 13, flexShrink: 0 }}>⚠</span>
+        <span style={{ fontSize: 12, color: '#B91C1C', lineHeight: 1.4 }}>{move.consequence}</span>
       </div>
       <button
         onClick={() => openGuide(moveKey)}
-        style={{ width: '100%', padding: '11px', borderRadius: 50, background: 'linear-gradient(145deg, #F4442E, #D93020)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, letterSpacing: '-0.1px' }}
+        style={{ width: '100%', padding: '12px', borderRadius: 50, background: 'linear-gradient(145deg, #F4442E, #D93020)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700 }}
       >
         Get recovery help →
       </button>
@@ -108,24 +115,32 @@ function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move
 }
 
 function ActNowCard({ moveKey, move, openGuide }: { moveKey: string; move: Move; openGuide: (k: string) => void }) {
+  const days = move.daysUntil
   return (
-    <div style={{ background: 'white', borderRadius: 16, padding: '14px 14px 12px', border: '1px solid #F0F0F0' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: '#FFF7ED', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
-          {categoryIcon[move.category]}
+    <div style={{ background: 'linear-gradient(145deg, #FFFFFF 0%, #FFF8F2 100%)', borderRadius: 20, padding: '16px 16px 14px', border: '1px solid rgba(245,121,58,0.12)' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ display: 'flex', gap: 10, flex: 1, minWidth: 0 }}>
+          <div style={{ width: 38, height: 38, borderRadius: 11, background: '#FFF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
+            {categoryIcon[move.category]}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A', lineHeight: 1.3 }}>{move.title}</div>
+            <div style={{ fontSize: 12, color: '#666666', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{move.subtitle}</div>
+          </div>
         </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A', lineHeight: 1.3 }}>{move.title}</div>
-          <div style={{ fontSize: 12, color: '#666666', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{move.subtitle}</div>
-        </div>
-        {move.daysUntil !== null && <DeadlineLabel days={move.daysUntil} urgency={move.urgency} />}
+        {days !== null && (
+          <div style={{ textAlign: 'right', flexShrink: 0, paddingLeft: 14 }}>
+            <div style={{ fontSize: 42, fontWeight: 900, color: ORANGE, lineHeight: 1, letterSpacing: '-2px' }}>{days}</div>
+            <div style={{ fontSize: 10, color: ORANGE, fontWeight: 700, marginTop: 1, letterSpacing: '0.3px' }}>DAY{days !== 1 ? 'S' : ''} LEFT</div>
+          </div>
+        )}
       </div>
-      <div style={{ fontSize: 12, color: '#92400E', background: '#FFFBEB', borderRadius: 8, padding: '7px 10px', marginBottom: 10, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-        If missed: {move.consequence}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 7, marginBottom: 12, padding: '8px 10px', background: '#FFFBEB', borderRadius: 10 }}>
+        <span style={{ fontSize: 12, color: '#92400E', lineHeight: 1.4 }}>If missed: {move.consequence}</span>
       </div>
       <button
         onClick={() => openGuide(moveKey)}
-        style={{ width: '100%', padding: '11px', borderRadius: 50, background: 'linear-gradient(145deg, #F5793A, #E06020)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700 }}
+        style={{ width: '100%', padding: '12px', borderRadius: 50, background: 'linear-gradient(145deg, #F5793A, #E06020)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700 }}
       >
         Start now →
       </button>
@@ -137,17 +152,22 @@ function ComingUpCard({ moveKey, move, openGuide }: { moveKey: string; move: Mov
   return (
     <button
       onClick={() => openGuide(moveKey)}
-      style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', borderRadius: 14, background: 'white', border: '1px solid #F0F0F0', cursor: 'pointer' }}
+      style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 16, background: 'white', border: '1px solid #F0F0F0', cursor: 'pointer' }}
     >
-      <div style={{ width: 34, height: 34, borderRadius: 9, background: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, flexShrink: 0 }}>
+      <div style={{ width: 36, height: 36, borderRadius: 10, background: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, flexShrink: 0 }}>
         {categoryIcon[move.category]}
       </div>
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1A1A' }}>{move.title}</div>
-        <div style={{ fontSize: 11, color: '#AAAAAA', marginTop: 1 }}>{move.subtitle}</div>
+        <div style={{ fontSize: 11, color: '#666666', marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{move.subtitle}</div>
       </div>
-      {move.daysUntil !== null && <DeadlineLabel days={move.daysUntil} urgency={move.urgency} />}
-      <span style={{ color: '#CCCCCC', fontSize: 16, marginLeft: 2 }}>›</span>
+      {move.daysUntil !== null && (
+        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+          <div style={{ fontSize: 22, fontWeight: 800, color: '#1A1A1A', lineHeight: 1, letterSpacing: '-1px' }}>{move.daysUntil}</div>
+          <div style={{ fontSize: 9, color: '#999999', marginTop: 1, fontWeight: 600, letterSpacing: '0.3px' }}>DAYS</div>
+        </div>
+      )}
+      <span style={{ color: '#CCCCCC', fontSize: 16, marginLeft: 4 }}>›</span>
     </button>
   )
 }
@@ -155,29 +175,29 @@ function ComingUpCard({ moveKey, move, openGuide }: { moveKey: string; move: Mov
 function LockedCard({ moveKey, move, blockers, openGuide }: { moveKey: string; move: Move; blockers: string[]; openGuide: (k: string) => void }) {
   const [open, setOpen] = useState(false)
   return (
-    <div style={{ background: 'white', borderRadius: 14, border: '1px solid #F0F0F0', overflow: 'hidden' }}>
+    <div style={{ background: '#FAFAF8', borderRadius: 16, border: '1px solid #EFEFED', overflow: 'hidden' }}>
       <button
         onClick={() => setOpen(v => !v)}
         style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', background: 'none', border: 'none', cursor: 'pointer' }}
       >
-        <div style={{ width: 34, height: 34, borderRadius: 9, background: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, flexShrink: 0, opacity: 0.45 }}>
+        <div style={{ width: 34, height: 34, borderRadius: 9, background: '#EFEFED', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, flexShrink: 0, opacity: 0.5 }}>
           {categoryIcon[move.category]}
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#666666' }}>{move.title}</div>
-          <div style={{ fontSize: 11, color: '#888888', marginTop: 1 }}>🔒 Needs {blockers[0]}</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#888888' }}>{move.title}</div>
+          <div style={{ fontSize: 11, color: '#999999', marginTop: 1 }}>🔒 Needs {blockers[0]}</div>
         </div>
-        <span style={{ fontSize: 11, color: '#D1D5DB' }}>{open ? '▲' : '▼'}</span>
+        <span style={{ fontSize: 11, color: '#CCCCCC' }}>{open ? '▲' : '▼'}</span>
       </button>
       {open && (
-        <div style={{ padding: '0 14px 12px' }}>
-          <div style={{ fontSize: 11, color: '#666666', marginBottom: 6 }}>Unlocks after:</div>
+        <div style={{ padding: '0 14px 12px', borderTop: '1px solid #EFEFED' }}>
+          <div style={{ fontSize: 11, color: '#999999', marginBottom: 6, marginTop: 8 }}>Unlocks after:</div>
           {blockers.map((b, i) => (
-            <div key={i} style={{ fontSize: 12, color: '#444', fontWeight: 500, marginBottom: 3 }}>→ {b}</div>
+            <div key={i} style={{ fontSize: 12, color: '#666666', fontWeight: 500, marginBottom: 3 }}>→ {b}</div>
           ))}
           <button
             onClick={() => openGuide(moveKey)}
-            style={{ marginTop: 8, width: '100%', padding: '9px', borderRadius: 50, background: 'white', border: '1.5px solid #E5E5E5', color: '#666666', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+            style={{ marginTop: 8, width: '100%', padding: '9px', borderRadius: 50, background: 'white', border: '1.5px solid #E5E5E5', color: '#888888', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
           >
             Preview anyway
           </button>
