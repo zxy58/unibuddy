@@ -46,8 +46,8 @@ export const cohortLabels: Record<CohortType, string> = {
 }
 
 export const cohortShort: Record<CohortType, string> = {
-  international: '🌐 International',
-  firstgen: '⭐ First-gen',
-  lowincome: '💛 Financial aid',
-  transfer: '↗ Transfer',
+  international: 'International',
+  firstgen: 'First-gen',
+  lowincome: 'Financial aid',
+  transfer: 'Transfer',
 }

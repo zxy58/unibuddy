@@ -28,12 +28,6 @@ const cohortDescriptions: Record<CohortType, string> = {
   transfer: 'Moving from another institution',
 }
 
-const cohortIcons: Record<CohortType, string> = {
-  international: '🌐',
-  firstgen: '⭐',
-  lowincome: '💛',
-  transfer: '↗',
-}
 
 const SCHOOL_MAP: Record<string, string> = {
   'brown.edu': 'Brown University',
@@ -228,7 +222,6 @@ export default function OnboardingFlow({ onComplete }: Props) {
                         onClick={() => setCohorts(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c])}
                         style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', borderRadius: 14, cursor: 'pointer', textAlign: 'left', border: `2px solid ${selected ? RED : '#E5E7EB'}`, background: selected ? RED_BG : '#FAFAFA', transition: 'all 0.15s' }}
                       >
-                        <span style={{ fontSize: 20, flexShrink: 0 }}>{cohortIcons[c]}</span>
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: 14, fontWeight: 700, color: '#0A0A0A' }}>{cohortLabels[c]}</div>
                           <div style={{ fontSize: 12, color: '#6B7280', marginTop: 1 }}>{cohortDescriptions[c]}</div>
