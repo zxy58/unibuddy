@@ -251,7 +251,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
       </div>
 
       {/* ── Content ── */}
-      <div style={{ padding: '20px 16px 40px', display: 'flex', flexDirection: 'column', gap: 28 }}>
+      <div style={{ padding: '20px 16px 96px', display: 'flex', flexDirection: 'column', gap: 28 }}>
 
         {/* Overdue */}
         {overdue.length > 0 && (

@@ -41,7 +41,7 @@ export default function ProfileScreen({ profile, onSignOut, onProfileUpdate }: P
 
   return (
     <div className="no-scroll" style={{ flex: 1, overflowY: 'auto' }}>
-      <div style={{ padding: '8px 18px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ padding: '8px 18px 96px', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
         {/* Avatar + name */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>

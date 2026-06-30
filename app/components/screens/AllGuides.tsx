@@ -98,7 +98,7 @@ export default function AllGuides({ moves, profile, openGuide }: Props) {
 
   return (
     <div className="no-scroll" style={{ flex: 1, overflowY: 'auto' }}>
-      <div style={{ padding: '8px 20px 32px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ padding: '8px 20px 96px', display: 'flex', flexDirection: 'column', gap: 24 }}>
 
         <div>
           <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.4px' }}>Process guides</div>

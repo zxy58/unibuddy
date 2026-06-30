@@ -292,7 +292,7 @@ export default function AskScreen({ profile, moves, openGuide, initialInput = ''
   }
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', paddingBottom: 80 }}>
       {/* Header */}
       <div style={{ padding: '10px 18px 12px', borderBottom: '1px solid var(--border-tertiary)', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
         <BuddyAvatar mood="thinking" size={36} />

@@ -192,13 +192,13 @@ export default function UnibuddyApp() {
         />
       ) : (
         <>
-          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', position: 'relative' }}>
             {activeTab === 'timeline' && <Timeline profile={profile} moves={moves} openGuide={openGuide} evolutionLevel={evolutionLevel} />}
             {activeTab === 'guides'   && <AllGuides moves={moves} profile={profile} openGuide={openGuide} />}
             {activeTab === 'ask'      && <AskScreen profile={profile} moves={moves} openGuide={openGuide} initialInput={askPrompt} />}
             {activeTab === 'profile'  && <ProfileScreen profile={profile} onSignOut={handleSignOut} onProfileUpdate={(p) => setProfile(p)} />}
+            <BottomNav active={activeTab} onNavigate={(tab) => setActiveTab(tab)} />
           </div>
-          <BottomNav active={activeTab} onNavigate={(tab) => setActiveTab(tab)} />
         </>
       )}
     </div>
