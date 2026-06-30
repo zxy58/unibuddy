@@ -220,7 +220,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
   const buddyMood: BuddyMood = completedCount === totalCount ? 'celebrate' : overdue.length > 0 ? 'urgent' : 'happy'
 
   return (
-    <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#DFE0D9' }}>
+    <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#ECEAE4' }}>
 
       {/* ── Greeting ── */}
       <div style={{ background: 'white', padding: '18px 18px 16px', borderRadius: '0 0 20px 20px', marginBottom: 4, boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
