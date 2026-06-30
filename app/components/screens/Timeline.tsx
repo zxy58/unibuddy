@@ -96,6 +96,28 @@ function isOverdue(move: Move): boolean {
   return !move.done && move.daysUntil !== null && move.daysUntil < 0
 }
 
+// ── Timeline dot + line wrapper ──────────────────────────────────────────────
+
+function TimelineItem({ dotColor, dotFill = true, isLast = false, children }: {
+  dotColor: string; dotFill?: boolean; isLast?: boolean; children: React.ReactNode
+}) {
+  return (
+    <div style={{ display: 'flex', gap: 10 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: 20 }}>
+        <div style={{
+          width: 10, height: 10, borderRadius: '50%', flexShrink: 0, marginTop: 20,
+          background: dotFill ? dotColor : 'white',
+          border: `2px solid ${dotColor}`,
+        }} />
+        {!isLast && <div style={{ width: 1.5, flex: 1, background: '#E4E4E2', marginTop: 4, marginBottom: -4 }} />}
+      </div>
+      <div style={{ flex: 1, minWidth: 0, paddingBottom: isLast ? 0 : 10 }}>
+        {children}
+      </div>
+    </div>
+  )
+}
+
 // ── Sparkle shape (4-pointed star) ───────────────────────────────────────────
 
 function Sparkle({ x, y, s, color, rot = 0, op = 1 }: { x: number; y: number; s: number; color: string; rot?: number; op?: number }) {
@@ -401,8 +423,12 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
           {showOverdue && overdue.length > 0 && (
             <div>
               <SectionLabel label="Overdue" badge={{ n: overdue.length, color: RED }} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {overdue.map(k => <OverdueCard key={k} moveKey={k} move={moves[k]} openGuide={openGuide} />)}
+              <div>
+                {overdue.map((k, i) => (
+                  <TimelineItem key={k} dotColor={RED} isLast={i === overdue.length - 1}>
+                    <OverdueCard moveKey={k} move={moves[k]} openGuide={openGuide} />
+                  </TimelineItem>
+                ))}
               </div>
             </div>
           )}
@@ -411,8 +437,12 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
           {showActNow && actNow.length > 0 && (
             <div>
               <SectionLabel label="Act now" />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {actNow.map(k => <ActNowCard key={k} moveKey={k} move={moves[k]} openGuide={openGuide} />)}
+              <div>
+                {actNow.map((k, i) => (
+                  <TimelineItem key={k} dotColor={ORANGE} isLast={i === actNow.length - 1}>
+                    <ActNowCard moveKey={k} move={moves[k]} openGuide={openGuide} />
+                  </TimelineItem>
+                ))}
               </div>
             </div>
           )}
@@ -421,8 +451,12 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
           {showComingUp && comingUp.length > 0 && (
             <div>
               <SectionLabel label="Coming up" />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {comingUp.map(k => <ComingUpCard key={k} moveKey={k} move={moves[k]} openGuide={openGuide} />)}
+              <div>
+                {comingUp.map((k, i) => (
+                  <TimelineItem key={k} dotColor="#CCCCCC" dotFill={false} isLast={i === comingUp.length - 1}>
+                    <ComingUpCard moveKey={k} move={moves[k]} openGuide={openGuide} />
+                  </TimelineItem>
+                ))}
               </div>
             </div>
           )}
@@ -431,8 +465,12 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
           {showLocked && locked.length > 0 && (
             <div>
               <SectionLabel label="Waiting on" />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {locked.map(k => <LockedCard key={k} moveKey={k} move={moves[k]} blockers={getBlockers(k, moves)} openGuide={openGuide} />)}
+              <div>
+                {locked.map((k, i) => (
+                  <TimelineItem key={k} dotColor="#DDDDDD" dotFill={false} isLast={i === locked.length - 1}>
+                    <LockedCard moveKey={k} move={moves[k]} blockers={getBlockers(k, moves)} openGuide={openGuide} />
+                  </TimelineItem>
+                ))}
               </div>
             </div>
           )}
@@ -441,23 +479,24 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
           {showDone && done.length > 0 && (
             <div>
               <SectionLabel label="Completed" badge={{ n: done.length, color: GREEN }} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {done.map(k => (
-                  <button
-                    key={k}
-                    onClick={() => openGuide(k)}
-                    style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 18, background: 'white', border: '1.5px solid #F0F0F0', cursor: 'pointer', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}
-                  >
-                    <div style={{ width: 38, height: 38, borderRadius: 12, background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={GREEN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
+              <div>
+                {done.map((k, i) => (
+                  <TimelineItem key={k} dotColor={GREEN} isLast={i === done.length - 1}>
+                    <button
+                      onClick={() => openGuide(k)}
+                      style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 18, background: 'white', border: '1.5px solid #F0F0F0', cursor: 'pointer', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}
+                    >
+                      <div style={{ width: 38, height: 38, borderRadius: 12, background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={GREEN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </div>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#666666', flex: 1 }}>{moves[k].title}</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#DDDDDD" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 18l6-6-6-6" />
                       </svg>
-                    </div>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: '#666666', flex: 1 }}>{moves[k].title}</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#DDDDDD" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M9 18l6-6-6-6" />
-                    </svg>
-                  </button>
+                    </button>
+                  </TimelineItem>
                 ))}
               </div>
             </div>
