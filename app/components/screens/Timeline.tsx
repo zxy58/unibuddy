@@ -290,8 +290,35 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
     <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <div ref={greetingRef} style={{ padding: '20px 20px 22px', position: 'relative' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
+      <div ref={greetingRef} style={{ padding: '20px 20px 22px', position: 'relative', overflow: 'hidden' }}>
+
+        {/* Decorative background shapes */}
+        <svg aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', overflow: 'visible' }}>
+          {/* Top-left sparkle */}
+          <path d="M38 18 L40 12 L42 18 L48 20 L42 22 L40 28 L38 22 L32 20 Z" fill="#8878CC" opacity="0.55" />
+          {/* Top-center small sparkle */}
+          <path d="M168 10 L169.5 5 L171 10 L176 11.5 L171 13 L169.5 18 L168 13 L163 11.5 Z" fill={RED} opacity="0.45" />
+          {/* Top-right small circle */}
+          <circle cx="305" cy="16" r="5" fill={RED} opacity="0.35" />
+          {/* Far right mid circle */}
+          <circle cx="358" cy="58" r="7" fill="#F5C4B8" opacity="0.6" />
+          {/* Left-mid teal circle */}
+          <circle cx="22" cy="72" r="6" fill="#9AE4D4" opacity="0.55" />
+          {/* Bottom-left peach circle */}
+          <circle cx="55" cy="108" r="8" fill="#F5C4A0" opacity="0.5" />
+          {/* Bottom-left purple sparkle */}
+          <path d="M18 104 L19.5 99 L21 104 L26 105.5 L21 107 L19.5 112 L18 107 L13 105.5 Z" fill={PURPLE} opacity="0.45" />
+          {/* Bottom-right pink sparkle */}
+          <path d="M330 102 L331.5 97 L333 102 L338 103.5 L333 105 L331.5 110 L330 105 L325 103.5 Z" fill="#E89AAA" opacity="0.5" />
+          {/* Bottom-right grad cap accent */}
+          <rect x="340" y="80" width="18" height="13" rx="2" fill="#D4B896" opacity="0.45" transform="rotate(-12 349 86)" />
+          <polygon points="339,80 349,74 359,80 349,84" fill="#C8A47A" opacity="0.45" transform="rotate(-12 349 79)" />
+          {/* Small dot cluster top */}
+          <circle cx="130" cy="6" r="3" fill="#8878CC" opacity="0.3" />
+          <circle cx="258" cy="30" r="3.5" fill={RED} opacity="0.25" />
+        </svg>
+
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12, position: 'relative', zIndex: 1 }}>
           <div style={{ flex: 1, minWidth: 0, paddingRight: 12 }}>
             <div style={{ fontSize: 34, fontWeight: 900, color: DARK, letterSpacing: '-1px', lineHeight: 1.1 }}>
               {greetingText}
