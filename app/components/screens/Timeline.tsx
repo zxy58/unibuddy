@@ -11,6 +11,8 @@ const ORANGE = '#F5793A'
 const RED    = '#F4442E'
 const GREEN  = '#10B981'
 
+type Filter = 'all' | 'urgent' | 'upcoming' | 'done'
+
 interface Props {
   profile: UserProfile
   moves: Record<string, Move>
@@ -18,7 +20,9 @@ interface Props {
   evolutionLevel?: BuddyEvolutionLevel
 }
 
-function CategoryIcon({ category, color, size = 18 }: { category: string; color: string; size?: number }) {
+// ── Category SVG icons ────────────────────────────────────────────────────────
+
+function CategoryIcon({ category, color, size = 20 }: { category: string; color: string; size?: number }) {
   const p = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
   switch (category) {
     case 'enrollment': return (
@@ -49,9 +53,7 @@ function CategoryIcon({ category, color, size = 18 }: { category: string; color:
       </svg>
     )
     case 'health': return (
-      <svg {...p}>
-        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-      </svg>
+      <svg {...p}><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg>
     )
     case 'academic': return (
       <svg {...p}>
@@ -61,11 +63,22 @@ function CategoryIcon({ category, color, size = 18 }: { category: string; color:
         <line x1="9" y1="13" x2="13" y2="13" />
       </svg>
     )
-    default: return (
-      <svg {...p}><circle cx="12" cy="12" r="9" /></svg>
-    )
+    default: return <svg {...p}><circle cx="12" cy="12" r="9" /></svg>
   }
 }
+
+// Per-category color scheme for Coming Up cards
+const catColors: Record<string, { bg: string }> = {
+  enrollment: { bg: '#4F46E5' },
+  financial:  { bg: '#059669' },
+  visa:       { bg: '#7C3AED' },
+  housing:    { bg: '#D97706' },
+  health:     { bg: '#DC2626' },
+  academic:   { bg: '#2563EB' },
+}
+function getCat(c: string) { return catColors[c] ?? { bg: '#6B7280' } }
+
+// ── Helper predicates ─────────────────────────────────────────────────────────
 
 function isLocked(moveKey: string, moves: Record<string, Move>): boolean {
   const move = moves[moveKey]
@@ -83,74 +96,65 @@ function isOverdue(move: Move): boolean {
   return !move.done && move.daysUntil !== null && move.daysUntil < 0
 }
 
-// ── Deadline label ───────────────────────────────────────────────────────────
+// ── Sparkle shape (4-pointed star) ───────────────────────────────────────────
 
-function DeadlineLabel({ days, urgency }: { days: number; urgency: 'critical' | 'soon' | 'upcoming' }) {
-  if (days < 0) {
-    return <span style={{ fontSize: 12, fontWeight: 700, color: RED }}>{Math.abs(days)}d overdue</span>
-  }
-  const color = days <= 3 ? RED : days <= 7 ? ORANGE : '#666666'
-  const label = days === 0 ? 'Today' : days === 1 ? '1 day left' : `${days}d left`
-  return <span style={{ fontSize: 12, fontWeight: 600, color }}>{label}</span>
+function Sparkle({ x, y, s, color, rot = 0, op = 1 }: { x: number; y: number; s: number; color: string; rot?: number; op?: number }) {
+  const h = s / 2, q = s / 5.5
+  return (
+    <path
+      d={`M${x} ${y - h} L${x + q} ${y - q} L${x + h} ${y} L${x + q} ${y + q} L${x} ${y + h} L${x - q} ${y + q} L${x - h} ${y} L${x - q} ${y - q}Z`}
+      fill={color} opacity={op} transform={`rotate(${rot},${x},${y})`}
+    />
+  )
 }
 
-// ── Timeline dot + line wrapper ──────────────────────────────────────────────
+// ── Section label ─────────────────────────────────────────────────────────────
 
-function TimelineItem({
-  dotColor, dotFill = true, isLast = false, children
-}: {
-  dotColor: string; dotFill?: boolean; isLast?: boolean; children: React.ReactNode
-}) {
+function SectionLabel({ label, sub, badge }: { label: string; sub?: string; badge?: { n: number; color: string } }) {
   return (
-    <div style={{ display: 'flex', gap: 14, position: 'relative' }}>
-      {/* Dot + line column */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: 20 }}>
-        <div style={{
-          width: 14, height: 14, borderRadius: '50%', flexShrink: 0, marginTop: 14,
-          background: dotFill ? dotColor : 'white',
-          border: `2px solid ${dotColor}`,
-          zIndex: 1,
-        }} />
-        {!isLast && (
-          <div style={{ width: 2, flex: 1, background: '#EBEBEB', marginTop: 4, marginBottom: -4 }} />
+    <div style={{ marginBottom: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ fontSize: 20, fontWeight: 900, color: '#1A1A1A', letterSpacing: '-0.5px' }}>{label}</div>
+        {badge && (
+          <div style={{ width: 22, height: 22, borderRadius: '50%', background: badge.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: 'white' }}>{badge.n}</span>
+          </div>
         )}
       </div>
-      {/* Card */}
-      <div style={{ flex: 1, minWidth: 0, paddingBottom: isLast ? 0 : 10 }}>
-        {children}
-      </div>
+      {sub && <div style={{ fontSize: 12, color: '#999999', marginTop: 3 }}>{sub}</div>}
     </div>
   )
 }
 
-// ── Item cards ───────────────────────────────────────────────────────────────
+// ── Cards ─────────────────────────────────────────────────────────────────────
 
 function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move; openGuide: (k: string) => void }) {
   const days = Math.abs(move.daysUntil!)
   return (
-    <div style={{ background: 'linear-gradient(145deg, #FFFFFF 0%, #FFF3F2 100%)', borderRadius: 20, padding: '16px 16px 14px', border: '1px solid rgba(244,68,46,0.12)' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
-        <div style={{ display: 'flex', gap: 10, flex: 1, minWidth: 0 }}>
-          <div style={{ width: 38, height: 38, borderRadius: 11, background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <CategoryIcon category={move.category} color={RED} size={18} />
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A', lineHeight: 1.3 }}>{move.title}</div>
-            <div style={{ fontSize: 12, color: '#666666', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{move.subtitle}</div>
-          </div>
+    <div style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, #FFF0EF 100%)', borderRadius: 24, padding: '18px 18px 16px', border: '1.5px solid rgba(244,68,46,0.15)', boxShadow: '0 4px 24px rgba(244,68,46,0.10)' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 14 }}>
+        <div style={{ width: 52, height: 52, borderRadius: 17, background: RED, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 14px rgba(244,68,46,0.38)' }}>
+          <CategoryIcon category={move.category} color="white" size={22} />
         </div>
-        <div style={{ textAlign: 'right', flexShrink: 0, paddingLeft: 14 }}>
-          <div style={{ fontSize: 42, fontWeight: 900, color: RED, lineHeight: 1, letterSpacing: '-2px' }}>{days}</div>
-          <div style={{ fontSize: 10, color: RED, fontWeight: 700, marginTop: 1, letterSpacing: '0.3px' }}>DAY{days !== 1 ? 'S' : ''} OVERDUE</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 15, fontWeight: 800, color: '#1A1A1A', lineHeight: 1.25, letterSpacing: '-0.3px' }}>{move.title}</div>
+          <div style={{ fontSize: 12, color: '#999999', marginTop: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{move.subtitle}</div>
+        </div>
+        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+          <div style={{ fontSize: 46, fontWeight: 900, color: RED, lineHeight: 1, letterSpacing: '-2px' }}>{days}</div>
+          <div style={{ fontSize: 9, color: RED, fontWeight: 800, marginTop: 1, letterSpacing: '0.5px', textTransform: 'uppercase' }}>day{days !== 1 ? 's' : ''} overdue</div>
         </div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 7, marginBottom: 12, padding: '8px 10px', background: '#FEF2F2', borderRadius: 10 }}>
-        <span style={{ fontSize: 13, flexShrink: 0 }}>⚠</span>
-        <span style={{ fontSize: 12, color: '#B91C1C', lineHeight: 1.4 }}>{move.consequence}</span>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 14, padding: '10px 12px', background: '#FEF2F2', borderRadius: 14 }}>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+          <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+        <span style={{ fontSize: 12, color: '#B91C1C', lineHeight: 1.5 }}>{move.consequence}</span>
       </div>
       <button
         onClick={() => openGuide(moveKey)}
-        style={{ width: '100%', padding: '12px', borderRadius: 50, background: 'linear-gradient(145deg, #F4442E, #D93020)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700 }}
+        style={{ width: '100%', padding: '13px', borderRadius: 50, background: 'linear-gradient(135deg, #F4442E, #DC2626)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
       >
         Get recovery help →
       </button>
@@ -161,30 +165,28 @@ function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move
 function ActNowCard({ moveKey, move, openGuide }: { moveKey: string; move: Move; openGuide: (k: string) => void }) {
   const days = move.daysUntil
   return (
-    <div style={{ background: 'linear-gradient(145deg, #FFFFFF 0%, #FFF8F2 100%)', borderRadius: 20, padding: '16px 16px 14px', border: '1px solid rgba(245,121,58,0.12)' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
-        <div style={{ display: 'flex', gap: 10, flex: 1, minWidth: 0 }}>
-          <div style={{ width: 38, height: 38, borderRadius: 11, background: '#FFF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <CategoryIcon category={move.category} color={ORANGE} size={18} />
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A', lineHeight: 1.3 }}>{move.title}</div>
-            <div style={{ fontSize: 12, color: '#666666', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{move.subtitle}</div>
-          </div>
+    <div style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, #FFF8F0 100%)', borderRadius: 24, padding: '18px 18px 16px', border: '1.5px solid rgba(245,121,58,0.15)', boxShadow: '0 4px 24px rgba(245,121,58,0.10)' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 14 }}>
+        <div style={{ width: 52, height: 52, borderRadius: 17, background: ORANGE, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 14px rgba(245,121,58,0.38)' }}>
+          <CategoryIcon category={move.category} color="white" size={22} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 15, fontWeight: 800, color: '#1A1A1A', lineHeight: 1.25, letterSpacing: '-0.3px' }}>{move.title}</div>
+          <div style={{ fontSize: 12, color: '#999999', marginTop: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{move.subtitle}</div>
         </div>
         {days !== null && (
-          <div style={{ textAlign: 'right', flexShrink: 0, paddingLeft: 14 }}>
-            <div style={{ fontSize: 42, fontWeight: 900, color: ORANGE, lineHeight: 1, letterSpacing: '-2px' }}>{days}</div>
-            <div style={{ fontSize: 10, color: ORANGE, fontWeight: 700, marginTop: 1, letterSpacing: '0.3px' }}>DAY{days !== 1 ? 'S' : ''} LEFT</div>
+          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+            <div style={{ fontSize: 46, fontWeight: 900, color: ORANGE, lineHeight: 1, letterSpacing: '-2px' }}>{days}</div>
+            <div style={{ fontSize: 9, color: ORANGE, fontWeight: 800, marginTop: 1, letterSpacing: '0.5px', textTransform: 'uppercase' }}>day{days !== 1 ? 's' : ''} left</div>
           </div>
         )}
       </div>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 7, marginBottom: 12, padding: '8px 10px', background: '#FFFBEB', borderRadius: 10 }}>
-        <span style={{ fontSize: 12, color: '#92400E', lineHeight: 1.4 }}>If missed: {move.consequence}</span>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 14, padding: '10px 12px', background: '#FFFBEB', borderRadius: 14 }}>
+        <span style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>If missed: {move.consequence}</span>
       </div>
       <button
         onClick={() => openGuide(moveKey)}
-        style={{ width: '100%', padding: '12px', borderRadius: 50, background: 'linear-gradient(145deg, #F5793A, #E06020)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700 }}
+        style={{ width: '100%', padding: '13px', borderRadius: 50, background: 'linear-gradient(135deg, #F5793A, #E06020)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
       >
         Start now →
       </button>
@@ -193,25 +195,28 @@ function ActNowCard({ moveKey, move, openGuide }: { moveKey: string; move: Move;
 }
 
 function ComingUpCard({ moveKey, move, openGuide }: { moveKey: string; move: Move; openGuide: (k: string) => void }) {
+  const cat = getCat(move.category)
   return (
     <button
       onClick={() => openGuide(moveKey)}
-      style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 16, background: 'white', border: '1px solid #F0F0F0', cursor: 'pointer' }}
+      style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px', borderRadius: 20, background: 'white', border: '1.5px solid #F0F0F0', cursor: 'pointer', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}
     >
-      <div style={{ width: 36, height: 36, borderRadius: 10, background: '#F0F0EE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        <CategoryIcon category={move.category} color="#555555" size={17} />
+      <div style={{ width: 48, height: 48, borderRadius: 15, background: cat.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <CategoryIcon category={move.category} color="white" size={21} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1A1A' }}>{move.title}</div>
-        <div style={{ fontSize: 11, color: '#666666', marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{move.subtitle}</div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A', letterSpacing: '-0.2px' }}>{move.title}</div>
+        <div style={{ fontSize: 11, color: '#999999', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{move.subtitle}</div>
       </div>
       {move.daysUntil !== null && (
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <div style={{ fontSize: 22, fontWeight: 800, color: '#1A1A1A', lineHeight: 1, letterSpacing: '-1px' }}>{move.daysUntil}</div>
-          <div style={{ fontSize: 9, color: '#999999', marginTop: 1, fontWeight: 600, letterSpacing: '0.3px' }}>DAYS</div>
+          <div style={{ fontSize: 26, fontWeight: 900, color: '#1A1A1A', lineHeight: 1, letterSpacing: '-1px' }}>{move.daysUntil}</div>
+          <div style={{ fontSize: 9, color: '#BBBBBB', marginTop: 1, fontWeight: 700, letterSpacing: '0.4px', textTransform: 'uppercase' }}>days</div>
         </div>
       )}
-      <span style={{ color: '#CCCCCC', fontSize: 16, marginLeft: 4 }}>›</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CCCCCC" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+        <path d="M9 18l6-6-6-6" />
+      </svg>
     </button>
   )
 }
@@ -219,52 +224,39 @@ function ComingUpCard({ moveKey, move, openGuide }: { moveKey: string; move: Mov
 function LockedCard({ moveKey, move, blockers, openGuide }: { moveKey: string; move: Move; blockers: string[]; openGuide: (k: string) => void }) {
   const [open, setOpen] = useState(false)
   return (
-    <div style={{ background: '#FAFAF8', borderRadius: 16, border: '1px solid #EFEFED', overflow: 'hidden' }}>
+    <div style={{ background: '#F9F9F8', borderRadius: 18, border: '1.5px solid #EEEEEC', overflow: 'hidden' }}>
       <button
         onClick={() => setOpen(v => !v)}
-        style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', background: 'none', border: 'none', cursor: 'pointer' }}
+        style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 15px', background: 'none', border: 'none', cursor: 'pointer' }}
       >
-        <div style={{ width: 34, height: 34, borderRadius: 9, background: '#EFEFED', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <CategoryIcon category={move.category} color="#BBBBBB" size={16} />
+        <div style={{ width: 44, height: 44, borderRadius: 14, background: '#EEEEEC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#BBBBBB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#888888' }}>{move.title}</div>
-          <div style={{ fontSize: 11, color: '#999999', marginTop: 1, display: 'flex', alignItems: 'center', gap: 4 }}>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#BBBBBB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-            Needs {blockers[0]}
-          </div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#AAAAAA', letterSpacing: '-0.2px' }}>{move.title}</div>
+          <div style={{ fontSize: 11, color: '#CCCCCC', marginTop: 2 }}>Needs {blockers[0]} first</div>
         </div>
-        <span style={{ fontSize: 11, color: '#CCCCCC' }}>{open ? '▲' : '▼'}</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#CCCCCC" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>
+          <path d="M6 9l6 6 6-6" />
+        </svg>
       </button>
       {open && (
-        <div style={{ padding: '0 14px 12px', borderTop: '1px solid #EFEFED' }}>
-          <div style={{ fontSize: 11, color: '#999999', marginBottom: 6, marginTop: 8 }}>Unlocks after:</div>
+        <div style={{ padding: '0 15px 14px', borderTop: '1px solid #EEEEEC' }}>
+          <div style={{ fontSize: 11, color: '#BBBBBB', marginBottom: 7, marginTop: 10, fontWeight: 700, letterSpacing: '0.3px', textTransform: 'uppercase' }}>Unlocks after</div>
           {blockers.map((b, i) => (
-            <div key={i} style={{ fontSize: 12, color: '#666666', fontWeight: 500, marginBottom: 3 }}>→ {b}</div>
+            <div key={i} style={{ fontSize: 12, color: '#888888', fontWeight: 600, marginBottom: 5, display: 'flex', alignItems: 'center', gap: 7 }}>
+              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#CCCCCC', flexShrink: 0 }} />
+              {b}
+            </div>
           ))}
           <button
             onClick={() => openGuide(moveKey)}
-            style={{ marginTop: 8, width: '100%', padding: '9px', borderRadius: 50, background: 'white', border: '1.5px solid #E5E5E5', color: '#888888', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+            style={{ marginTop: 10, width: '100%', padding: '10px', borderRadius: 50, background: 'white', border: '1.5px solid #E5E5E5', color: '#AAAAAA', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
           >
             Preview anyway
           </button>
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ── Section label ─────────────────────────────────────────────────────────────
-
-function SectionLabel({ label, color = '#666666', count }: { label: string; color?: string; count?: number }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 14, paddingLeft: 34 }}>
-      <span style={{ fontSize: 11, fontWeight: 700, color, textTransform: 'uppercase', letterSpacing: '0.8px' }}>{label}</span>
-      {count !== undefined && (
-        <div style={{ width: 18, height: 18, borderRadius: '50%', background: color, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: 10, fontWeight: 800, color: 'white' }}>{count}</span>
         </div>
       )}
     </div>
@@ -288,135 +280,197 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
   const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0
   const buddyMood: BuddyMood = completedCount === totalCount ? 'celebrate' : overdue.length > 0 ? 'urgent' : 'happy'
 
-  const greetingRef = useRef<HTMLDivElement>(null)
-  const [greetingH, setGreetingH] = useState(136)
+  const [activeFilter, setActiveFilter] = useState<Filter>('all')
 
+  const greetingRef = useRef<HTMLDivElement>(null)
+  const [greetingH, setGreetingH] = useState(160)
   useEffect(() => {
     if (greetingRef.current) setGreetingH(greetingRef.current.offsetHeight)
   }, [])
 
+  const greetingText =
+    overdue.length > 0
+      ? `${overdue.length} task${overdue.length > 1 ? 's' : ''} need attention`
+      : completedCount === totalCount
+      ? 'All done! 🎉'
+      : `Hi ${profile.name?.split(' ')[0] || 'there'}!`
+
+  const showOverdue  = activeFilter === 'all' || activeFilter === 'urgent'
+  const showActNow   = activeFilter === 'all' || activeFilter === 'urgent'
+  const showComingUp = activeFilter === 'all' || activeFilter === 'upcoming'
+  const showLocked   = activeFilter === 'all' || activeFilter === 'upcoming'
+  const showDone     = activeFilter === 'all' || activeFilter === 'done'
+
+  const filters: { id: Filter; label: string }[] = [
+    { id: 'all',      label: 'All tasks' },
+    { id: 'urgent',   label: '🚨 Urgent' },
+    { id: 'upcoming', label: '📅 Upcoming' },
+    { id: 'done',     label: '✓ Done' },
+  ]
+
   return (
     <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
 
-      {/* ── Greeting — sits on the gradient background behind the scroll sheet ── */}
-      <div ref={greetingRef} style={{ padding: '18px 18px 20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-          <div style={{ flex: 1, minWidth: 0, paddingRight: 12 }}>
-            <div style={{ fontSize: 24, fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.5px' }}>
-              {overdue.length > 0
-                ? `${overdue.length} task${overdue.length > 1 ? 's' : ''} need attention`
-                : completedCount === totalCount ? 'All done! 🎉'
-                : `Hi ${profile.name?.split(' ')[0] || 'there'}`}
+      {/* ── Illustrated hero greeting ────────────────────────────────────────── */}
+      <div ref={greetingRef} style={{ padding: '20px 20px 22px', position: 'relative', overflow: 'hidden' }}>
+
+        {/* Decorative SVG layer — sparkles, dots, grad cap */}
+        <svg
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
+          viewBox="0 0 393 160"
+          preserveAspectRatio="xMidYMid slice"
+        >
+          <Sparkle x={338} y={24}  s={16} color="#F59E0B" op={0.55} rot={15} />
+          <Sparkle x={362} y={92}  s={10} color="#FB7185" op={0.45} rot={30} />
+          <Sparkle x={22}  y={112} s={12} color="#34D399" op={0.45} rot={-10} />
+          <Sparkle x={54}  y={18}  s={8}  color="#60A5FA" op={0.50} rot={20} />
+          <Sparkle x={308} y={142} s={14} color="#A78BFA" op={0.35} rot={0} />
+          <Sparkle x={165} y={8}   s={7}  color="#F5793A" op={0.40} rot={45} />
+          <circle cx={374} cy={54}  r={7}  fill="#F5793A" opacity={0.20} />
+          <circle cx={16}  cy={52}  r={9}  fill="#60A5FA" opacity={0.15} />
+          <circle cx={283} cy={62}  r={5}  fill="#34D399" opacity={0.28} />
+          <circle cx={368} cy={132} r={4}  fill="#F59E0B" opacity={0.28} />
+          <circle cx={200} cy={150} r={10} fill="#FB7185" opacity={0.12} />
+          {/* Grad cap doodle */}
+          <g transform="translate(344,108) rotate(12)" opacity={0.32}>
+            <polygon points="0,-9 15,0 0,9 -15,0" fill="#F59E0B" />
+            <polygon points="8,0 15,0 15,11 8,11" fill="#F59E0B" />
+            <line x1="0" y1="9" x2="0" y2="18" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" />
+          </g>
+          {/* Tiny star cluster top-left */}
+          <circle cx={80}  cy={32}  r={2.5} fill="#FB7185" opacity={0.5} />
+          <circle cx={90}  cy={22}  r={1.8} fill="#A78BFA" opacity={0.55} />
+          <circle cx={100} cy={36}  r={2}   fill="#60A5FA" opacity={0.45} />
+        </svg>
+
+        {/* Greeting text + buddy */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
+          <div style={{ flex: 1, minWidth: 0, paddingRight: 14 }}>
+            <div style={{ fontSize: 28, fontWeight: 900, color: '#1A1A1A', letterSpacing: '-0.8px', lineHeight: 1.15 }}>
+              {greetingText}
             </div>
-            <div style={{ fontSize: 13, color: '#5C5C52', marginTop: 3, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            <div style={{ fontSize: 13, color: '#5C5C52', marginTop: 7, lineHeight: 1.55, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }}>
               {nudge.body}
             </div>
           </div>
-          <BuddyAvatar mood={buddyMood} size={52} evolutionLevel={evolutionLevel} />
+          <BuddyAvatar mood={buddyMood} size={54} evolutionLevel={evolutionLevel} />
         </div>
-        {/* Progress */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ flex: 1, height: 4, borderRadius: 4, background: 'rgba(0,0,0,0.12)', overflow: 'hidden' }}>
-            <div style={{ height: '100%', borderRadius: 4, background: completedCount === totalCount ? GREEN : ORANGE, width: `${pct}%`, transition: 'width 0.6s ease' }} />
+
+        {/* Progress pill */}
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '7px 14px 7px 10px', borderRadius: 50, background: 'rgba(0,0,0,0.06)' }}>
+          <div style={{ width: 72, height: 5, borderRadius: 5, background: 'rgba(0,0,0,0.12)', overflow: 'hidden' }}>
+            <div style={{ height: '100%', borderRadius: 5, background: completedCount === totalCount ? GREEN : ORANGE, width: `${pct}%`, transition: 'width 0.6s ease' }} />
           </div>
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#7A7A6E', flexShrink: 0 }}>
-            {completedCount} of {totalCount}
-          </span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#3A3A3A' }}>{completedCount}/{totalCount} done</span>
         </div>
       </div>
 
-      {/* ── Scroll sheet — slides up over the greeting when scrolled ── */}
-      <div
-        className="no-scroll"
-        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflowY: 'auto', overflowX: 'hidden' }}
-      >
-        {/* Transparent spacer: greeting is visible through this */}
+      {/* ── Scroll sheet ─────────────────────────────────────────────────────── */}
+      <div className="no-scroll" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflowY: 'auto', overflowX: 'hidden' }}>
         <div style={{ height: greetingH, flexShrink: 0 }} />
 
-        {/* White card sheet with rounded top corners */}
         <div style={{
-          background: 'white',
-          borderRadius: '20px 20px 0 0',
+          background: '#F5F5F3',
+          borderRadius: '24px 24px 0 0',
           minHeight: `calc(100% - ${greetingH}px)`,
-          padding: '20px 16px 96px',
+          padding: '18px 16px 96px',
           display: 'flex', flexDirection: 'column', gap: 28,
         }}>
 
+          {/* Filter chips */}
+          <div className="no-scroll" style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 2 }}>
+            {filters.map(f => (
+              <button
+                key={f.id}
+                onClick={() => setActiveFilter(f.id)}
+                style={{
+                  padding: '8px 16px', borderRadius: 50, flexShrink: 0, border: 'none', cursor: 'pointer',
+                  background: activeFilter === f.id ? '#1A1A1A' : 'white',
+                  color: activeFilter === f.id ? 'white' : '#555555',
+                  fontSize: 13, fontWeight: 700,
+                  boxShadow: activeFilter === f.id ? '0 2px 8px rgba(0,0,0,0.18)' : '0 1px 4px rgba(0,0,0,0.07)',
+                  transition: 'background 0.15s, color 0.15s',
+                }}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
           {/* Overdue */}
-          {overdue.length > 0 && (
+          {showOverdue && overdue.length > 0 && (
             <div>
-              <SectionLabel label="Overdue" color={RED} count={overdue.length} />
-              <div>
-                {overdue.map((k, i) => (
-                  <TimelineItem key={k} dotColor={RED} isLast={i === overdue.length - 1}>
-                    <OverdueCard moveKey={k} move={moves[k]} openGuide={openGuide} />
-                  </TimelineItem>
-                ))}
+              <SectionLabel label="Overdue" sub="Complete these immediately" badge={{ n: overdue.length, color: RED }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {overdue.map(k => <OverdueCard key={k} moveKey={k} move={moves[k]} openGuide={openGuide} />)}
               </div>
             </div>
           )}
 
           {/* Act now */}
-          {actNow.length > 0 && (
+          {showActNow && actNow.length > 0 && (
             <div>
-              <SectionLabel label="Act now" color={ORANGE} />
-              <div>
-                {actNow.map((k, i) => (
-                  <TimelineItem key={k} dotColor={ORANGE} isLast={i === actNow.length - 1}>
-                    <ActNowCard moveKey={k} move={moves[k]} openGuide={openGuide} />
-                  </TimelineItem>
-                ))}
+              <SectionLabel label="Act now" sub="Deadlines approaching fast" />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {actNow.map(k => <ActNowCard key={k} moveKey={k} move={moves[k]} openGuide={openGuide} />)}
               </div>
             </div>
           )}
 
           {/* Coming up */}
-          {comingUp.length > 0 && (
+          {showComingUp && comingUp.length > 0 && (
             <div>
-              <SectionLabel label="Coming up" color="#6B6B6B" />
-              <div>
-                {comingUp.map((k, i) => (
-                  <TimelineItem key={k} dotColor="#CCCCCC" dotFill={false} isLast={i === comingUp.length - 1}>
-                    <ComingUpCard moveKey={k} move={moves[k]} openGuide={openGuide} />
-                  </TimelineItem>
-                ))}
+              <SectionLabel label="Coming up" sub="Plan ahead for these" />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {comingUp.map(k => <ComingUpCard key={k} moveKey={k} move={moves[k]} openGuide={openGuide} />)}
               </div>
             </div>
           )}
 
           {/* Locked */}
-          {locked.length > 0 && (
+          {showLocked && locked.length > 0 && (
             <div>
-              <SectionLabel label="Waiting on" color="#777777" />
-              <div>
-                {locked.map((k, i) => (
-                  <TimelineItem key={k} dotColor="#D1D5DB" dotFill={false} isLast={i === locked.length - 1}>
-                    <LockedCard moveKey={k} move={moves[k]} blockers={getBlockers(k, moves)} openGuide={openGuide} />
-                  </TimelineItem>
-                ))}
+              <SectionLabel label="Waiting on" sub="Blocked by other tasks" />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {locked.map(k => <LockedCard key={k} moveKey={k} move={moves[k]} blockers={getBlockers(k, moves)} openGuide={openGuide} />)}
               </div>
             </div>
           )}
 
           {/* Done */}
-          {done.length > 0 && (
+          {showDone && done.length > 0 && (
             <div>
-              <SectionLabel label="Completed" color={GREEN} count={done.length} />
-              <div>
-                {done.map((k, i) => (
-                  <TimelineItem key={k} dotColor={GREEN} isLast={i === done.length - 1}>
-                    <button
-                      onClick={() => openGuide(k)}
-                      style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', borderRadius: 13, background: 'white', border: '1px solid #F0F0F0', cursor: 'pointer' }}
-                    >
-                      <div style={{ width: 30, height: 30, borderRadius: 8, background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={GREEN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                      </div>
-                      <span style={{ fontSize: 13, color: '#666666', flex: 1 }}>{moves[k].title}</span>
-                    </button>
-                  </TimelineItem>
+              <SectionLabel label="Completed" sub="Great work so far!" badge={{ n: done.length, color: GREEN }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {done.map(k => (
+                  <button
+                    key={k}
+                    onClick={() => openGuide(k)}
+                    style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 18, background: 'white', border: '1.5px solid #F0F0F0', cursor: 'pointer', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}
+                  >
+                    <div style={{ width: 38, height: 38, borderRadius: 12, background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={GREEN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#666666', flex: 1 }}>{moves[k].title}</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#DDDDDD" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 18l6-6-6-6" />
+                    </svg>
+                  </button>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Empty state for filtered views */}
+          {((activeFilter === 'urgent'   && overdue.length === 0 && actNow.length === 0) ||
+            (activeFilter === 'upcoming' && comingUp.length === 0 && locked.length === 0) ||
+            (activeFilter === 'done'     && done.length === 0)) && (
+            <div style={{ textAlign: 'center', padding: '48px 20px', color: '#BBBBBB' }}>
+              <div style={{ fontSize: 44, marginBottom: 12 }}>✓</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: '#888888', letterSpacing: '-0.3px' }}>All clear here</div>
+              <div style={{ fontSize: 13, marginTop: 6, color: '#AAAAAA' }}>Nothing in this section right now</div>
             </div>
           )}
 
