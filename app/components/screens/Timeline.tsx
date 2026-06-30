@@ -83,7 +83,7 @@ function TimelineItem({
 
 function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move; openGuide: (k: string) => void }) {
   return (
-    <div style={{ background: 'white', borderRadius: 16, padding: '14px 14px 12px', boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }}>
+    <div style={{ background: 'white', borderRadius: 16, padding: '14px 14px 12px', border: '1px solid #F0F0F0' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
         <div style={{ width: 36, height: 36, borderRadius: 10, background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
           {categoryIcon[move.category]}
@@ -109,7 +109,7 @@ function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move
 
 function ActNowCard({ moveKey, move, openGuide }: { moveKey: string; move: Move; openGuide: (k: string) => void }) {
   return (
-    <div style={{ background: 'white', borderRadius: 16, padding: '14px 14px 12px', boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }}>
+    <div style={{ background: 'white', borderRadius: 16, padding: '14px 14px 12px', border: '1px solid #F0F0F0' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
         <div style={{ width: 36, height: 36, borderRadius: 10, background: '#FFF7ED', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
           {categoryIcon[move.category]}
@@ -137,7 +137,7 @@ function ComingUpCard({ moveKey, move, openGuide }: { moveKey: string; move: Mov
   return (
     <button
       onClick={() => openGuide(moveKey)}
-      style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', borderRadius: 14, background: 'white', border: 'none', cursor: 'pointer', boxShadow: '0 1px 6px rgba(0,0,0,0.05)' }}
+      style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', borderRadius: 14, background: 'white', border: '1px solid #F0F0F0', cursor: 'pointer' }}
     >
       <div style={{ width: 34, height: 34, borderRadius: 9, background: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, flexShrink: 0 }}>
         {categoryIcon[move.category]}
@@ -155,7 +155,7 @@ function ComingUpCard({ moveKey, move, openGuide }: { moveKey: string; move: Mov
 function LockedCard({ moveKey, move, blockers, openGuide }: { moveKey: string; move: Move; blockers: string[]; openGuide: (k: string) => void }) {
   const [open, setOpen] = useState(false)
   return (
-    <div style={{ background: 'white', borderRadius: 14, boxShadow: '0 1px 4px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
+    <div style={{ background: 'white', borderRadius: 14, border: '1px solid #F0F0F0', overflow: 'hidden' }}>
       <button
         onClick={() => setOpen(v => !v)}
         style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', background: 'none', border: 'none', cursor: 'pointer' }}
@@ -220,7 +220,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
   const buddyMood: BuddyMood = completedCount === totalCount ? 'celebrate' : overdue.length > 0 ? 'urgent' : 'happy'
 
   return (
-    <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#F7F7F8' }}>
+    <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: 'white' }}>
 
       {/* ── Greeting ── */}
       <div style={{ background: 'white', padding: '18px 18px 16px', borderBottom: '1px solid #F0F0F0' }}>
@@ -318,7 +318,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
                 <TimelineItem key={k} dotColor={GREEN} isLast={i === done.length - 1}>
                   <button
                     onClick={() => openGuide(k)}
-                    style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', borderRadius: 13, background: 'white', border: 'none', cursor: 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
+                    style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', borderRadius: 13, background: 'white', border: '1px solid #F0F0F0', cursor: 'pointer' }}
                   >
                     <div style={{ width: 30, height: 30, borderRadius: 8, background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                       <span style={{ fontSize: 13, color: GREEN }}>✓</span>
