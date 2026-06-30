@@ -292,7 +292,7 @@ export default function AskScreen({ profile, moves, openGuide, initialInput = ''
   }
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', paddingBottom: 80 }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
       {/* Header */}
       <div style={{ padding: '10px 18px 12px', borderBottom: '1px solid var(--border-tertiary)', flexShrink: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
         <BuddyAvatar mood="thinking" size={36} />
@@ -303,7 +303,7 @@ export default function AskScreen({ profile, moves, openGuide, initialInput = ''
       </div>
 
       {/* Messages */}
-      <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', padding: '14px 16px 90px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         {messages.map(msg => (
           <div key={msg.id}>
             {/* Bubble */}
@@ -360,22 +360,22 @@ export default function AskScreen({ profile, moves, openGuide, initialInput = ''
         <div ref={bottomRef} />
       </div>
 
-      {/* Input bar */}
-      <div style={{ padding: '10px 14px 16px', borderTop: '1px solid var(--border-tertiary)', background: 'var(--bg-primary)', flexShrink: 0, display: 'flex', gap: 8 }}>
+      {/* Floating input */}
+      <div style={{ position: 'absolute', bottom: 86, left: 14, right: 14, display: 'flex', gap: 8 }}>
         <input
           ref={inputRef}
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), send(input))}
           placeholder="Ask anything about your checklist..."
-          style={{ flex: 1, padding: '11px 14px', borderRadius: 12, border: '1.5px solid var(--border-secondary)', fontSize: 13, color: 'var(--text-primary)', background: 'white', outline: 'none', fontFamily: 'inherit' }}
+          style={{ flex: 1, padding: '13px 16px', borderRadius: 50, border: 'none', fontSize: 13, color: 'var(--text-primary)', background: 'white', outline: 'none', fontFamily: 'inherit', boxShadow: '0 2px 16px rgba(0,0,0,0.10)' }}
         />
         <button
           onClick={() => send(input)}
           disabled={!input.trim()}
-          style={{ width: 42, height: 42, borderRadius: 12, background: input.trim() ? '#F4442E' : '#FFF5F5', border: 'none', cursor: input.trim() ? 'pointer' : 'not-allowed', color: input.trim() ? 'white' : '#FECACA', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}
+          style={{ width: 46, height: 46, borderRadius: 50, background: input.trim() ? '#F4442E' : 'white', border: 'none', cursor: input.trim() ? 'pointer' : 'default', color: input.trim() ? 'white' : '#DDCCCC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 16px rgba(0,0,0,0.10)' }}
         >
-          ↑
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
         </button>
       </div>
     </div>
