@@ -340,7 +340,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
       </div>
 
       {/* ── Scroll sheet ─────────────────────────────────────────────────── */}
-      <div className="no-scroll" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflowY: 'auto', overflowX: 'hidden' }}>
+      <div className="no-scroll" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflowY: 'auto', overflowX: 'hidden', zIndex: 2 }}>
         <div style={{ height: greetingH, flexShrink: 0 }} />
 
         <div style={{
