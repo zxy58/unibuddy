@@ -7,17 +7,18 @@ import { getDashboardNudge, getPrioritizedMoves } from '@/app/lib/recommendation
 import BuddyAvatar from '@/app/components/ui/BuddyAvatar'
 import type { BuddyMood, BuddyEvolutionLevel } from '@/app/components/ui/BuddyAvatar'
 
-const ORANGE = '#F5793A'
-const RED    = '#F4442E'
-const GREEN  = '#10B981'
+const RED  = '#E85028'
+const BLUE = '#5567D4'
+const LIME = '#CCFA4E'
+const DARK = '#1C1C1C'
 
 type Filter = 'all' | 'urgent' | 'upcoming' | 'done'
 
-const filterColors: Record<Filter, string> = {
-  all:      '#1A1A1A',
-  urgent:   RED,
-  upcoming: '#4F46E5',
-  done:     GREEN,
+const filterColors: Record<Filter, { bg: string; text: string }> = {
+  all:      { bg: DARK, text: '#FFFFFF' },
+  urgent:   { bg: RED,  text: '#FFFFFF' },
+  upcoming: { bg: BLUE, text: '#FFFFFF' },
+  done:     { bg: LIME, text: DARK },
 }
 
 interface Props {
@@ -74,16 +75,15 @@ function CategoryIcon({ category, color, size = 20 }: { category: string; color:
   }
 }
 
-// Per-category color scheme
-const catColors: Record<string, { bg: string }> = {
-  enrollment: { bg: '#4F46E5' },
-  financial:  { bg: '#16A34A' },
-  visa:       { bg: '#9333EA' },
-  housing:    { bg: '#EA580C' },
-  health:     { bg: '#DC2626' },
-  academic:   { bg: '#2563EB' },
+const catColors: Record<string, { bg: string; iconColor: string }> = {
+  enrollment: { bg: BLUE, iconColor: '#FFFFFF' },
+  financial:  { bg: DARK, iconColor: '#FFFFFF' },
+  visa:       { bg: DARK, iconColor: '#FFFFFF' },
+  housing:    { bg: RED,  iconColor: '#FFFFFF' },
+  health:     { bg: RED,  iconColor: '#FFFFFF' },
+  academic:   { bg: BLUE, iconColor: '#FFFFFF' },
 }
-function getCat(c: string) { return catColors[c] ?? { bg: '#6B7280' } }
+function getCat(c: string) { return catColors[c] ?? { bg: DARK, iconColor: '#FFFFFF' } }
 
 // ── Helper predicates ─────────────────────────────────────────────────────────
 
@@ -105,13 +105,13 @@ function isOverdue(move: Move): boolean {
 
 // ── Section label ─────────────────────────────────────────────────────────────
 
-function SectionLabel({ label, badge }: { label: string; badge?: { n: number; color: string } }) {
+function SectionLabel({ label, badge }: { label: string; badge?: { n: number; color: string; textColor?: string } }) {
   return (
     <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
-      <div style={{ fontSize: 24, fontWeight: 900, color: '#1A1A1A', letterSpacing: '-0.6px' }}>{label}</div>
+      <div style={{ fontSize: 24, fontWeight: 900, color: DARK, letterSpacing: '-0.6px' }}>{label}</div>
       {badge && (
         <div style={{ width: 24, height: 24, borderRadius: '50%', background: badge.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <span style={{ fontSize: 12, fontWeight: 800, color: 'white' }}>{badge.n}</span>
+          <span style={{ fontSize: 12, fontWeight: 800, color: badge.textColor ?? '#FFFFFF' }}>{badge.n}</span>
         </div>
       )}
     </div>
@@ -123,23 +123,23 @@ function SectionLabel({ label, badge }: { label: string; badge?: { n: number; co
 function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move; openGuide: (k: string) => void }) {
   const days = Math.abs(move.daysUntil!)
   return (
-    <div style={{ background: RED, borderRadius: 24, padding: '20px 20px 18px', overflow: 'hidden' }}>
+    <div style={{ background: RED, borderRadius: 24, padding: '20px 20px 18px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
         <div style={{ flex: 1, paddingRight: 12 }}>
-          <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>Overdue</div>
-          <div style={{ fontSize: 18, fontWeight: 900, color: 'white', lineHeight: 1.2, letterSpacing: '-0.4px' }}>{move.title}</div>
+          <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.55)', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>Overdue</div>
+          <div style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF', lineHeight: 1.2, letterSpacing: '-0.4px' }}>{move.title}</div>
         </div>
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <div style={{ fontSize: 52, fontWeight: 900, color: 'white', lineHeight: 1, letterSpacing: '-3px' }}>{days}</div>
-          <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.65)', fontWeight: 800, letterSpacing: '0.8px', textTransform: 'uppercase' as const, marginTop: 2 }}>day{days !== 1 ? 's' : ''} overdue</div>
+          <div style={{ fontSize: 52, fontWeight: 900, color: '#FFFFFF', lineHeight: 1, letterSpacing: '-3px' }}>{days}</div>
+          <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', fontWeight: 800, letterSpacing: '0.8px', textTransform: 'uppercase' as const, marginTop: 2 }}>day{days !== 1 ? 's' : ''} overdue</div>
         </div>
       </div>
-      <div style={{ padding: '10px 13px', background: 'rgba(0,0,0,0.18)', borderRadius: 14, marginBottom: 16 }}>
+      <div style={{ padding: '10px 13px', background: 'rgba(0,0,0,0.16)', borderRadius: 14, marginBottom: 16 }}>
         <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.88)', lineHeight: 1.5 }}>{move.consequence}</span>
       </div>
       <button
         onClick={() => openGuide(moveKey)}
-        style={{ width: '100%', padding: '13px', borderRadius: 50, background: 'white', color: RED, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
+        style={{ width: '100%', padding: '13px', borderRadius: 50, background: '#FFFFFF', color: RED, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
       >
         Get recovery help →
       </button>
@@ -150,25 +150,25 @@ function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move
 function ActNowCard({ moveKey, move, openGuide }: { moveKey: string; move: Move; openGuide: (k: string) => void }) {
   const days = move.daysUntil
   return (
-    <div style={{ background: ORANGE, borderRadius: 24, padding: '20px 20px 18px', overflow: 'hidden' }}>
+    <div style={{ background: DARK, borderRadius: 24, padding: '20px 20px 18px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
         <div style={{ flex: 1, paddingRight: 12 }}>
-          <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.65)', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>Act now</div>
-          <div style={{ fontSize: 18, fontWeight: 900, color: 'white', lineHeight: 1.2, letterSpacing: '-0.4px' }}>{move.title}</div>
+          <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>Act now</div>
+          <div style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF', lineHeight: 1.2, letterSpacing: '-0.4px' }}>{move.title}</div>
         </div>
         {days !== null && (
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div style={{ fontSize: 52, fontWeight: 900, color: 'white', lineHeight: 1, letterSpacing: '-3px' }}>{days}</div>
-            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.65)', fontWeight: 800, letterSpacing: '0.8px', textTransform: 'uppercase' as const, marginTop: 2 }}>day{days !== 1 ? 's' : ''} left</div>
+            <div style={{ fontSize: 52, fontWeight: 900, color: LIME, lineHeight: 1, letterSpacing: '-3px' }}>{days}</div>
+            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', fontWeight: 800, letterSpacing: '0.8px', textTransform: 'uppercase' as const, marginTop: 2 }}>day{days !== 1 ? 's' : ''} left</div>
           </div>
         )}
       </div>
-      <div style={{ padding: '10px 13px', background: 'rgba(0,0,0,0.14)', borderRadius: 14, marginBottom: 16 }}>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.88)', lineHeight: 1.5 }}>If missed: {move.consequence}</span>
+      <div style={{ padding: '10px 13px', background: 'rgba(255,255,255,0.07)', borderRadius: 14, marginBottom: 16 }}>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 }}>If missed: {move.consequence}</span>
       </div>
       <button
         onClick={() => openGuide(moveKey)}
-        style={{ width: '100%', padding: '13px', borderRadius: 50, background: 'white', color: ORANGE, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
+        style={{ width: '100%', padding: '13px', borderRadius: 50, background: LIME, color: DARK, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
       >
         Start now →
       </button>
@@ -181,18 +181,18 @@ function ComingUpCard({ moveKey, move, openGuide }: { moveKey: string; move: Mov
   return (
     <button
       onClick={() => openGuide(moveKey)}
-      style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px', borderRadius: 20, background: `${cat.bg}12`, border: `1.5px solid ${cat.bg}38`, cursor: 'pointer' }}
+      style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px', borderRadius: 20, background: `${cat.bg}10`, border: `1.5px solid ${cat.bg}30`, cursor: 'pointer' }}
     >
       <div style={{ width: 46, height: 46, borderRadius: 14, background: cat.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        <CategoryIcon category={move.category} color="white" size={20} />
+        <CategoryIcon category={move.category} color={cat.iconColor} size={20} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.3px' }}>{move.title}</div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: DARK, letterSpacing: '-0.3px' }}>{move.title}</div>
         {move.daysUntil !== null && (
           <div style={{ fontSize: 12, fontWeight: 700, color: cat.bg, marginTop: 3 }}>{move.daysUntil} days left</div>
         )}
       </div>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={cat.bg} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.55 }}>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={cat.bg} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.5 }}>
         <path d="M9 18l6-6-6-6" />
       </svg>
     </button>
@@ -202,36 +202,36 @@ function ComingUpCard({ moveKey, move, openGuide }: { moveKey: string; move: Mov
 function LockedCard({ moveKey, move, blockers, openGuide }: { moveKey: string; move: Move; blockers: string[]; openGuide: (k: string) => void }) {
   const [open, setOpen] = useState(false)
   return (
-    <div style={{ background: '#F4F4F2', borderRadius: 18, border: '1.5px solid #EAEAE8', overflow: 'hidden' }}>
+    <div style={{ background: '#F4F4F2', borderRadius: 18, border: '1.5px solid #E8E8E5', overflow: 'hidden' }}>
       <button
         onClick={() => setOpen(v => !v)}
         style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 15px', background: 'none', border: 'none', cursor: 'pointer' }}
       >
-        <div style={{ width: 44, height: 44, borderRadius: 14, background: '#E8E8E6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div style={{ width: 44, height: 44, borderRadius: 14, background: '#E8E8E5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#BBBBBB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#AAAAAA', letterSpacing: '-0.2px' }}>{move.title}</div>
-          <div style={{ fontSize: 11, color: '#CCCCCC', marginTop: 2 }}>Needs {blockers[0]} first</div>
+          <div style={{ fontSize: 11, color: '#C0C0C0', marginTop: 2 }}>Needs {blockers[0]} first</div>
         </div>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#CCCCCC" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C0C0C0" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>
           <path d="M6 9l6 6 6-6" />
         </svg>
       </button>
       {open && (
-        <div style={{ padding: '0 15px 14px', borderTop: '1px solid #EAEAE8' }}>
+        <div style={{ padding: '0 15px 14px', borderTop: '1px solid #E8E8E5' }}>
           <div style={{ fontSize: 11, color: '#BBBBBB', marginBottom: 7, marginTop: 10, fontWeight: 700, letterSpacing: '0.3px', textTransform: 'uppercase' as const }}>Unlocks after</div>
           {blockers.map((b, i) => (
             <div key={i} style={{ fontSize: 12, color: '#888888', fontWeight: 600, marginBottom: 5, display: 'flex', alignItems: 'center', gap: 7 }}>
-              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#CCCCCC', flexShrink: 0 }} />
+              <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#C8C8C8', flexShrink: 0 }} />
               {b}
             </div>
           ))}
           <button
             onClick={() => openGuide(moveKey)}
-            style={{ marginTop: 10, width: '100%', padding: '10px', borderRadius: 50, background: 'white', border: '1.5px solid #E5E5E5', color: '#AAAAAA', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+            style={{ marginTop: 10, width: '100%', padding: '10px', borderRadius: 50, background: 'white', border: '1.5px solid #E0E0E0', color: '#AAAAAA', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
           >
             Preview anyway
           </button>
@@ -290,13 +290,11 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
   return (
     <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
 
-      {/* ── Hero greeting ────────────────────────────────────────────────────── */}
+      {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <div ref={greetingRef} style={{ padding: '20px 20px 22px', position: 'relative' }}>
-
-        {/* Greeting + buddy */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
           <div style={{ flex: 1, minWidth: 0, paddingRight: 12 }}>
-            <div style={{ fontSize: 34, fontWeight: 900, color: '#1A1A1A', letterSpacing: '-1px', lineHeight: 1.1 }}>
+            <div style={{ fontSize: 34, fontWeight: 900, color: DARK, letterSpacing: '-1px', lineHeight: 1.1 }}>
               {greetingText}
             </div>
             <div style={{ fontSize: 13, color: '#6B6B60', marginTop: 8, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }}>
@@ -308,14 +306,14 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
 
         {/* Progress */}
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 14px 8px 10px', borderRadius: 50, background: 'rgba(0,0,0,0.06)' }}>
-          <div style={{ width: 72, height: 5, borderRadius: 5, background: 'rgba(0,0,0,0.12)', overflow: 'hidden' }}>
-            <div style={{ height: '100%', borderRadius: 5, background: completedCount === totalCount ? GREEN : ORANGE, width: `${pct}%`, transition: 'width 0.6s ease' }} />
+          <div style={{ width: 72, height: 5, borderRadius: 5, background: 'rgba(0,0,0,0.10)', overflow: 'hidden' }}>
+            <div style={{ height: '100%', borderRadius: 5, background: completedCount === totalCount ? LIME : BLUE, width: `${pct}%`, transition: 'width 0.6s ease' }} />
           </div>
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#3A3A3A' }}>{completedCount}/{totalCount} done</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: DARK }}>{completedCount}/{totalCount} done</span>
         </div>
       </div>
 
-      {/* ── Scroll sheet ─────────────────────────────────────────────────────── */}
+      {/* ── Scroll sheet ─────────────────────────────────────────────────── */}
       <div className="no-scroll" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflowY: 'auto', overflowX: 'hidden' }}>
         <div style={{ height: greetingH, flexShrink: 0 }} />
 
@@ -329,41 +327,45 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
 
           {/* Filter chips */}
           <div className="no-scroll" style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 2 }}>
-            {filters.map(f => (
-              <button
-                key={f.id}
-                onClick={() => setActiveFilter(f.id)}
-                style={{
-                  padding: '8px 16px', borderRadius: 50, flexShrink: 0, border: 'none', cursor: 'pointer',
-                  background: activeFilter === f.id ? filterColors[f.id] : 'white',
-                  color: activeFilter === f.id ? 'white' : '#666666',
-                  fontSize: 13, fontWeight: 700,
-                  boxShadow: activeFilter === f.id ? `0 2px 8px ${filterColors[f.id]}55` : '0 1px 4px rgba(0,0,0,0.07)',
-                  transition: 'background 0.15s, color 0.15s, box-shadow 0.15s',
-                }}
-              >
-                {f.label}
-              </button>
-            ))}
+            {filters.map(f => {
+              const fc = filterColors[f.id]
+              const active = activeFilter === f.id
+              return (
+                <button
+                  key={f.id}
+                  onClick={() => setActiveFilter(f.id)}
+                  style={{
+                    padding: '8px 16px', borderRadius: 50, flexShrink: 0, border: 'none', cursor: 'pointer',
+                    background: active ? fc.bg : 'white',
+                    color: active ? fc.text : '#666666',
+                    fontSize: 13, fontWeight: 700,
+                    boxShadow: active ? `0 2px 10px ${fc.bg}44` : '0 1px 4px rgba(0,0,0,0.07)',
+                    transition: 'background 0.15s, color 0.15s',
+                  }}
+                >
+                  {f.label}
+                </button>
+              )
+            })}
           </div>
 
           {/* Flat timeline */}
           {(() => {
             type FI =
-              | { t: 'L'; label: string; badge?: { n: number; color: string } }
+              | { t: 'L'; label: string; badge?: { n: number; color: string; textColor?: string } }
               | { t: 'overdue' | 'actNow' | 'comingUp' | 'locked' | 'done'; id: string }
 
             const flat: FI[] = []
-            if (showOverdue  && overdue.length  > 0) { flat.push({ t: 'L', label: 'Overdue',   badge: { n: overdue.length,  color: RED   } }); overdue.forEach(id  => flat.push({ t: 'overdue',  id })) }
-            if (showActNow   && actNow.length   > 0) { flat.push({ t: 'L', label: 'Act now'                                                }); actNow.forEach(id   => flat.push({ t: 'actNow',   id })) }
-            if (showComingUp && comingUp.length > 0) { flat.push({ t: 'L', label: 'Coming up'                                              }); comingUp.forEach(id => flat.push({ t: 'comingUp', id })) }
-            if (showLocked   && locked.length   > 0) { flat.push({ t: 'L', label: 'Waiting on'                                             }); locked.forEach(id   => flat.push({ t: 'locked',   id })) }
-            if (showDone     && done.length     > 0) { flat.push({ t: 'L', label: 'Completed', badge: { n: done.length,    color: GREEN  } }); done.forEach(id     => flat.push({ t: 'done',     id })) }
+            if (showOverdue  && overdue.length  > 0) { flat.push({ t: 'L', label: 'Overdue',   badge: { n: overdue.length, color: RED,  textColor: '#FFFFFF' } }); overdue.forEach(id  => flat.push({ t: 'overdue',  id })) }
+            if (showActNow   && actNow.length   > 0) { flat.push({ t: 'L', label: 'Act now'                                                                       }); actNow.forEach(id   => flat.push({ t: 'actNow',   id })) }
+            if (showComingUp && comingUp.length > 0) { flat.push({ t: 'L', label: 'Coming up'                                                                     }); comingUp.forEach(id => flat.push({ t: 'comingUp', id })) }
+            if (showLocked   && locked.length   > 0) { flat.push({ t: 'L', label: 'Waiting on'                                                                    }); locked.forEach(id   => flat.push({ t: 'locked',   id })) }
+            if (showDone     && done.length     > 0) { flat.push({ t: 'L', label: 'Completed', badge: { n: done.length,   color: LIME, textColor: DARK           } }); done.forEach(id     => flat.push({ t: 'done',     id })) }
 
             if (flat.length === 0) return null
 
             const dotColor = (t: string) =>
-              t === 'overdue' ? RED : t === 'actNow' ? ORANGE : t === 'done' ? GREEN : '#D0D0CC'
+              t === 'overdue' ? RED : t === 'actNow' ? DARK : t === 'done' ? LIME : '#D0D0CC'
             const dotFill  = (t: string) => t === 'overdue' || t === 'actNow' || t === 'done'
 
             return (
@@ -391,12 +393,12 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
                              : item.t === 'comingUp' ? <ComingUpCard moveKey={item.id} move={moves[item.id]} openGuide={openGuide} />
                              : item.t === 'locked'   ? <LockedCard   moveKey={item.id} move={moves[item.id]} blockers={getBlockers(item.id, moves)} openGuide={openGuide} />
                              : (
-                              <button onClick={() => openGuide(item.id)} style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 18, background: '#F9FDF9', border: '1.5px solid #D1FAE5', cursor: 'pointer' }}>
-                                <div style={{ width: 38, height: 38, borderRadius: 12, background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={GREEN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                              <button onClick={() => openGuide(item.id)} style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 18, background: `${LIME}1A`, border: `1.5px solid ${LIME}66`, cursor: 'pointer' }}>
+                                <div style={{ width: 38, height: 38, borderRadius: 12, background: `${LIME}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={DARK} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                 </div>
-                                <span style={{ fontSize: 14, fontWeight: 700, color: '#3D7A5A', flex: 1 }}>{moves[item.id].title}</span>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A7F3D0" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+                                <span style={{ fontSize: 14, fontWeight: 700, color: DARK, flex: 1, opacity: 0.6 }}>{moves[item.id].title}</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={DARK} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.25 }}><path d="M9 18l6-6-6-6" /></svg>
                               </button>
                             )
 
@@ -417,9 +419,9 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
           {((activeFilter === 'urgent'   && overdue.length === 0 && actNow.length === 0) ||
             (activeFilter === 'upcoming' && comingUp.length === 0 && locked.length === 0) ||
             (activeFilter === 'done'     && done.length === 0)) && (
-            <div style={{ textAlign: 'center', padding: '48px 20px', color: '#BBBBBB' }}>
+            <div style={{ textAlign: 'center', padding: '48px 20px' }}>
               <div style={{ fontSize: 44, marginBottom: 12 }}>✓</div>
-              <div style={{ fontSize: 16, fontWeight: 800, color: '#888888', letterSpacing: '-0.3px' }}>All clear here</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: DARK, letterSpacing: '-0.3px' }}>All clear here</div>
               <div style={{ fontSize: 13, marginTop: 6, color: '#AAAAAA' }}>Nothing in this section right now</div>
             </div>
           )}

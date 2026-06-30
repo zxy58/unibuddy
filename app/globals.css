@@ -14,16 +14,11 @@
   --radius-lg: 18px;
   --radius-md: 12px;
 
-  /* Brand */
-  --red: #F4442E;
-  --brown: #4E3629;
-
-  /* Status */
-  --green: #10B981;
-  --green-dark: #059669;
-  --green-light: #D1FAE5;
-  --amber: #F59E0B;
-  --amber-light: #FEF3C7;
+  /* Brand palette */
+  --red: #E85028;
+  --blue: #5567D4;
+  --lime: #CCFA4E;
+  --dark: #1C1C1C;
 }
 
 * { box-sizing: border-box; }

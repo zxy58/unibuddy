@@ -195,7 +195,7 @@ export default function UnibuddyApp() {
             {activeTab === 'ask'      && <AskScreen profile={profile} moves={moves} openGuide={openGuide} initialInput={askPrompt} />}
             {activeTab === 'profile'  && <ProfileScreen profile={profile} onSignOut={handleSignOut} onProfileUpdate={(p) => setProfile(p)} />}
             {/* Ambient glow behind nav */}
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 130, zIndex: 9, background: 'linear-gradient(to top, rgba(244,68,46,0.13) 0%, rgba(244,68,46,0.04) 55%, transparent 100%)', pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 130, zIndex: 9, background: 'linear-gradient(to top, rgba(85,103,212,0.10) 0%, rgba(85,103,212,0.03) 55%, transparent 100%)', pointerEvents: 'none' }} />
             <BottomNav active={activeTab} onNavigate={(tab) => setActiveTab(tab)} />
           </div>
         </>

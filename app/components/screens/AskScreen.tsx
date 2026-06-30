@@ -315,7 +315,7 @@ export default function AskScreen({ profile, moves, openGuide, initialInput = ''
               )}
               <div style={{
                 maxWidth: '78%', padding: '10px 13px', borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                background: msg.role === 'user' ? '#4E3629' : 'white',
+                background: msg.role === 'user' ? '#1C1C1C' : 'white',
                 border: msg.role === 'assistant' ? '1px solid var(--border-secondary)' : 'none',
                 fontSize: 13, color: msg.role === 'user' ? 'white' : 'var(--text-primary)',
                 lineHeight: 1.55, whiteSpace: 'pre-wrap',
@@ -329,14 +329,16 @@ export default function AskScreen({ profile, moves, openGuide, initialInput = ''
               <div style={{ marginLeft: 36, marginBottom: 6 }}>
                 <button
                   onClick={() => openGuide(msg.guideKey!)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 13px', borderRadius: 12, background: '#FFF5F5', border: '1.5px solid #FECACA', cursor: 'pointer', textAlign: 'left', width: '100%' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 13px', borderRadius: 12, background: '#F0F2FF', border: '1.5px solid #C4CAFE', cursor: 'pointer', textAlign: 'left', width: '100%' }}
                 >
-                  <span style={{ fontSize: 18 }}>📋</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: '#4E3629' }}>{moves[msg.guideKey].title}</div>
-                    <div style={{ fontSize: 11, color: '#F4442E', marginTop: 2 }}>{moves[msg.guideKey].steps.length} steps · Tap to open</div>
+                  <div style={{ width: 32, height: 32, borderRadius: 10, background: '#5567D4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
                   </div>
-                  <span style={{ color: '#F4442E', fontSize: 14 }}>→</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#1C1C1C' }}>{moves[msg.guideKey].title}</div>
+                    <div style={{ fontSize: 11, color: '#5567D4', marginTop: 2 }}>{moves[msg.guideKey].steps.length} steps · Tap to open</div>
+                  </div>
+                  <span style={{ color: '#5567D4', fontSize: 14 }}>→</span>
                 </button>
               </div>
             )}
@@ -348,7 +350,7 @@ export default function AskScreen({ profile, moves, openGuide, initialInput = ''
                   <button
                     key={qr}
                     onClick={() => send(qr)}
-                    style={{ padding: '6px 12px', borderRadius: 20, background: 'white', border: '1.5px solid #FECACA', fontSize: 12, fontWeight: 600, color: '#4E3629', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                    style={{ padding: '6px 12px', borderRadius: 20, background: 'white', border: '1.5px solid #C4CAFE', fontSize: 12, fontWeight: 600, color: '#5567D4', cursor: 'pointer', whiteSpace: 'nowrap' }}
                   >
                     {qr}
                   </button>
@@ -373,7 +375,7 @@ export default function AskScreen({ profile, moves, openGuide, initialInput = ''
         <button
           onClick={() => send(input)}
           disabled={!input.trim()}
-          style={{ width: 46, height: 46, borderRadius: 50, background: input.trim() ? '#F4442E' : 'white', border: 'none', cursor: input.trim() ? 'pointer' : 'default', color: input.trim() ? 'white' : '#DDCCCC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 16px rgba(0,0,0,0.10)' }}
+          style={{ width: 46, height: 46, borderRadius: 50, background: input.trim() ? '#E85028' : 'white', border: 'none', cursor: input.trim() ? 'pointer' : 'default', color: input.trim() ? 'white' : '#CCCCCC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 16px rgba(0,0,0,0.10)' }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
         </button>
