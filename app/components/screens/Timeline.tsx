@@ -291,73 +291,95 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
     <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <div ref={greetingRef} style={{ padding: '20px 20px 22px', position: 'relative', overflow: 'hidden' }}>
+      <div ref={greetingRef} style={{ padding: '14px 20px 14px', position: 'relative', overflow: 'hidden' }}>
 
-        {/* Ambient organic leaf shapes (background) */}
+        {/* Ambient organic leaf shapes (background, small + subtle) */}
         <svg aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', overflow: 'visible' }}>
-          {/* Purple leaf — top-left, steep tilt */}
-          <g transform="translate(38,20) rotate(-38)">
-            <path d="M0,-13 C10,-6 10,6 0,13 C-10,6 -10,-6 0,-13Z" fill={PURPLE} opacity="0.42"/>
+          <defs>
+            <linearGradient id="bgLfPurple" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#C8C0F4"/>
+              <stop offset="100%" stopColor="#6450A8"/>
+            </linearGradient>
+            <linearGradient id="bgLfRed" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0%" stopColor="#F5B090"/>
+              <stop offset="100%" stopColor="#D84018"/>
+            </linearGradient>
+            <linearGradient id="bgLfPeach" x1="1" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#FDD5B0"/>
+              <stop offset="100%" stopColor="#EE8860"/>
+            </linearGradient>
+          </defs>
+          {/* Purple leaf — top-left */}
+          <g transform="translate(38,18) rotate(-38)">
+            <path d="M0,-9 C7,-4 7,4 0,9 C-7,4 -7,-4 0,-9Z" fill="url(#bgLfPurple)" opacity="0.5"/>
           </g>
-          {/* Red leaf — top-center, nearly horizontal */}
-          <g transform="translate(168,11) rotate(72)">
-            <path d="M0,-8 C6,-4 6,4 0,8 C-6,4 -6,-4 0,-8Z" fill={RED} opacity="0.38"/>
+          {/* Red leaf — top-center */}
+          <g transform="translate(168,10) rotate(72)">
+            <path d="M0,-6 C4.5,-3 4.5,3 0,6 C-4.5,3 -4.5,-3 0,-6Z" fill="url(#bgLfRed)" opacity="0.44"/>
           </g>
-          {/* Purple outline leaf — upper-right, lopsided */}
-          <g transform="translate(292,22) rotate(-18)">
-            <path d="M0,-10 C8,-5 8,5 0,10 C-8,5 -8,-5 0,-10Z" fill="none" stroke={PURPLE} strokeWidth="2" opacity="0.35"/>
+          {/* Purple outline leaf — upper-right */}
+          <g transform="translate(290,20) rotate(-18)">
+            <path d="M0,-7 C5.5,-3.5 5.5,3.5 0,7 C-5.5,3.5 -5.5,-3.5 0,-7Z" fill="none" stroke={PURPLE} strokeWidth="1.8" opacity="0.3"/>
           </g>
-          {/* Red leaf — bottom-left, off-axis */}
-          <g transform="translate(18,106) rotate(22)">
-            <path d="M0,-9 C7,-4.5 7,4.5 0,9 C-7,4.5 -7,-4.5 0,-9Z" fill={RED} opacity="0.3"/>
-          </g>
-          {/* Peach tiny leaf — mid-left */}
-          <g transform="translate(56,76) rotate(-55)">
-            <path d="M0,-6 C4.5,-3 4.5,3 0,6 C-4.5,3 -4.5,-3 0,-6Z" fill="#F5A87C" opacity="0.45"/>
+          {/* Peach leaf — mid-left */}
+          <g transform="translate(22,82) rotate(22)">
+            <path d="M0,-7 C5,-3.5 5,3.5 0,7 C-5,3.5 -5,-3.5 0,-7Z" fill="url(#bgLfPeach)" opacity="0.38"/>
           </g>
         </svg>
 
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12, position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10, position: 'relative', zIndex: 1 }}>
           <div style={{ flex: 1, minWidth: 0, paddingRight: 12 }}>
-            <div style={{ fontSize: 34, fontWeight: 900, color: DARK, letterSpacing: '-1px', lineHeight: 1.1 }}>
+            <div style={{ fontSize: 32, fontWeight: 900, color: DARK, letterSpacing: '-0.9px', lineHeight: 1.1 }}>
               {greetingText}
             </div>
-            <div style={{ fontSize: 13, color: '#6B6B60', marginTop: 8, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }}>
+            <div style={{ fontSize: 12, color: '#6B6B60', marginTop: 6, lineHeight: 1.45, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }}>
               {nudge.body}
             </div>
           </div>
-          <BuddyAvatar mood={buddyMood} size={60} evolutionLevel={evolutionLevel} />
+          <BuddyAvatar mood={buddyMood} size={54} evolutionLevel={evolutionLevel} />
         </div>
 
-        {/* Progress + 3-D shape pile */}
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 14px 8px 10px', borderRadius: 50, background: 'rgba(0,0,0,0.06)' }}>
-            <div style={{ width: 72, height: 5, borderRadius: 5, background: 'rgba(0,0,0,0.10)', overflow: 'hidden' }}>
-              <div style={{ height: '100%', borderRadius: 5, background: PURPLE, width: `${pct}%`, transition: 'width 0.6s ease' }} />
+        {/* Progress + leaf shape pile */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '7px 13px 7px 9px', borderRadius: 50, background: 'rgba(0,0,0,0.06)' }}>
+            <div style={{ width: 66, height: 4, borderRadius: 4, background: 'rgba(0,0,0,0.10)', overflow: 'hidden' }}>
+              <div style={{ height: '100%', borderRadius: 4, background: PURPLE, width: `${pct}%`, transition: 'width 0.6s ease' }} />
             </div>
-            <span style={{ fontSize: 12, fontWeight: 700, color: DARK }}>{completedCount}/{totalCount} done</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: DARK }}>{completedCount}/{totalCount} done</span>
           </div>
 
-          {/* Leaf shape pile — focal point right of progress bar */}
-          <svg aria-hidden="true" width="104" height="68" viewBox="0 0 104 68" fill="none" style={{ pointerEvents: 'none', flexShrink: 0, marginRight: -2 }}>
-            {/* Large purple leaf — background anchor, tilted left */}
-            <g transform="translate(50,36) rotate(-28)">
-              <path d="M0,-28 C20,-14 20,14 0,28 C-20,14 -20,-14 0,-28Z" fill={PURPLE} opacity="0.82"/>
+          {/* Leaf shape pile */}
+          <svg aria-hidden="true" width="82" height="52" viewBox="0 0 82 52" fill="none" style={{ pointerEvents: 'none', flexShrink: 0 }}>
+            <defs>
+              <linearGradient id="pilePurple" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#C8C0F4"/>
+                <stop offset="100%" stopColor="#5C48A0"/>
+              </linearGradient>
+              <linearGradient id="pileRed" x1="0" y1="1" x2="1" y2="0">
+                <stop offset="0%" stopColor="#FBCFB0"/>
+                <stop offset="100%" stopColor="#D83C18"/>
+              </linearGradient>
+              <linearGradient id="pilePeach" x1="1" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#FFE0C0"/>
+                <stop offset="100%" stopColor="#EE7848"/>
+              </linearGradient>
+            </defs>
+            {/* Large purple leaf — background, tilted */}
+            <g transform="translate(40,28) rotate(-28)">
+              <path d="M0,-22 C16,-11 16,11 0,22 C-16,11 -16,-11 0,-22Z" fill="url(#pilePurple)" opacity="0.88"/>
             </g>
-            {/* Red leaf — overlapping top-right, steep angle */}
-            <g transform="translate(76,22) rotate(48)">
-              <path d="M0,-20 C14,-10 14,10 0,20 C-14,10 -14,-10 0,-20Z" fill={RED} opacity="0.88"/>
+            {/* Red leaf — overlapping right, steep */}
+            <g transform="translate(60,17) rotate(48)">
+              <path d="M0,-16 C11,-8 11,8 0,16 C-11,8 -11,-8 0,-16Z" fill="url(#pileRed)" opacity="0.92"/>
             </g>
-            {/* Peach leaf — bottom-left, nearly sideways */}
-            <g transform="translate(22,52) rotate(78)">
-              <path d="M0,-14 C10,-7 10,7 0,14 C-10,7 -10,-7 0,-14Z" fill="#F5A87C" opacity="0.85"/>
+            {/* Peach leaf — bottom-left, sideways */}
+            <g transform="translate(18,40) rotate(78)">
+              <path d="M0,-11 C8,-5.5 8,5.5 0,11 C-8,5.5 -8,-5.5 0,-11Z" fill="url(#pilePeach)" opacity="0.88"/>
             </g>
-            {/* Purple outline leaf — small, top-left, floaty */}
-            <g transform="translate(18,18) rotate(-52)">
-              <path d="M0,-10 C7,-5 7,5 0,10 C-7,5 -7,-5 0,-10Z" fill="none" stroke={PURPLE} strokeWidth="2.2" opacity="0.55"/>
+            {/* Purple outline leaf — small, floaty */}
+            <g transform="translate(15,14) rotate(-52)">
+              <path d="M0,-8 C6,-4 6,4 0,8 C-6,4 -6,-4 0,-8Z" fill="none" stroke={PURPLE} strokeWidth="1.8" opacity="0.5"/>
             </g>
-            {/* Tiny red dot accent */}
-            <circle cx="88" cy="54" r="4" fill={RED} opacity="0.35"/>
           </svg>
         </div>
       </div>

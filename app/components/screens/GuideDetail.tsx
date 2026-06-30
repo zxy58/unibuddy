@@ -449,13 +449,13 @@ function ContactCard({ contact, moveKey, profile, col }: {
   return (
     <div style={{ borderRadius: 12, border: `1.5px solid ${open ? col.border : 'var(--border-secondary)'}`, overflow: 'hidden', transition: 'border-color 0.15s' }}>
       <div style={{ padding: '12px 14px', background: open ? col.bg : 'white' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-          <div style={{ flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, minWidth: 0 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{contact.office}</div>
             <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 2, lineHeight: 1.4 }}>{contact.role}</div>
             <a
               href={`mailto:${resolvedEmail}`}
-              style={{ fontSize: 12, color: col.text, fontWeight: 600, fontFamily: 'monospace', marginTop: 5, display: 'block', textDecoration: 'none' }}
+              style={{ fontSize: 11, color: col.text, fontWeight: 600, fontFamily: 'monospace', marginTop: 5, display: 'block', textDecoration: 'none', wordBreak: 'break-all' }}
               onClick={e => e.stopPropagation()}
             >
               {resolvedEmail}
@@ -466,7 +466,7 @@ function ContactCard({ contact, moveKey, profile, col }: {
           </div>
           <button
             onClick={() => setOpen(o => !o)}
-            style={{ flexShrink: 0, padding: '6px 12px', borderRadius: 8, background: col.bg, border: `1px solid ${col.border}`, color: col.text, fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
+            style={{ flexShrink: 0, padding: '6px 10px', borderRadius: 8, background: col.bg, border: `1px solid ${col.border}`, color: col.text, fontSize: 11, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
           >
             {open ? 'Close' : '✉ Draft email'}
           </button>
