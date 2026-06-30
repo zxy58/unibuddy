@@ -305,38 +305,21 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <div ref={greetingRef} style={{ padding: '14px 20px 14px', position: 'relative', overflow: 'hidden' }}>
 
-        {/* Ambient organic leaf shapes (background, small + subtle) */}
+        {/* Ambient graphic shapes (background) */}
         <svg aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', overflow: 'visible' }}>
-          <defs>
-            <linearGradient id="bgLfPurple" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#C8C0F4"/>
-              <stop offset="100%" stopColor="#6450A8"/>
-            </linearGradient>
-            <linearGradient id="bgLfRed" x1="0" y1="1" x2="1" y2="0">
-              <stop offset="0%" stopColor="#F5B090"/>
-              <stop offset="100%" stopColor="#D84018"/>
-            </linearGradient>
-            <linearGradient id="bgLfPeach" x1="1" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#FDD5B0"/>
-              <stop offset="100%" stopColor="#EE8860"/>
-            </linearGradient>
-          </defs>
-          {/* Purple leaf — top-left */}
-          <g transform="translate(38,18) rotate(-38)">
-            <path d="M0,-9 C7,-4 7,4 0,9 C-7,4 -7,-4 0,-9Z" fill="url(#bgLfPurple)" opacity="0.5"/>
+          {/* Thick purple arch — upper-right, tilted */}
+          <g transform="translate(318,4) rotate(-16)">
+            <path d="M-44,58 A44,44 0 0,0 44,58 L28,58 A28,28 0 0,1 -28,58 Z" fill={PURPLE} opacity="0.18"/>
           </g>
-          {/* Red leaf — top-center */}
-          <g transform="translate(168,10) rotate(72)">
-            <path d="M0,-6 C4.5,-3 4.5,3 0,6 C-4.5,3 -4.5,-3 0,-6Z" fill="url(#bgLfRed)" opacity="0.44"/>
+          {/* Red four-petal clover — upper-left */}
+          <g transform="translate(26,26)" opacity="0.18">
+            <circle cx="0" cy="-13" r="14" fill={RED}/>
+            <circle cx="13" cy="0" r="14" fill={RED}/>
+            <circle cx="0" cy="13" r="14" fill={RED}/>
+            <circle cx="-13" cy="0" r="14" fill={RED}/>
           </g>
-          {/* Purple outline leaf — upper-right */}
-          <g transform="translate(290,20) rotate(-18)">
-            <path d="M0,-7 C5.5,-3.5 5.5,3.5 0,7 C-5.5,3.5 -5.5,-3.5 0,-7Z" fill="none" stroke={PURPLE} strokeWidth="1.8" opacity="0.3"/>
-          </g>
-          {/* Peach leaf — mid-left */}
-          <g transform="translate(22,82) rotate(22)">
-            <path d="M0,-7 C5,-3.5 5,3.5 0,7 C-5,3.5 -5,-3.5 0,-7Z" fill="url(#bgLfPeach)" opacity="0.38"/>
-          </g>
+          {/* Horizontal pill — mid hero, very faint */}
+          <rect x="140" y="74" width="56" height="18" rx="9" fill={PURPLE} opacity="0.09"/>
         </svg>
 
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10, position: 'relative', zIndex: 1 }}>
@@ -360,38 +343,21 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
             <span style={{ fontSize: 11, fontWeight: 700, color: DARK }}>{completedCount}/{totalCount} done</span>
           </div>
 
-          {/* Leaf shape pile */}
-          <svg aria-hidden="true" width="82" height="52" viewBox="0 0 82 52" fill="none" style={{ pointerEvents: 'none', flexShrink: 0 }}>
-            <defs>
-              <linearGradient id="pilePurple" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#C8C0F4"/>
-                <stop offset="100%" stopColor="#5C48A0"/>
-              </linearGradient>
-              <linearGradient id="pileRed" x1="0" y1="1" x2="1" y2="0">
-                <stop offset="0%" stopColor="#FBCFB0"/>
-                <stop offset="100%" stopColor="#D83C18"/>
-              </linearGradient>
-              <linearGradient id="pilePeach" x1="1" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#FFE0C0"/>
-                <stop offset="100%" stopColor="#EE7848"/>
-              </linearGradient>
-            </defs>
-            {/* Large purple leaf — background, tilted */}
-            <g transform="translate(40,28) rotate(-28)">
-              <path d="M0,-22 C16,-11 16,11 0,22 C-16,11 -16,-11 0,-22Z" fill="url(#pilePurple)" opacity="0.88"/>
+          {/* Graphic shape pile */}
+          <svg aria-hidden="true" width="96" height="68" viewBox="0 0 96 68" fill="none" style={{ pointerEvents: 'none', flexShrink: 0 }}>
+            {/* Thick purple arch — main form, anchored at bottom */}
+            <path d="M2,68 A46,46 0 0,0 94,68 L76,68 A28,28 0 0,1 20,68 Z" fill={PURPLE}/>
+            {/* Red four-petal clover — upper-right, overlapping arch */}
+            <g transform="translate(72,26)">
+              <circle cx="0" cy="-13" r="14" fill={RED}/>
+              <circle cx="13" cy="0" r="14" fill={RED}/>
+              <circle cx="0" cy="13" r="14" fill={RED}/>
+              <circle cx="-13" cy="0" r="14" fill={RED}/>
             </g>
-            {/* Red leaf — overlapping right, steep */}
-            <g transform="translate(60,17) rotate(48)">
-              <path d="M0,-16 C11,-8 11,8 0,16 C-11,8 -11,-8 0,-16Z" fill="url(#pileRed)" opacity="0.92"/>
-            </g>
-            {/* Peach leaf — bottom-left, sideways */}
-            <g transform="translate(18,40) rotate(78)">
-              <path d="M0,-11 C8,-5.5 8,5.5 0,11 C-8,5.5 -8,-5.5 0,-11Z" fill="url(#pilePeach)" opacity="0.88"/>
-            </g>
-            {/* Purple outline leaf — small, floaty */}
-            <g transform="translate(15,14) rotate(-52)">
-              <path d="M0,-8 C6,-4 6,4 0,8 C-6,4 -6,-4 0,-8Z" fill="none" stroke={PURPLE} strokeWidth="1.8" opacity="0.5"/>
-            </g>
+            {/* Cream rounded square — lower-left accent */}
+            <rect x="4" y="36" width="22" height="22" rx="7" fill="#F8F7F6"/>
+            {/* Small purple dot — floating */}
+            <circle cx="18" cy="16" r="5" fill={PURPLE} opacity="0.5"/>
           </svg>
         </div>
       </div>
