@@ -6,7 +6,7 @@ import type { UserProfile } from '@/app/lib/profile'
 import { getGuideAI } from '@/app/lib/recommendations'
 import BuddyAvatar from '@/app/components/ui/BuddyAvatar'
 
-const RED   = '#ED1C24'
+const RED   = '#F4442E'
 const BROWN = '#4E3629'
 
 interface Props {

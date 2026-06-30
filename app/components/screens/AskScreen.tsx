@@ -334,9 +334,9 @@ export default function AskScreen({ profile, moves, openGuide, initialInput = ''
                   <span style={{ fontSize: 18 }}>📋</span>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 12, fontWeight: 700, color: '#4E3629' }}>{moves[msg.guideKey].title}</div>
-                    <div style={{ fontSize: 11, color: '#ED1C24', marginTop: 2 }}>{moves[msg.guideKey].steps.length} steps · Tap to open</div>
+                    <div style={{ fontSize: 11, color: '#F4442E', marginTop: 2 }}>{moves[msg.guideKey].steps.length} steps · Tap to open</div>
                   </div>
-                  <span style={{ color: '#ED1C24', fontSize: 14 }}>→</span>
+                  <span style={{ color: '#F4442E', fontSize: 14 }}>→</span>
                 </button>
               </div>
             )}
@@ -373,7 +373,7 @@ export default function AskScreen({ profile, moves, openGuide, initialInput = ''
         <button
           onClick={() => send(input)}
           disabled={!input.trim()}
-          style={{ width: 42, height: 42, borderRadius: 12, background: input.trim() ? '#ED1C24' : '#FFF5F5', border: 'none', cursor: input.trim() ? 'pointer' : 'not-allowed', color: input.trim() ? 'white' : '#FECACA', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}
+          style={{ width: 42, height: 42, borderRadius: 12, background: input.trim() ? '#F4442E' : '#FFF5F5', border: 'none', cursor: input.trim() ? 'pointer' : 'not-allowed', color: input.trim() ? 'white' : '#FECACA', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}
         >
           ↑
         </button>

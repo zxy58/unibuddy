@@ -8,7 +8,7 @@ import BuddyAvatar from '@/app/components/ui/BuddyAvatar'
 import type { BuddyMood, BuddyEvolutionLevel } from '@/app/components/ui/BuddyAvatar'
 
 const ORANGE = '#F5793A'
-const RED    = '#ED1C24'
+const RED    = '#F4442E'
 const GREEN  = '#10B981'
 
 interface Props {
@@ -99,7 +99,7 @@ function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move
       </div>
       <button
         onClick={() => openGuide(moveKey)}
-        style={{ width: '100%', padding: '11px', borderRadius: 50, background: RED, color: 'white', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, letterSpacing: '-0.1px' }}
+        style={{ width: '100%', padding: '11px', borderRadius: 50, background: 'linear-gradient(145deg, #F4442E, #D93020)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700, letterSpacing: '-0.1px' }}
       >
         Get recovery help →
       </button>
@@ -125,7 +125,7 @@ function ActNowCard({ moveKey, move, openGuide }: { moveKey: string; move: Move;
       </div>
       <button
         onClick={() => openGuide(moveKey)}
-        style={{ width: '100%', padding: '11px', borderRadius: 50, background: ORANGE, color: 'white', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700 }}
+        style={{ width: '100%', padding: '11px', borderRadius: 50, background: 'linear-gradient(145deg, #F5793A, #E06020)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 700 }}
       >
         Start now →
       </button>
@@ -220,10 +220,10 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
   const buddyMood: BuddyMood = completedCount === totalCount ? 'celebrate' : overdue.length > 0 ? 'urgent' : 'happy'
 
   return (
-    <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: 'white' }}>
+    <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#DFE0D9' }}>
 
       {/* ── Greeting ── */}
-      <div style={{ background: 'white', padding: '18px 18px 16px', borderBottom: '1px solid #F0F0F0' }}>
+      <div style={{ background: 'white', padding: '18px 18px 16px', borderRadius: '0 0 20px 20px', marginBottom: 4, boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
           <div>
             <div style={{ fontSize: 24, fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.5px' }}>

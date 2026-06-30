@@ -69,7 +69,7 @@ export default function BottomNav({ active, onNavigate }: BottomNavProps) {
       position: 'absolute', bottom: 16, left: 14, right: 14, zIndex: 10,
       display: 'flex', alignItems: 'center',
       borderRadius: 40, padding: 6,
-      background: 'rgba(255,255,255,0.92)',
+      background: 'rgba(255,255,255,0.70)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
       border: '1px solid rgba(0,0,0,0.06)',
@@ -88,7 +88,7 @@ export default function BottomNav({ active, onNavigate }: BottomNavProps) {
           >
             <div style={{
               width: 48, height: 48, borderRadius: 24,
-              background: isActive ? '#ED1C24' : 'transparent',
+              background: isActive ? '#F4442E' : 'transparent',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'background 0.18s',
             }}>
