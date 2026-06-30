@@ -15,7 +15,7 @@ function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
   return (
     <button
       onClick={onToggle}
-      style={{ width: 44, height: 26, borderRadius: 13, background: on ? '#A0522D' : '#D1D5DB', border: 'none', cursor: 'pointer', position: 'relative', flexShrink: 0, transition: 'background 0.2s' }}
+      style={{ width: 44, height: 26, borderRadius: 13, background: on ? '#4E3629' : '#D1D5DB', border: 'none', cursor: 'pointer', position: 'relative', flexShrink: 0, transition: 'background 0.2s' }}
     >
       <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'white', position: 'absolute', top: 3, left: on ? 21 : 3, transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }} />
     </button>
@@ -44,20 +44,20 @@ export default function ProfileScreen({ profile, onSignOut, onProfileUpdate }: P
       <div style={{ padding: '8px 18px 96px', display: 'flex', flexDirection: 'column', gap: 20 }}>
 
         {/* Hero card */}
-        <div style={{ background: 'linear-gradient(145deg, #FDF4EE 0%, #F8E8DA 100%)', borderRadius: 22, padding: '20px', border: '1px solid rgba(160,82,45,0.08)' }}>
+        <div style={{ background: 'linear-gradient(145deg, #F5F0EC 0%, #EDE4DC 100%)', borderRadius: 22, padding: '20px', border: '1px solid rgba(78,54,41,0.08)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg, #A0522D, #7A3B1E)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 900, color: 'white', flexShrink: 0, boxShadow: '0 6px 18px rgba(160,82,45,0.25)' }}>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'linear-gradient(135deg, #4E3629, #3A2820)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 900, color: 'white', flexShrink: 0, boxShadow: '0 6px 18px rgba(78,54,41,0.25)' }}>
               {profile.name?.[0]?.toUpperCase() || 'U'}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 22, fontWeight: 900, color: '#1A1A1A', letterSpacing: '-0.5px' }}>{profile.name}</div>
-              <div style={{ fontSize: 13, color: '#A0522D', marginTop: 3, fontWeight: 600 }}>{profile.schoolName}</div>
+              <div style={{ fontSize: 13, color: '#4E3629', marginTop: 3, fontWeight: 600 }}>{profile.schoolName}</div>
             </div>
           </div>
           {profile.cohorts.length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 14 }}>
               {profile.cohorts.map(c => (
-                <span key={c} style={{ padding: '5px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700, background: 'rgba(160,82,45,0.08)', color: '#7A3B1E', border: '1px solid rgba(160,82,45,0.18)' }}>
+                <span key={c} style={{ padding: '5px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700, background: 'rgba(78,54,41,0.08)', color: '#3A2820', border: '1px solid rgba(78,54,41,0.18)' }}>
                   {cohortShort[c]}
                 </span>
               ))}
@@ -69,15 +69,15 @@ export default function ProfileScreen({ profile, onSignOut, onProfileUpdate }: P
         <div style={{ background: 'white', borderRadius: 18, border: '1px solid var(--border-secondary)', overflow: 'hidden' }}>
           {[
             {
-              icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A0522D" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 22 8.5 12 15 2 8.5" /><polyline points="17 11 17 18 12 21 7 18 7 11" /></svg>,
+              icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4E3629" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 22 8.5 12 15 2 8.5" /><polyline points="17 11 17 18 12 21 7 18 7 11" /></svg>,
               label: 'School', value: profile.schoolName || '—',
             },
             {
-              icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A0522D" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>,
+              icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4E3629" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>,
               label: profile.cohorts.includes('international') ? 'Home country' : 'Home state', value: profile.country || '—',
             },
             {
-              icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A0522D" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>,
+              icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4E3629" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>,
               label: 'Start date', value: profile.startDate ? new Date(profile.startDate + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '—',
             },
           ].map((row, i, arr) => (
@@ -99,7 +99,7 @@ export default function ProfileScreen({ profile, onSignOut, onProfileUpdate }: P
           {/* Preview of what a reminder looks like */}
           <div style={{ padding: '13px 14px', borderRadius: 16, background: 'linear-gradient(145deg, #1C1C1E, #2D2D30)', marginBottom: 14, boxShadow: '0 4px 16px rgba(0,0,0,0.18)' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 11 }}>
-              <div style={{ width: 38, height: 38, borderRadius: 11, background: 'linear-gradient(135deg, #A0522D, #7A3B1E)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 8px rgba(160,82,45,0.32)' }}>
+              <div style={{ width: 38, height: 38, borderRadius: 11, background: 'linear-gradient(135deg, #4E3629, #3A2820)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 8px rgba(78,54,41,0.32)' }}>
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
                   <rect x="8" y="2" width="8" height="4" rx="1" />
@@ -109,7 +109,7 @@ export default function ProfileScreen({ profile, onSignOut, onProfileUpdate }: P
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 12, fontWeight: 800, color: 'white', marginBottom: 3, letterSpacing: '-0.2px' }}>UniBuddy · 3 days left</div>
                 <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>{nextUrgentLabel}. Tap to complete this step.</div>
-                <div style={{ fontSize: 11, color: '#C4724A', fontWeight: 700, marginTop: 6 }}>Open guide →</div>
+                <div style={{ fontSize: 11, color: '#8A7068', fontWeight: 700, marginTop: 6 }}>Open guide →</div>
               </div>
             </div>
           </div>
@@ -117,7 +117,7 @@ export default function ProfileScreen({ profile, onSignOut, onProfileUpdate }: P
           {/* Email toggle */}
           <div style={{ background: 'white', borderRadius: 16, border: '1px solid var(--border-secondary)', overflow: 'hidden', marginBottom: 10 }}>
             <div style={{ padding: '14px 15px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: notifyEmail ? '1px solid #F5F5F5' : 'none' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A0522D" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" /><polyline points="2,4 12,13 22,4" /></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4E3629" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" /><polyline points="2,4 12,13 22,4" /></svg>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Email reminders</div>
                 <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Deadline alerts + step-by-step links</div>
@@ -140,7 +140,7 @@ export default function ProfileScreen({ profile, onSignOut, onProfileUpdate }: P
           {/* SMS toggle */}
           <div style={{ background: 'white', borderRadius: 16, border: '1px solid var(--border-secondary)', overflow: 'hidden' }}>
             <div style={{ padding: '14px 15px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: notifySMS ? '1px solid #F5F5F5' : 'none' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A0522D" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4E3629" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>SMS / text reminders</div>
                 <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Text nudges before each deadline</div>
@@ -167,7 +167,7 @@ export default function ProfileScreen({ profile, onSignOut, onProfileUpdate }: P
           <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 10 }}>Remind me</div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {['7 days before', '3 days before', 'Day of'].map(opt => (
-              <div key={opt} style={{ padding: '6px 12px', borderRadius: 20, background: '#FDF4EE', border: '1.5px solid #D4A882', fontSize: 12, fontWeight: 600, color: '#A0522D' }}>
+              <div key={opt} style={{ padding: '6px 12px', borderRadius: 20, background: '#F5F0EC', border: '1.5px solid #B0A098', fontSize: 12, fontWeight: 600, color: '#4E3629' }}>
                 ✓ {opt}
               </div>
             ))}
@@ -178,15 +178,15 @@ export default function ProfileScreen({ profile, onSignOut, onProfileUpdate }: P
         {/* Save button */}
         <button
           onClick={handleSave}
-          style={{ width: '100%', padding: '13px', borderRadius: 12, background: saved ? 'linear-gradient(135deg, #059669, #047857)' : 'linear-gradient(135deg, #A0522D, #7A3B1E)', border: 'none', color: 'white', fontSize: 14, fontWeight: 800, cursor: 'pointer', transition: 'background 0.3s' }}
+          style={{ width: '100%', padding: '13px', borderRadius: 12, background: saved ? 'linear-gradient(135deg, #059669, #047857)' : 'linear-gradient(135deg, #4E3629, #3A2820)', border: 'none', color: 'white', fontSize: 14, fontWeight: 800, cursor: 'pointer', transition: 'background 0.3s' }}
         >
           {saved ? 'Saved ✓' : 'Save notification settings'}
         </button>
 
         {/* About */}
-        <div style={{ padding: '16px 17px', borderRadius: 18, background: 'linear-gradient(145deg, #FDF4EE 0%, #F8E8DA 100%)', border: '1px solid rgba(160,82,45,0.10)' }}>
-          <div style={{ fontSize: 12, fontWeight: 800, color: '#7A3B1E', marginBottom: 6, letterSpacing: '-0.1px' }}>About UniBuddy</div>
-          <div style={{ fontSize: 12, color: '#5C2D0E', lineHeight: 1.7 }}>
+        <div style={{ padding: '16px 17px', borderRadius: 18, background: 'linear-gradient(145deg, #F5F0EC 0%, #EDE4DC 100%)', border: '1px solid rgba(78,54,41,0.10)' }}>
+          <div style={{ fontSize: 12, fontWeight: 800, color: '#3A2820', marginBottom: 6, letterSpacing: '-0.1px' }}>About UniBuddy</div>
+          <div style={{ fontSize: 12, color: '#3A2820', lineHeight: 1.7 }}>
             UniBuddy makes college bureaucracy legible for first-gen and international students — delivering the right step at exactly the moment you need to take it.
           </div>
         </div>
