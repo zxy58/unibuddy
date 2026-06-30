@@ -329,16 +329,16 @@ export default function AskScreen({ profile, moves, openGuide, initialInput = ''
               <div style={{ marginLeft: 36, marginBottom: 6 }}>
                 <button
                   onClick={() => openGuide(msg.guideKey!)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 13px', borderRadius: 12, background: '#F0F2FF', border: '1.5px solid #C4CAFE', cursor: 'pointer', textAlign: 'left', width: '100%' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 13px', borderRadius: 12, background: '#F2F0FB', border: '1.5px solid #C8C0E8', cursor: 'pointer', textAlign: 'left', width: '100%' }}
                 >
-                  <div style={{ width: 32, height: 32, borderRadius: 10, background: '#5567D4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 10, background: '#8878CC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 12, fontWeight: 700, color: '#1C1C1C' }}>{moves[msg.guideKey].title}</div>
-                    <div style={{ fontSize: 11, color: '#5567D4', marginTop: 2 }}>{moves[msg.guideKey].steps.length} steps · Tap to open</div>
+                    <div style={{ fontSize: 11, color: '#8878CC', marginTop: 2 }}>{moves[msg.guideKey].steps.length} steps · Tap to open</div>
                   </div>
-                  <span style={{ color: '#5567D4', fontSize: 14 }}>→</span>
+                  <span style={{ color: '#8878CC', fontSize: 14 }}>→</span>
                 </button>
               </div>
             )}
@@ -350,7 +350,7 @@ export default function AskScreen({ profile, moves, openGuide, initialInput = ''
                   <button
                     key={qr}
                     onClick={() => send(qr)}
-                    style={{ padding: '6px 12px', borderRadius: 20, background: 'white', border: '1.5px solid #C4CAFE', fontSize: 12, fontWeight: 600, color: '#5567D4', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                    style={{ padding: '6px 12px', borderRadius: 20, background: 'white', border: '1.5px solid #C8C0E8', fontSize: 12, fontWeight: 600, color: '#8878CC', cursor: 'pointer', whiteSpace: 'nowrap' }}
                   >
                     {qr}
                   </button>

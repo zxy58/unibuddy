@@ -7,18 +7,17 @@ import { getDashboardNudge, getPrioritizedMoves } from '@/app/lib/recommendation
 import BuddyAvatar from '@/app/components/ui/BuddyAvatar'
 import type { BuddyMood, BuddyEvolutionLevel } from '@/app/components/ui/BuddyAvatar'
 
-const RED  = '#E85028'
-const BLUE = '#5567D4'
-const LIME = '#CCFA4E'
-const DARK = '#1C1C1C'
+const RED    = '#E85028'
+const PURPLE = '#8878CC'
+const DARK   = '#1C1C1C'
 
 type Filter = 'all' | 'urgent' | 'upcoming' | 'done'
 
 const filterColors: Record<Filter, { bg: string; text: string }> = {
-  all:      { bg: DARK, text: '#FFFFFF' },
-  urgent:   { bg: RED,  text: '#FFFFFF' },
-  upcoming: { bg: BLUE, text: '#FFFFFF' },
-  done:     { bg: LIME, text: DARK },
+  all:      { bg: DARK,   text: '#FFFFFF' },
+  urgent:   { bg: RED,    text: '#FFFFFF' },
+  upcoming: { bg: PURPLE, text: '#FFFFFF' },
+  done:     { bg: '#E8E4F8', text: PURPLE },
 }
 
 interface Props {
@@ -76,12 +75,12 @@ function CategoryIcon({ category, color, size = 20 }: { category: string; color:
 }
 
 const catColors: Record<string, { bg: string; iconColor: string }> = {
-  enrollment: { bg: BLUE, iconColor: '#FFFFFF' },
-  financial:  { bg: DARK, iconColor: '#FFFFFF' },
-  visa:       { bg: DARK, iconColor: '#FFFFFF' },
-  housing:    { bg: RED,  iconColor: '#FFFFFF' },
-  health:     { bg: RED,  iconColor: '#FFFFFF' },
-  academic:   { bg: BLUE, iconColor: '#FFFFFF' },
+  enrollment: { bg: PURPLE, iconColor: '#FFFFFF' },
+  financial:  { bg: DARK,   iconColor: '#FFFFFF' },
+  visa:       { bg: PURPLE, iconColor: '#FFFFFF' },
+  housing:    { bg: RED,    iconColor: '#FFFFFF' },
+  health:     { bg: RED,    iconColor: '#FFFFFF' },
+  academic:   { bg: PURPLE, iconColor: '#FFFFFF' },
 }
 function getCat(c: string) { return catColors[c] ?? { bg: DARK, iconColor: '#FFFFFF' } }
 
@@ -150,15 +149,15 @@ function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move
 function ActNowCard({ moveKey, move, openGuide }: { moveKey: string; move: Move; openGuide: (k: string) => void }) {
   const days = move.daysUntil
   return (
-    <div style={{ background: DARK, borderRadius: 24, padding: '20px 20px 18px' }}>
+    <div style={{ background: PURPLE, borderRadius: 24, padding: '20px 20px 18px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
         <div style={{ flex: 1, paddingRight: 12 }}>
-          <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>Act now</div>
+          <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.5)', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>Act now</div>
           <div style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF', lineHeight: 1.2, letterSpacing: '-0.4px' }}>{move.title}</div>
         </div>
         {days !== null && (
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div style={{ fontSize: 52, fontWeight: 900, color: LIME, lineHeight: 1, letterSpacing: '-3px' }}>{days}</div>
+            <div style={{ fontSize: 52, fontWeight: 900, color: '#FFFFFF', lineHeight: 1, letterSpacing: '-3px' }}>{days}</div>
             <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', fontWeight: 800, letterSpacing: '0.8px', textTransform: 'uppercase' as const, marginTop: 2 }}>day{days !== 1 ? 's' : ''} left</div>
           </div>
         )}
@@ -168,7 +167,7 @@ function ActNowCard({ moveKey, move, openGuide }: { moveKey: string; move: Move;
       </div>
       <button
         onClick={() => openGuide(moveKey)}
-        style={{ width: '100%', padding: '13px', borderRadius: 50, background: LIME, color: DARK, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
+        style={{ width: '100%', padding: '13px', borderRadius: 50, background: '#FFFFFF', color: PURPLE, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
       >
         Start now →
       </button>
@@ -307,7 +306,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
         {/* Progress */}
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 14px 8px 10px', borderRadius: 50, background: 'rgba(0,0,0,0.06)' }}>
           <div style={{ width: 72, height: 5, borderRadius: 5, background: 'rgba(0,0,0,0.10)', overflow: 'hidden' }}>
-            <div style={{ height: '100%', borderRadius: 5, background: completedCount === totalCount ? LIME : BLUE, width: `${pct}%`, transition: 'width 0.6s ease' }} />
+            <div style={{ height: '100%', borderRadius: 5, background: completedCount === totalCount ? PURPLE : PURPLE, width: `${pct}%`, transition: 'width 0.6s ease' }} />
           </div>
           <span style={{ fontSize: 12, fontWeight: 700, color: DARK }}>{completedCount}/{totalCount} done</span>
         </div>
@@ -360,12 +359,12 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
             if (showActNow   && actNow.length   > 0) { flat.push({ t: 'L', label: 'Act now'                                                                       }); actNow.forEach(id   => flat.push({ t: 'actNow',   id })) }
             if (showComingUp && comingUp.length > 0) { flat.push({ t: 'L', label: 'Coming up'                                                                     }); comingUp.forEach(id => flat.push({ t: 'comingUp', id })) }
             if (showLocked   && locked.length   > 0) { flat.push({ t: 'L', label: 'Waiting on'                                                                    }); locked.forEach(id   => flat.push({ t: 'locked',   id })) }
-            if (showDone     && done.length     > 0) { flat.push({ t: 'L', label: 'Completed', badge: { n: done.length,   color: LIME, textColor: DARK           } }); done.forEach(id     => flat.push({ t: 'done',     id })) }
+            if (showDone     && done.length     > 0) { flat.push({ t: 'L', label: 'Completed', badge: { n: done.length,   color: '#E8E4F8', textColor: PURPLE     } }); done.forEach(id     => flat.push({ t: 'done',     id })) }
 
             if (flat.length === 0) return null
 
             const dotColor = (t: string) =>
-              t === 'overdue' ? RED : t === 'actNow' ? DARK : t === 'done' ? LIME : '#D0D0CC'
+              t === 'overdue' ? RED : t === 'actNow' ? PURPLE : t === 'done' ? PURPLE : '#D0D0CC'
             const dotFill  = (t: string) => t === 'overdue' || t === 'actNow' || t === 'done'
 
             return (
@@ -393,8 +392,8 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
                              : item.t === 'comingUp' ? <ComingUpCard moveKey={item.id} move={moves[item.id]} openGuide={openGuide} />
                              : item.t === 'locked'   ? <LockedCard   moveKey={item.id} move={moves[item.id]} blockers={getBlockers(item.id, moves)} openGuide={openGuide} />
                              : (
-                              <button onClick={() => openGuide(item.id)} style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 18, background: `${LIME}1A`, border: `1.5px solid ${LIME}66`, cursor: 'pointer' }}>
-                                <div style={{ width: 38, height: 38, borderRadius: 12, background: `${LIME}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <button onClick={() => openGuide(item.id)} style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 18, background: '#F2F0FB', border: '1.5px solid #D4CDEF', cursor: 'pointer' }}>
+                                <div style={{ width: 38, height: 38, borderRadius: 12, background: '#E8E4F8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={DARK} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                 </div>
                                 <span style={{ fontSize: 14, fontWeight: 700, color: DARK, flex: 1, opacity: 0.6 }}>{moves[item.id].title}</span>
