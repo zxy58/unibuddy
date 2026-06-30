@@ -25,6 +25,7 @@ interface Props {
   moves: Record<string, Move>
   openGuide: (key: string) => void
   evolutionLevel?: BuddyEvolutionLevel
+  recoveryMoves?: Record<string, string>
 }
 
 // ── Category SVG icons ────────────────────────────────────────────────────────
@@ -119,13 +120,22 @@ function SectionLabel({ label, badge }: { label: string; badge?: { n: number; co
 
 // ── Cards ─────────────────────────────────────────────────────────────────────
 
-function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move; openGuide: (k: string) => void }) {
+function OverdueCard({ moveKey, move, openGuide, inRecovery }: { moveKey: string; move: Move; openGuide: (k: string) => void; inRecovery?: boolean }) {
   const days = Math.abs(move.daysUntil!)
+  const bg = inRecovery ? '#C47820' : RED
   return (
-    <div className="card-press" style={{ background: RED, borderRadius: 24, padding: '20px 20px 18px', cursor: 'pointer' }} onClick={() => openGuide(moveKey)}>
+    <div className="card-press" style={{ background: bg, borderRadius: 24, padding: '20px 20px 18px', cursor: 'pointer' }} onClick={() => openGuide(moveKey)}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
         <div style={{ flex: 1, paddingRight: 12 }}>
-          <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.55)', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>Overdue</div>
+          <div style={{ marginBottom: 8 }}>
+            {inRecovery ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 9px', borderRadius: 20, background: 'rgba(255,255,255,0.22)', fontSize: 10, fontWeight: 800, color: 'white', letterSpacing: '0.8px', textTransform: 'uppercase' as const }}>
+                ● In Recovery
+              </span>
+            ) : (
+              <span style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.55)', letterSpacing: '1.5px', textTransform: 'uppercase' as const }}>Overdue</span>
+            )}
+          </div>
           <div style={{ fontSize: 18, fontWeight: 900, color: '#FFFFFF', lineHeight: 1.2, letterSpacing: '-0.4px' }}>{move.title}</div>
         </div>
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
@@ -134,13 +144,15 @@ function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move
         </div>
       </div>
       <div style={{ padding: '10px 13px', background: 'rgba(0,0,0,0.16)', borderRadius: 14, marginBottom: 16 }}>
-        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.88)', lineHeight: 1.5 }}>{move.consequence}</span>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.88)', lineHeight: 1.5 }}>
+          {inRecovery ? 'Recovery plan in progress — tap to continue your steps' : move.consequence}
+        </span>
       </div>
       <button
-        onClick={() => openGuide(moveKey)}
-        style={{ width: '100%', padding: '13px', borderRadius: 50, background: '#FFFFFF', color: RED, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
+        onClick={e => { e.stopPropagation(); openGuide(moveKey) }}
+        style={{ width: '100%', padding: '13px', borderRadius: 50, background: '#FFFFFF', color: bg, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
       >
-        Get recovery help →
+        {inRecovery ? 'Continue recovery →' : 'Get recovery help →'}
       </button>
     </div>
   )
@@ -243,7 +255,7 @@ function LockedCard({ moveKey, move, blockers, openGuide }: { moveKey: string; m
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 
-export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0 }: Props) {
+export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0, recoveryMoves = {} }: Props) {
   const nudge = getDashboardNudge(profile)
   const ordered = getPrioritizedMoves(profile, moves)
 
@@ -392,12 +404,10 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
           background: 'white',
           borderRadius: '24px 24px 0 0',
           minHeight: `calc(100% - ${greetingH}px)`,
-          padding: '18px 16px 96px',
-          display: 'flex', flexDirection: 'column', gap: 28,
         }}>
 
-          {/* Filter chips */}
-          <div className="no-scroll" style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 2 }}>
+          {/* Sticky filter bar */}
+          <div className="no-scroll" style={{ position: 'sticky', top: 0, background: 'white', zIndex: 10, padding: '14px 16px 10px', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', gap: 8, overflowX: 'auto' }}>
             {filters.map(f => {
               const fc = filterColors[f.id]
               const active = activeFilter === f.id
@@ -419,6 +429,8 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
               )
             })}
           </div>
+
+          <div style={{ padding: '16px 16px 96px', display: 'flex', flexDirection: 'column', gap: 28 }}>
 
           {/* Flat timeline */}
           {(() => {
@@ -459,7 +471,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
                   const df = dotFill(item.t)
                   const isLast = idx === flat.length - 1
 
-                  const card = item.t === 'overdue'  ? <OverdueCard  moveKey={item.id} move={moves[item.id]} openGuide={openGuide} />
+                  const card = item.t === 'overdue'  ? <OverdueCard  moveKey={item.id} move={moves[item.id]} openGuide={openGuide} inRecovery={!!recoveryMoves[item.id]} />
                              : item.t === 'actNow'   ? <ActNowCard   moveKey={item.id} move={moves[item.id]} openGuide={openGuide} />
                              : item.t === 'comingUp' ? <ComingUpCard moveKey={item.id} move={moves[item.id]} openGuide={openGuide} />
                              : item.t === 'locked'   ? <LockedCard   moveKey={item.id} move={moves[item.id]} blockers={getBlockers(item.id, moves)} openGuide={openGuide} />
@@ -497,6 +509,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
             </div>
           )}
 
+          </div>
         </div>
       </div>
     </div>

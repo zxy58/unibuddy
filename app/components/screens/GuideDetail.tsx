@@ -10,6 +10,7 @@ const RED    = '#E85028'
 const PURPLE = '#8878CC'
 const BROWN  = '#5C3D2E'
 const DARK   = '#1C1C1C'
+const AMBER  = '#C47820'
 
 interface Props {
   moveKey: string
@@ -18,6 +19,8 @@ interface Props {
   onBack: () => void
   onMarkDone: (key: string) => void
   onAskBruno: (prompt: string) => void
+  recoveryPath?: string
+  onStartRecovery?: (moveKey: string, path: string) => void
 }
 
 const categoryIcon: Record<string, string> = {
@@ -536,9 +539,67 @@ function ContactCard({ contact, moveKey, profile, col }: {
   )
 }
 
+// ── Recovery steps view (after starting a plan) ──────────────────────────────
+
+function RecoveryStepsView({ guide, onMarkDone }: { guide: RecoveryGuide; onMarkDone: () => void }) {
+  const [checked, setChecked] = useState<Record<number, boolean>>({})
+  const toggle = (i: number) => setChecked(prev => ({ ...prev, [i]: !prev[i] }))
+  const checkedCount = Object.values(checked).filter(Boolean).length
+  const allChecked = checkedCount === guide.steps.length
+  const pct = guide.steps.length > 0 ? (checkedCount / guide.steps.length) * 100 : 0
+
+  return (
+    <div style={{ borderRadius: 14, border: `2px solid ${AMBER}`, overflow: 'hidden' }}>
+      <div style={{ padding: '12px 14px', background: AMBER }}>
+        <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.8)', letterSpacing: '1px', textTransform: 'uppercase' as const, marginBottom: 3 }}>Recovery plan in progress</div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: 'white', lineHeight: 1.3 }}>{guide.headline}</div>
+        <div style={{ marginTop: 9, height: 3, borderRadius: 2, background: 'rgba(0,0,0,0.2)', overflow: 'hidden' }}>
+          <div style={{ height: '100%', borderRadius: 2, background: 'white', width: `${pct}%`, transition: 'width 0.25s ease' }} />
+        </div>
+        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.75)', marginTop: 4 }}>{checkedCount} of {guide.steps.length} steps done</div>
+      </div>
+
+      <div style={{ padding: '12px 14px', background: '#FFF8EC' }}>
+        <p style={{ margin: '0 0 11px', fontSize: 12, color: '#374151', lineHeight: 1.6 }}>{guide.reality}</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+          {guide.steps.map((step, i) => {
+            const done = !!checked[i]
+            return (
+              <div key={i} style={{ display: 'flex', gap: 10, padding: '10px 12px', borderRadius: 10, background: done ? '#FFF0D0' : 'white', border: `1.5px solid ${done ? AMBER : '#E5E7EB'}` }}>
+                <button
+                  onClick={() => toggle(i)}
+                  style={{ width: 22, height: 22, borderRadius: 6, border: `2px solid ${done ? AMBER : '#D1D5DB'}`, background: done ? AMBER : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, marginTop: 1 }}
+                >
+                  {done && <span style={{ color: 'white', fontSize: 12, fontWeight: 700, lineHeight: 1 }}>✓</span>}
+                </button>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: AMBER, flexShrink: 0 }}>{i + 1}</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: done ? '#9CA3AF' : DARK, lineHeight: 1.4, textDecoration: done ? 'line-through' : 'none' }}>
+                      {step}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+        {allChecked && (
+          <button
+            onClick={onMarkDone}
+            style={{ marginTop: 12, width: '100%', padding: '13px', borderRadius: 12, background: '#059669', border: 'none', color: 'white', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}
+          >
+            Recovery complete — Mark task done ✓
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ── Recovery triage block ────────────────────────────────────────────────────
 
-function RecoveryBlock({ moveKey, move, profile }: { moveKey: string; move: Move; profile: UserProfile }) {
+function RecoveryBlock({ moveKey, move, profile, onStartRecovery }: { moveKey: string; move: Move; profile: UserProfile; onStartRecovery: (path: RecoveryPath) => void }) {
   const [selected, setSelected] = useState<RecoveryPath | null>(null)
   const overdueDays = move.daysUntil !== null ? Math.abs(move.daysUntil) : 0
   const guides = getRecoveryGuides(moveKey, profile)
@@ -638,6 +699,12 @@ function RecoveryBlock({ moveKey, move, profile }: { moveKey: string; move: Move
                   </div>
                 ))}
               </div>
+              <button
+                onClick={() => onStartRecovery(selected!)}
+                style={{ width: '100%', padding: '12px', borderRadius: 10, background: RED, border: 'none', color: 'white', fontSize: 13, fontWeight: 800, cursor: 'pointer', marginTop: 2 }}
+              >
+                Start this recovery plan →
+              </button>
             </div>
           </div>
         )}
@@ -818,7 +885,7 @@ function BrunoPromptBuilder({ moveKey, move, profile, onSubmit, onDismiss }: {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone, onAskBruno }: Props) {
+export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone, onAskBruno, recoveryPath, onStartRecovery }: Props) {
   const [checkedSteps, setCheckedSteps] = useState<Record<number, boolean>>({})
   const [decoderOpen,  setDecoderOpen]  = useState(false)
   const [showPeer,     setShowPeer]     = useState(false)
@@ -827,6 +894,8 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
   const col     = categoryColor[move.category] || categoryColor.enrollment
   const overdue = !move.done && move.daysUntil !== null && move.daysUntil < 0
   const decoder = docDecoder[moveKey]
+  const inRecovery = !!recoveryPath
+  const recoveryGuide = inRecovery ? getRecoveryGuides(moveKey, profile)[recoveryPath as RecoveryPath] : null
 
   const toggleStep = (i: number) =>
     setCheckedSteps(prev => ({ ...prev, [i]: !prev[i] }))
@@ -868,9 +937,14 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
             <span>{categoryIcon[move.category]}</span>
             <span style={{ textTransform: 'capitalize' }}>{move.category}</span>
           </span>
-          {overdue && move.daysUntil !== null && (
+          {overdue && move.daysUntil !== null && !inRecovery && (
             <span style={{ padding: '4px 10px', borderRadius: 20, background: RED, color: 'white', fontSize: 11, fontWeight: 700 }}>
               {Math.abs(move.daysUntil)}d overdue
+            </span>
+          )}
+          {inRecovery && (
+            <span style={{ padding: '4px 10px', borderRadius: 20, background: AMBER, color: 'white', fontSize: 11, fontWeight: 700 }}>
+              ● In Recovery
             </span>
           )}
           {!overdue && !move.done && move.daysUntil !== null && (
@@ -900,9 +974,12 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
 
       <div style={{ padding: '16px 18px 36px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-        {/* ── Recovery triage (overdue only) ── */}
-        {overdue && (
-          <RecoveryBlock moveKey={moveKey} move={move} profile={profile} />
+        {/* ── Recovery (overdue only) ── */}
+        {overdue && inRecovery && recoveryGuide && (
+          <RecoveryStepsView guide={recoveryGuide} onMarkDone={() => onMarkDone(moveKey)} />
+        )}
+        {overdue && !inRecovery && (
+          <RecoveryBlock moveKey={moveKey} move={move} profile={profile} onStartRecovery={(path) => onStartRecovery?.(moveKey, path)} />
         )}
 
         {/* ── Consequence (non-overdue, non-done) ── */}

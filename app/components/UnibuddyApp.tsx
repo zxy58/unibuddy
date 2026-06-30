@@ -24,6 +24,7 @@ export default function UnibuddyApp() {
   const [askPrompt, setAskPrompt] = useState('')
   const [toast, setToast] = useState<string | null>(null)
   const [moves, setMoves] = useState<Record<string, Move>>(initialMoves)
+  const [recoveryMoves, setRecoveryMoves] = useState<Record<string, string>>({})
   const [streak, setStreak] = useState(1)
 
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -84,8 +85,13 @@ export default function UnibuddyApp() {
 
   const markDone = useCallback((key: string) => {
     setMoves(prev => ({ ...prev, [key]: { ...prev[key], done: true } }))
+    setRecoveryMoves(prev => { const n = { ...prev }; delete n[key]; return n })
     showToast('Marked as done ✓')
   }, [showToast])
+
+  const startRecovery = useCallback((moveKey: string, path: string) => {
+    setRecoveryMoves(prev => ({ ...prev, [moveKey]: path }))
+  }, [])
 
   // If a guide is open, show it full-screen (overlay)
   const guideOpen = activeGuide && moves[activeGuide]
@@ -187,12 +193,14 @@ export default function UnibuddyApp() {
             onBack={closeGuide}
             onMarkDone={markDone}
             onAskBruno={navigateToAsk}
+            recoveryPath={recoveryMoves[activeGuide]}
+            onStartRecovery={startRecovery}
           />
         </div>
       ) : (
         <>
           <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', position: 'relative' }}>
-            {activeTab === 'timeline' && <div key="timeline" className="fade-up" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}><Timeline profile={profile} moves={moves} openGuide={openGuide} evolutionLevel={evolutionLevel} /></div>}
+            {activeTab === 'timeline' && <div key="timeline" className="fade-up" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}><Timeline profile={profile} moves={moves} openGuide={openGuide} evolutionLevel={evolutionLevel} recoveryMoves={recoveryMoves} /></div>}
             {activeTab === 'guides'   && <div key="guides"   className="fade-up" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}><AllGuides moves={moves} profile={profile} openGuide={openGuide} /></div>}
             {activeTab === 'ask'      && <div key="ask"      className="fade-up" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}><AskScreen profile={profile} moves={moves} openGuide={openGuide} initialInput={askPrompt} /></div>}
             {activeTab === 'profile'  && <div key="profile"  className="fade-up" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}><ProfileScreen profile={profile} onSignOut={handleSignOut} onProfileUpdate={(p) => setProfile(p)} /></div>}
