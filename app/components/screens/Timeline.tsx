@@ -45,7 +45,7 @@ function DeadlineLabel({ days, urgency }: { days: number; urgency: 'critical' | 
   if (days < 0) {
     return <span style={{ fontSize: 12, fontWeight: 700, color: RED }}>{Math.abs(days)}d overdue</span>
   }
-  const color = days <= 3 ? RED : days <= 7 ? ORANGE : '#8A8A8A'
+  const color = days <= 3 ? RED : days <= 7 ? ORANGE : '#666666'
   const label = days === 0 ? 'Today' : days === 1 ? '1 day left' : `${days}d left`
   return <span style={{ fontSize: 12, fontWeight: 600, color }}>{label}</span>
 }
@@ -90,7 +90,7 @@ function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A', lineHeight: 1.3 }}>{move.title}</div>
-          <div style={{ fontSize: 12, color: '#8A8A8A', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{move.subtitle}</div>
+          <div style={{ fontSize: 12, color: '#666666', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{move.subtitle}</div>
         </div>
         <DeadlineLabel days={move.daysUntil!} urgency="critical" />
       </div>
@@ -116,7 +116,7 @@ function ActNowCard({ moveKey, move, openGuide }: { moveKey: string; move: Move;
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A', lineHeight: 1.3 }}>{move.title}</div>
-          <div style={{ fontSize: 12, color: '#8A8A8A', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{move.subtitle}</div>
+          <div style={{ fontSize: 12, color: '#666666', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>{move.subtitle}</div>
         </div>
         {move.daysUntil !== null && <DeadlineLabel days={move.daysUntil} urgency={move.urgency} />}
       </div>
@@ -164,20 +164,20 @@ function LockedCard({ moveKey, move, blockers, openGuide }: { moveKey: string; m
           {categoryIcon[move.category]}
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#AAAAAA' }}>{move.title}</div>
-          <div style={{ fontSize: 11, color: '#C0C0C0', marginTop: 1 }}>🔒 Needs {blockers[0]}</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#666666' }}>{move.title}</div>
+          <div style={{ fontSize: 11, color: '#888888', marginTop: 1 }}>🔒 Needs {blockers[0]}</div>
         </div>
         <span style={{ fontSize: 11, color: '#D1D5DB' }}>{open ? '▲' : '▼'}</span>
       </button>
       {open && (
         <div style={{ padding: '0 14px 12px' }}>
-          <div style={{ fontSize: 11, color: '#8A8A8A', marginBottom: 6 }}>Unlocks after:</div>
+          <div style={{ fontSize: 11, color: '#666666', marginBottom: 6 }}>Unlocks after:</div>
           {blockers.map((b, i) => (
             <div key={i} style={{ fontSize: 12, color: '#444', fontWeight: 500, marginBottom: 3 }}>→ {b}</div>
           ))}
           <button
             onClick={() => openGuide(moveKey)}
-            style={{ marginTop: 8, width: '100%', padding: '9px', borderRadius: 50, background: 'white', border: '1.5px solid #E5E5E5', color: '#8A8A8A', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+            style={{ marginTop: 8, width: '100%', padding: '9px', borderRadius: 50, background: 'white', border: '1.5px solid #E5E5E5', color: '#666666', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
           >
             Preview anyway
           </button>
@@ -189,7 +189,7 @@ function LockedCard({ moveKey, move, blockers, openGuide }: { moveKey: string; m
 
 // ── Section label ─────────────────────────────────────────────────────────────
 
-function SectionLabel({ label, color = '#8A8A8A', count }: { label: string; color?: string; count?: number }) {
+function SectionLabel({ label, color = '#666666', count }: { label: string; color?: string; count?: number }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 14, paddingLeft: 34 }}>
       <span style={{ fontSize: 11, fontWeight: 700, color, textTransform: 'uppercase', letterSpacing: '0.8px' }}>{label}</span>
@@ -304,7 +304,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
           {/* Coming up */}
           {comingUp.length > 0 && (
             <div>
-              <SectionLabel label="Coming up" color="#AAAAAA" />
+              <SectionLabel label="Coming up" color="#6B6B6B" />
               <div>
                 {comingUp.map((k, i) => (
                   <TimelineItem key={k} dotColor="#CCCCCC" dotFill={false} isLast={i === comingUp.length - 1}>
@@ -318,7 +318,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
           {/* Locked */}
           {locked.length > 0 && (
             <div>
-              <SectionLabel label="Waiting on" color="#C0C0C0" />
+              <SectionLabel label="Waiting on" color="#777777" />
               <div>
                 {locked.map((k, i) => (
                   <TimelineItem key={k} dotColor="#D1D5DB" dotFill={false} isLast={i === locked.length - 1}>
@@ -343,7 +343,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
                       <div style={{ width: 30, height: 30, borderRadius: 8, background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <span style={{ fontSize: 13, color: GREEN }}>✓</span>
                       </div>
-                      <span style={{ fontSize: 13, color: '#AAAAAA', flex: 1 }}>{moves[k].title}</span>
+                      <span style={{ fontSize: 13, color: '#666666', flex: 1 }}>{moves[k].title}</span>
                     </button>
                   </TimelineItem>
                 ))}

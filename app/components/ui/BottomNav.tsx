@@ -8,7 +8,7 @@ interface BottomNavProps {
 }
 
 function TimelineIcon({ active }: { active: boolean }) {
-  const c = active ? '#FFFFFF' : '#AAAAAA'
+  const c = active ? '#FFFFFF' : '#5E5E5E'
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" strokeLinecap="round">
       <circle cx="5" cy="7"  r="2" fill={active ? c : 'none'} stroke={c} strokeWidth="1.8" />
@@ -22,7 +22,7 @@ function TimelineIcon({ active }: { active: boolean }) {
 }
 
 function GuidesIcon({ active }: { active: boolean }) {
-  const c = active ? '#FFFFFF' : '#AAAAAA'
+  const c = active ? '#FFFFFF' : '#5E5E5E'
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
@@ -34,7 +34,7 @@ function GuidesIcon({ active }: { active: boolean }) {
 }
 
 function AskIcon({ active }: { active: boolean }) {
-  const c = active ? '#FFFFFF' : '#AAAAAA'
+  const c = active ? '#FFFFFF' : '#5E5E5E'
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
@@ -47,7 +47,7 @@ function AskIcon({ active }: { active: boolean }) {
 }
 
 function ProfileIcon({ active }: { active: boolean }) {
-  const c = active ? '#FFFFFF' : '#AAAAAA'
+  const c = active ? '#FFFFFF' : '#5E5E5E'
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="8" r="4" fill={active ? 'rgba(255,255,255,0.18)' : 'none'} />
