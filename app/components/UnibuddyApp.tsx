@@ -117,9 +117,9 @@ export default function UnibuddyApp() {
         {/* Bezel */}
         <div style={{ background: '#1C1C1E', borderRadius: 56, padding: 10, boxShadow: '0 28px 80px rgba(0,0,0,0.22), 0 0 0 1px rgba(255,255,255,0.06)' }}>
           {/* Screen — iPhone 17 logical resolution 393×852 pt */}
-          <div style={{ width: 393, height: 'min(852px, calc(100dvh - 96px))', background: 'linear-gradient(to bottom, #E1E2DA 0%, #F1ECE4 55%, #F0F1EC 100%)', borderRadius: 48, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+          <div style={{ width: 393, height: 'min(852px, calc(100dvh - 96px))', background: 'linear-gradient(to bottom, #F3F4F0 0%, #F1ECE4 55%, #F0F1EC 100%)', borderRadius: 48, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative' }}>
             {/* Dynamic Island + status bar */}
-            <div style={{ flexShrink: 0, background: '#E1E2DA', paddingTop: 12 }}>
+            <div style={{ flexShrink: 0, background: '#F3F4F0', paddingTop: 12 }}>
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 22px', height: 34 }}>
                 <span style={{ fontSize: 15, fontWeight: 700, color: '#000', letterSpacing: '-0.3px', zIndex: 2 }}>9:41</span>
                 <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', width: 120, height: 34, background: 'black', borderRadius: 50, zIndex: 1 }} />
@@ -160,7 +160,7 @@ export default function UnibuddyApp() {
   }
 
   const headerBar = (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 18px 10px', flexShrink: 0, background: '#E1E2DA', borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 18px 10px', flexShrink: 0, background: '#F3F4F0', borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <BuddyAvatar mood={buddyMood} size={32} evolutionLevel={evolutionLevel} />
         <div style={{ fontSize: 16, fontWeight: 900, color: '#0A0A0A', letterSpacing: '-0.5px' }}>UniBuddy</div>

@@ -371,7 +371,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
         <div style={{ height: greetingH, flexShrink: 0 }} />
 
         <div style={{
-          background: '#F3F4F0',
+          background: 'white',
           borderRadius: '24px 24px 0 0',
           minHeight: `calc(100% - ${greetingH}px)`,
           padding: '18px 16px 96px',
