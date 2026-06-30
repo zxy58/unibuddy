@@ -68,12 +68,21 @@ export default function ProfileScreen({ profile, onSignOut, onProfileUpdate }: P
         {/* Profile details */}
         <div style={{ background: 'white', borderRadius: 18, border: '1px solid var(--border-secondary)', overflow: 'hidden' }}>
           {[
-            { icon: '🎓', label: 'School', value: profile.schoolName || '—' },
-            { icon: '🌍', label: profile.cohorts.includes('international') ? 'Home country' : 'Home state', value: profile.country || '—' },
-            { icon: '📅', label: 'Start date', value: profile.startDate ? new Date(profile.startDate + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '—' },
+            {
+              icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 22 8.5 12 15 2 8.5" /><polyline points="17 11 17 18 12 21 7 18 7 11" /></svg>,
+              label: 'School', value: profile.schoolName || '—',
+            },
+            {
+              icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg>,
+              label: profile.cohorts.includes('international') ? 'Home country' : 'Home state', value: profile.country || '—',
+            },
+            {
+              icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>,
+              label: 'Start date', value: profile.startDate ? new Date(profile.startDate + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '—',
+            },
           ].map((row, i, arr) => (
             <div key={row.label} style={{ padding: '14px 16px', borderBottom: i < arr.length - 1 ? '1px solid #F5F5F5' : 'none', display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ fontSize: 16, flexShrink: 0 }}>{row.icon}</span>
+              <span style={{ flexShrink: 0, display: 'flex' }}>{row.icon}</span>
               <span style={{ fontSize: 13, color: 'var(--text-tertiary)', flex: 1 }}>{row.label}</span>
               <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{row.value}</span>
             </div>
@@ -90,7 +99,13 @@ export default function ProfileScreen({ profile, onSignOut, onProfileUpdate }: P
           {/* Preview of what a reminder looks like */}
           <div style={{ padding: '13px 14px', borderRadius: 16, background: 'linear-gradient(145deg, #1C1C1E, #2D2D30)', marginBottom: 14, boxShadow: '0 4px 16px rgba(0,0,0,0.18)' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 11 }}>
-              <div style={{ width: 38, height: 38, borderRadius: 11, background: 'linear-gradient(135deg, #7C3AED, #5B21B6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0, boxShadow: '0 2px 8px rgba(124,58,237,0.4)' }}>📋</div>
+              <div style={{ width: 38, height: 38, borderRadius: 11, background: 'linear-gradient(135deg, #7C3AED, #5B21B6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 8px rgba(124,58,237,0.4)' }}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                  <rect x="8" y="2" width="8" height="4" rx="1" />
+                  <line x1="9" y1="12" x2="15" y2="12" /><line x1="9" y1="16" x2="13" y2="16" />
+                </svg>
+              </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 12, fontWeight: 800, color: 'white', marginBottom: 3, letterSpacing: '-0.2px' }}>UniBuddy · 3 days left</div>
                 <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>{nextUrgentLabel}. Tap to complete this step.</div>
@@ -102,7 +117,7 @@ export default function ProfileScreen({ profile, onSignOut, onProfileUpdate }: P
           {/* Email toggle */}
           <div style={{ background: 'white', borderRadius: 16, border: '1px solid var(--border-secondary)', overflow: 'hidden', marginBottom: 10 }}>
             <div style={{ padding: '14px 15px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: notifyEmail ? '1px solid #F5F5F5' : 'none' }}>
-              <span style={{ fontSize: 20 }}>✉️</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" /><polyline points="2,4 12,13 22,4" /></svg>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Email reminders</div>
                 <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Deadline alerts + step-by-step links</div>
@@ -125,7 +140,7 @@ export default function ProfileScreen({ profile, onSignOut, onProfileUpdate }: P
           {/* SMS toggle */}
           <div style={{ background: 'white', borderRadius: 16, border: '1px solid var(--border-secondary)', overflow: 'hidden' }}>
             <div style={{ padding: '14px 15px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: notifySMS ? '1px solid #F5F5F5' : 'none' }}>
-              <span style={{ fontSize: 20 }}>💬</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>SMS / text reminders</div>
                 <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Text nudges before each deadline</div>

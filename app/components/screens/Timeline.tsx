@@ -18,9 +18,53 @@ interface Props {
   evolutionLevel?: BuddyEvolutionLevel
 }
 
-const categoryIcon: Record<string, string> = {
-  enrollment: '🎓', financial: '💰', visa: '🛂',
-  housing: '🏠', health: '🏥', academic: '📚',
+function CategoryIcon({ category, color, size = 18 }: { category: string; color: string; size?: number }) {
+  const p = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+  switch (category) {
+    case 'enrollment': return (
+      <svg {...p}>
+        <polygon points="12 2 22 8.5 12 15 2 8.5" />
+        <polyline points="17 11 17 18 12 21 7 18 7 11" />
+      </svg>
+    )
+    case 'financial': return (
+      <svg {...p}>
+        <rect x="1" y="4" width="22" height="16" rx="2" />
+        <line x1="1" y1="10" x2="23" y2="10" />
+        <line x1="6" y1="15" x2="9" y2="15" />
+      </svg>
+    )
+    case 'visa': return (
+      <svg {...p}>
+        <rect x="3" y="2" width="18" height="20" rx="2" />
+        <circle cx="12" cy="8.5" r="2.5" />
+        <line x1="8" y1="15" x2="16" y2="15" />
+        <line x1="8" y1="18" x2="13" y2="18" />
+      </svg>
+    )
+    case 'housing': return (
+      <svg {...p}>
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </svg>
+    )
+    case 'health': return (
+      <svg {...p}>
+        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+      </svg>
+    )
+    case 'academic': return (
+      <svg {...p}>
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+        <line x1="9" y1="9" x2="15" y2="9" />
+        <line x1="9" y1="13" x2="13" y2="13" />
+      </svg>
+    )
+    default: return (
+      <svg {...p}><circle cx="12" cy="12" r="9" /></svg>
+    )
+  }
 }
 
 function isLocked(moveKey: string, moves: Record<string, Move>): boolean {
@@ -87,8 +131,8 @@ function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move
     <div style={{ background: 'linear-gradient(145deg, #FFFFFF 0%, #FFF3F2 100%)', borderRadius: 20, padding: '16px 16px 14px', border: '1px solid rgba(244,68,46,0.12)' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{ display: 'flex', gap: 10, flex: 1, minWidth: 0 }}>
-          <div style={{ width: 38, height: 38, borderRadius: 11, background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
-            {categoryIcon[move.category]}
+          <div style={{ width: 38, height: 38, borderRadius: 11, background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <CategoryIcon category={move.category} color={RED} size={18} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A', lineHeight: 1.3 }}>{move.title}</div>
@@ -120,8 +164,8 @@ function ActNowCard({ moveKey, move, openGuide }: { moveKey: string; move: Move;
     <div style={{ background: 'linear-gradient(145deg, #FFFFFF 0%, #FFF8F2 100%)', borderRadius: 20, padding: '16px 16px 14px', border: '1px solid rgba(245,121,58,0.12)' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{ display: 'flex', gap: 10, flex: 1, minWidth: 0 }}>
-          <div style={{ width: 38, height: 38, borderRadius: 11, background: '#FFF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
-            {categoryIcon[move.category]}
+          <div style={{ width: 38, height: 38, borderRadius: 11, background: '#FFF3E8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <CategoryIcon category={move.category} color={ORANGE} size={18} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A', lineHeight: 1.3 }}>{move.title}</div>
@@ -154,8 +198,8 @@ function ComingUpCard({ moveKey, move, openGuide }: { moveKey: string; move: Mov
       onClick={() => openGuide(moveKey)}
       style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 16, background: 'white', border: '1px solid #F0F0F0', cursor: 'pointer' }}
     >
-      <div style={{ width: 36, height: 36, borderRadius: 10, background: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, flexShrink: 0 }}>
-        {categoryIcon[move.category]}
+      <div style={{ width: 36, height: 36, borderRadius: 10, background: '#F0F0EE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <CategoryIcon category={move.category} color="#555555" size={17} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1A1A' }}>{move.title}</div>
@@ -180,12 +224,17 @@ function LockedCard({ moveKey, move, blockers, openGuide }: { moveKey: string; m
         onClick={() => setOpen(v => !v)}
         style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', background: 'none', border: 'none', cursor: 'pointer' }}
       >
-        <div style={{ width: 34, height: 34, borderRadius: 9, background: '#EFEFED', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, flexShrink: 0, opacity: 0.5 }}>
-          {categoryIcon[move.category]}
+        <div style={{ width: 34, height: 34, borderRadius: 9, background: '#EFEFED', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <CategoryIcon category={move.category} color="#BBBBBB" size={16} />
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: '#888888' }}>{move.title}</div>
-          <div style={{ fontSize: 11, color: '#999999', marginTop: 1 }}>🔒 Needs {blockers[0]}</div>
+          <div style={{ fontSize: 11, color: '#999999', marginTop: 1, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#BBBBBB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            Needs {blockers[0]}
+          </div>
         </div>
         <span style={{ fontSize: 11, color: '#CCCCCC' }}>{open ? '▲' : '▼'}</span>
       </button>
@@ -361,7 +410,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
                       style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10, padding: '11px 13px', borderRadius: 13, background: 'white', border: '1px solid #F0F0F0', cursor: 'pointer' }}
                     >
                       <div style={{ width: 30, height: 30, borderRadius: 8, background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <span style={{ fontSize: 13, color: GREEN }}>✓</span>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={GREEN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                       </div>
                       <span style={{ fontSize: 13, color: '#666666', flex: 1 }}>{moves[k].title}</span>
                     </button>
