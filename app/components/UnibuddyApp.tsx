@@ -161,10 +161,7 @@ export default function UnibuddyApp() {
 
   const headerBar = (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 18px 10px', flexShrink: 0, background: '#F3F4F0', borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <BuddyAvatar mood={buddyMood} size={32} evolutionLevel={evolutionLevel} />
-        <div style={{ fontSize: 16, fontWeight: 900, color: '#0A0A0A', letterSpacing: '-0.5px' }}>UniBuddy</div>
-      </div>
+      <div style={{ fontSize: 17, fontWeight: 900, color: '#0A0A0A', letterSpacing: '-0.6px' }}>UniBuddy</div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <button
           onClick={handleSignOut}

@@ -134,8 +134,8 @@ export default function OnboardingFlow({ onComplete }: Props) {
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: D_BG, margin: '-20px -22px -28px', padding: 0 }}>
             {/* Illustration tray */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 28px 0' }}>
-              <div style={{ width: 200, height: 160, borderRadius: 28, background: D_CARD, border: `1px solid ${D_BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 32, boxShadow: '0 20px 60px rgba(0,0,0,0.6)' }}>
-                <BuddyAvatar mood="wave" size={110} />
+              <div style={{ marginBottom: 32 }}>
+                <div style={{ fontSize: 36, fontWeight: 900, color: D_TEXT, letterSpacing: '-1px', lineHeight: 1 }}>UniBuddy</div>
               </div>
 
               <div style={{ fontSize: 30, fontWeight: 900, color: D_TEXT, letterSpacing: '-0.8px', lineHeight: 1.15, textAlign: 'center', marginBottom: 10 }}>
@@ -196,9 +196,6 @@ export default function OnboardingFlow({ onComplete }: Props) {
               <div style={{ fontSize: 28, fontWeight: 900, color: '#0A0A0A', letterSpacing: '-0.6px', lineHeight: 1.2 }}>
                 Tell us about yourself
               </div>
-              <div style={{ fontSize: 14, color: '#6B7280', marginTop: 6, lineHeight: 1.5 }}>
-                Personalizes your deadline checklist from day one.
-              </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 18, flex: 1 }}>
               <div>
@@ -244,7 +241,6 @@ export default function OnboardingFlow({ onComplete }: Props) {
             <div style={{ fontSize: 28, fontWeight: 900, color: '#0A0A0A', letterSpacing: '-0.6px', lineHeight: 1.2, marginBottom: 6 }}>
               A bit more context
             </div>
-            <div style={{ fontSize: 14, color: '#6B7280', marginBottom: 20, lineHeight: 1.5 }}>Used to surface the right deadlines and contacts.</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20, flex: 1 }}>
               <div>
                 <label style={{ fontSize: 11, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8, display: 'block' }}>
