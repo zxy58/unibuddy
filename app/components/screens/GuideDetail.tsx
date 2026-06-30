@@ -6,8 +6,10 @@ import type { UserProfile } from '@/app/lib/profile'
 import { getGuideAI } from '@/app/lib/recommendations'
 import BuddyAvatar from '@/app/components/ui/BuddyAvatar'
 
-const RED   = '#F4442E'
-const BROWN = '#4E3629'
+const RED    = '#E85028'
+const PURPLE = '#8878CC'
+const BROWN  = '#5C3D2E'
+const DARK   = '#1C1C1C'
 
 interface Props {
   moveKey: string
@@ -541,10 +543,34 @@ function RecoveryBlock({ moveKey, move, profile }: { moveKey: string; move: Move
   const overdueDays = move.daysUntil !== null ? Math.abs(move.daysUntil) : 0
   const guides = getRecoveryGuides(moveKey, profile)
 
-  const options: { path: RecoveryPath; label: string; icon: string; hint: string }[] = [
-    { path: 'grace',  icon: '🟡', label: 'Less than 48 hours',  hint: 'Grace period window' },
-    { path: 'appeal', icon: '🟠', label: '3 – 14 days ago',     hint: 'Appeal territory' },
-    { path: 'damage', icon: '🔴', label: 'More than 2 weeks',   hint: 'Damage control' },
+  const triageIcons: Record<RecoveryPath, React.ReactNode> = {
+    grace: (
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <circle cx="11" cy="11" r="9" fill="#FEF3C7" stroke="#F59E0B" strokeWidth="1.8"/>
+        <circle cx="11" cy="11" r="1.5" fill="#F59E0B"/>
+        <path d="M11 7v4" stroke="#F59E0B" strokeWidth="1.8" strokeLinecap="round"/>
+        <path d="M11 11l2.5 2" stroke="#F59E0B" strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+    appeal: (
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <rect x="4" y="2" width="14" height="18" rx="2.5" fill="#EDE9FB" stroke={PURPLE} strokeWidth="1.8"/>
+        <path d="M7.5 7.5h7M7.5 11h7M7.5 14.5h4.5" stroke={PURPLE} strokeWidth="1.5" strokeLinecap="round"/>
+      </svg>
+    ),
+    damage: (
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <path d="M11 2L3 5.5v5.2C3 15.4 6.5 19.5 11 21c4.5-1.5 8-5.6 8-10.3V5.5L11 2z" fill="#FEE2E2" stroke={RED} strokeWidth="1.8"/>
+        <path d="M11 8v4" stroke={RED} strokeWidth="1.8" strokeLinecap="round"/>
+        <circle cx="11" cy="14.5" r="1" fill={RED}/>
+      </svg>
+    ),
+  }
+
+  const options: { path: RecoveryPath; label: string; hint: string }[] = [
+    { path: 'grace',  label: 'Less than 48 hours',  hint: 'Grace period window' },
+    { path: 'appeal', label: '3 – 14 days ago',     hint: 'Appeal territory' },
+    { path: 'damage', label: 'More than 2 weeks',   hint: 'Damage control' },
   ]
 
   const active = selected ? guides[selected] : null
@@ -580,7 +606,7 @@ function RecoveryBlock({ moveKey, move, profile }: { moveKey: string; move: Move
               cursor: 'pointer', textAlign: 'left',
             }}
           >
-            <span style={{ fontSize: 16 }}>{opt.icon}</span>
+            {triageIcons[opt.path]}
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: BROWN }}>{opt.label}</div>
               <div style={{ fontSize: 11, color: '#6B7280' }}>{opt.hint}</div>
@@ -880,7 +906,7 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
 
         {/* ── Have ready ── */}
         <div>
-          <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.7px', marginBottom: 8 }}>Have ready</div>
+          <div style={{ fontSize: 15, fontWeight: 900, color: DARK, letterSpacing: '-0.3px', marginBottom: 10 }}>Have ready</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {move.gather.map((item, i) => (
               <div key={i} style={{ padding: '5px 11px', borderRadius: 20, background: col.bg, border: `1px solid ${col.border}`, fontSize: 12, fontWeight: 500, color: col.text }}>
@@ -892,14 +918,14 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
 
         {/* ── Steps + inline Bruno ── */}
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.7px' }}>Steps</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <div style={{ fontSize: 15, fontWeight: 900, color: DARK, letterSpacing: '-0.3px' }}>Steps</div>
             <button
               onClick={() => setShowBuilder(true)}
-              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, border: `1.5px solid #FECACA`, background: 'white', color: BROWN, fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 20, border: 'none', background: RED, color: 'white', fontSize: 11, fontWeight: 800, cursor: 'pointer' }}
             >
-              <BuddyAvatar mood="wave" size={18} />
-              <span>? Ask Bruno</span>
+              <BuddyAvatar mood="wave" size={16} />
+              <span>Ask Bruno</span>
             </button>
           </div>
 
