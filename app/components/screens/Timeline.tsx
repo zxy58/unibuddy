@@ -13,6 +13,13 @@ const GREEN  = '#10B981'
 
 type Filter = 'all' | 'urgent' | 'upcoming' | 'done'
 
+const filterColors: Record<Filter, string> = {
+  all:      '#1A1A1A',
+  urgent:   RED,
+  upcoming: '#4F46E5',
+  done:     GREEN,
+}
+
 interface Props {
   profile: UserProfile
   moves: Record<string, Move>
@@ -67,12 +74,12 @@ function CategoryIcon({ category, color, size = 20 }: { category: string; color:
   }
 }
 
-// Per-category color scheme for Coming Up cards
+// Per-category color scheme
 const catColors: Record<string, { bg: string }> = {
   enrollment: { bg: '#4F46E5' },
-  financial:  { bg: '#059669' },
-  visa:       { bg: '#7C3AED' },
-  housing:    { bg: '#D97706' },
+  financial:  { bg: '#16A34A' },
+  visa:       { bg: '#9333EA' },
+  housing:    { bg: '#EA580C' },
   health:     { bg: '#DC2626' },
   academic:   { bg: '#2563EB' },
 }
@@ -96,33 +103,17 @@ function isOverdue(move: Move): boolean {
   return !move.done && move.daysUntil !== null && move.daysUntil < 0
 }
 
-
-// ── Sparkle shape (4-pointed star) ───────────────────────────────────────────
-
-function Sparkle({ x, y, s, color, rot = 0, op = 1 }: { x: number; y: number; s: number; color: string; rot?: number; op?: number }) {
-  const h = s / 2, q = s / 5.5
-  return (
-    <path
-      d={`M${x} ${y - h} L${x + q} ${y - q} L${x + h} ${y} L${x + q} ${y + q} L${x} ${y + h} L${x - q} ${y + q} L${x - h} ${y} L${x - q} ${y - q}Z`}
-      fill={color} opacity={op} transform={`rotate(${rot},${x},${y})`}
-    />
-  )
-}
-
 // ── Section label ─────────────────────────────────────────────────────────────
 
-function SectionLabel({ label, sub, badge }: { label: string; sub?: string; badge?: { n: number; color: string } }) {
+function SectionLabel({ label, badge }: { label: string; badge?: { n: number; color: string } }) {
   return (
-    <div style={{ marginBottom: 14 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{ fontSize: 20, fontWeight: 900, color: '#1A1A1A', letterSpacing: '-0.5px' }}>{label}</div>
-        {badge && (
-          <div style={{ width: 22, height: 22, borderRadius: '50%', background: badge.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, color: 'white' }}>{badge.n}</span>
-          </div>
-        )}
-      </div>
-      {sub && <div style={{ fontSize: 12, color: '#999999', marginTop: 3 }}>{sub}</div>}
+    <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ fontSize: 24, fontWeight: 900, color: '#1A1A1A', letterSpacing: '-0.6px' }}>{label}</div>
+      {badge && (
+        <div style={{ width: 24, height: 24, borderRadius: '50%', background: badge.color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <span style={{ fontSize: 12, fontWeight: 800, color: 'white' }}>{badge.n}</span>
+        </div>
+      )}
     </div>
   )
 }
@@ -132,30 +123,23 @@ function SectionLabel({ label, sub, badge }: { label: string; sub?: string; badg
 function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move; openGuide: (k: string) => void }) {
   const days = Math.abs(move.daysUntil!)
   return (
-    <div style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, #FFF0EF 100%)', borderRadius: 24, padding: '18px 18px 16px', border: '1.5px solid rgba(244,68,46,0.15)', boxShadow: '0 4px 24px rgba(244,68,46,0.10)' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 14 }}>
-        <div style={{ width: 52, height: 52, borderRadius: 17, background: RED, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 14px rgba(244,68,46,0.38)' }}>
-          <CategoryIcon category={move.category} color="white" size={22} />
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 15, fontWeight: 800, color: '#1A1A1A', lineHeight: 1.25, letterSpacing: '-0.3px' }}>{move.title}</div>
-          <div style={{ fontSize: 12, color: '#999999', marginTop: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{move.subtitle}</div>
+    <div style={{ background: RED, borderRadius: 24, padding: '20px 20px 18px', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
+        <div style={{ flex: 1, paddingRight: 12 }}>
+          <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>Overdue</div>
+          <div style={{ fontSize: 18, fontWeight: 900, color: 'white', lineHeight: 1.2, letterSpacing: '-0.4px' }}>{move.title}</div>
         </div>
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <div style={{ fontSize: 46, fontWeight: 900, color: RED, lineHeight: 1, letterSpacing: '-2px' }}>{days}</div>
-          <div style={{ fontSize: 9, color: RED, fontWeight: 800, marginTop: 1, letterSpacing: '0.5px', textTransform: 'uppercase' }}>day{days !== 1 ? 's' : ''} overdue</div>
+          <div style={{ fontSize: 52, fontWeight: 900, color: 'white', lineHeight: 1, letterSpacing: '-3px' }}>{days}</div>
+          <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.65)', fontWeight: 800, letterSpacing: '0.8px', textTransform: 'uppercase' as const, marginTop: 2 }}>day{days !== 1 ? 's' : ''} overdue</div>
         </div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 14, padding: '10px 12px', background: '#FEF2F2', borderRadius: 14 }}>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-          <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
-        </svg>
-        <span style={{ fontSize: 12, color: '#B91C1C', lineHeight: 1.5 }}>{move.consequence}</span>
+      <div style={{ padding: '10px 13px', background: 'rgba(0,0,0,0.18)', borderRadius: 14, marginBottom: 16 }}>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.88)', lineHeight: 1.5 }}>{move.consequence}</span>
       </div>
       <button
         onClick={() => openGuide(moveKey)}
-        style={{ width: '100%', padding: '13px', borderRadius: 50, background: 'linear-gradient(135deg, #F4442E, #DC2626)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
+        style={{ width: '100%', padding: '13px', borderRadius: 50, background: 'white', color: RED, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
       >
         Get recovery help →
       </button>
@@ -166,28 +150,25 @@ function OverdueCard({ moveKey, move, openGuide }: { moveKey: string; move: Move
 function ActNowCard({ moveKey, move, openGuide }: { moveKey: string; move: Move; openGuide: (k: string) => void }) {
   const days = move.daysUntil
   return (
-    <div style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, #FFF8F0 100%)', borderRadius: 24, padding: '18px 18px 16px', border: '1.5px solid rgba(245,121,58,0.15)', boxShadow: '0 4px 24px rgba(245,121,58,0.10)' }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 14 }}>
-        <div style={{ width: 52, height: 52, borderRadius: 17, background: ORANGE, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 14px rgba(245,121,58,0.38)' }}>
-          <CategoryIcon category={move.category} color="white" size={22} />
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 15, fontWeight: 800, color: '#1A1A1A', lineHeight: 1.25, letterSpacing: '-0.3px' }}>{move.title}</div>
-          <div style={{ fontSize: 12, color: '#999999', marginTop: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{move.subtitle}</div>
+    <div style={{ background: ORANGE, borderRadius: 24, padding: '20px 20px 18px', overflow: 'hidden' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
+        <div style={{ flex: 1, paddingRight: 12 }}>
+          <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.65)', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>Act now</div>
+          <div style={{ fontSize: 18, fontWeight: 900, color: 'white', lineHeight: 1.2, letterSpacing: '-0.4px' }}>{move.title}</div>
         </div>
         {days !== null && (
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div style={{ fontSize: 46, fontWeight: 900, color: ORANGE, lineHeight: 1, letterSpacing: '-2px' }}>{days}</div>
-            <div style={{ fontSize: 9, color: ORANGE, fontWeight: 800, marginTop: 1, letterSpacing: '0.5px', textTransform: 'uppercase' }}>day{days !== 1 ? 's' : ''} left</div>
+            <div style={{ fontSize: 52, fontWeight: 900, color: 'white', lineHeight: 1, letterSpacing: '-3px' }}>{days}</div>
+            <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.65)', fontWeight: 800, letterSpacing: '0.8px', textTransform: 'uppercase' as const, marginTop: 2 }}>day{days !== 1 ? 's' : ''} left</div>
           </div>
         )}
       </div>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 14, padding: '10px 12px', background: '#FFFBEB', borderRadius: 14 }}>
-        <span style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>If missed: {move.consequence}</span>
+      <div style={{ padding: '10px 13px', background: 'rgba(0,0,0,0.14)', borderRadius: 14, marginBottom: 16 }}>
+        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.88)', lineHeight: 1.5 }}>If missed: {move.consequence}</span>
       </div>
       <button
         onClick={() => openGuide(moveKey)}
-        style={{ width: '100%', padding: '13px', borderRadius: 50, background: 'linear-gradient(135deg, #F5793A, #E06020)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
+        style={{ width: '100%', padding: '13px', borderRadius: 50, background: 'white', color: ORANGE, border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 800, letterSpacing: '-0.2px' }}
       >
         Start now →
       </button>
@@ -200,22 +181,18 @@ function ComingUpCard({ moveKey, move, openGuide }: { moveKey: string; move: Mov
   return (
     <button
       onClick={() => openGuide(moveKey)}
-      style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px', borderRadius: 20, background: 'white', border: '1.5px solid #F0F0F0', cursor: 'pointer', boxShadow: '0 2px 12px rgba(0,0,0,0.04)' }}
+      style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 14, padding: '14px 16px', borderRadius: 20, background: `${cat.bg}12`, border: `1.5px solid ${cat.bg}38`, cursor: 'pointer' }}
     >
-      <div style={{ width: 48, height: 48, borderRadius: 15, background: cat.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        <CategoryIcon category={move.category} color="white" size={21} />
+      <div style={{ width: 46, height: 46, borderRadius: 14, background: cat.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <CategoryIcon category={move.category} color="white" size={20} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1A1A', letterSpacing: '-0.2px' }}>{move.title}</div>
-        <div style={{ fontSize: 11, color: '#999999', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{move.subtitle}</div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: '#1A1A1A', letterSpacing: '-0.3px' }}>{move.title}</div>
+        {move.daysUntil !== null && (
+          <div style={{ fontSize: 12, fontWeight: 700, color: cat.bg, marginTop: 3 }}>{move.daysUntil} days left</div>
+        )}
       </div>
-      {move.daysUntil !== null && (
-        <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <div style={{ fontSize: 26, fontWeight: 900, color: '#1A1A1A', lineHeight: 1, letterSpacing: '-1px' }}>{move.daysUntil}</div>
-          <div style={{ fontSize: 9, color: '#BBBBBB', marginTop: 1, fontWeight: 700, letterSpacing: '0.4px', textTransform: 'uppercase' }}>days</div>
-        </div>
-      )}
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CCCCCC" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={cat.bg} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.55 }}>
         <path d="M9 18l6-6-6-6" />
       </svg>
     </button>
@@ -225,18 +202,18 @@ function ComingUpCard({ moveKey, move, openGuide }: { moveKey: string; move: Mov
 function LockedCard({ moveKey, move, blockers, openGuide }: { moveKey: string; move: Move; blockers: string[]; openGuide: (k: string) => void }) {
   const [open, setOpen] = useState(false)
   return (
-    <div style={{ background: '#F9F9F8', borderRadius: 18, border: '1.5px solid #EEEEEC', overflow: 'hidden' }}>
+    <div style={{ background: '#F4F4F2', borderRadius: 18, border: '1.5px solid #EAEAE8', overflow: 'hidden' }}>
       <button
         onClick={() => setOpen(v => !v)}
         style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 15px', background: 'none', border: 'none', cursor: 'pointer' }}
       >
-        <div style={{ width: 44, height: 44, borderRadius: 14, background: '#EEEEEC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div style={{ width: 44, height: 44, borderRadius: 14, background: '#E8E8E6', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#BBBBBB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#AAAAAA', letterSpacing: '-0.2px' }}>{move.title}</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#AAAAAA', letterSpacing: '-0.2px' }}>{move.title}</div>
           <div style={{ fontSize: 11, color: '#CCCCCC', marginTop: 2 }}>Needs {blockers[0]} first</div>
         </div>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#CCCCCC" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>
@@ -244,8 +221,8 @@ function LockedCard({ moveKey, move, blockers, openGuide }: { moveKey: string; m
         </svg>
       </button>
       {open && (
-        <div style={{ padding: '0 15px 14px', borderTop: '1px solid #EEEEEC' }}>
-          <div style={{ fontSize: 11, color: '#BBBBBB', marginBottom: 7, marginTop: 10, fontWeight: 700, letterSpacing: '0.3px', textTransform: 'uppercase' }}>Unlocks after</div>
+        <div style={{ padding: '0 15px 14px', borderTop: '1px solid #EAEAE8' }}>
+          <div style={{ fontSize: 11, color: '#BBBBBB', marginBottom: 7, marginTop: 10, fontWeight: 700, letterSpacing: '0.3px', textTransform: 'uppercase' as const }}>Unlocks after</div>
           {blockers.map((b, i) => (
             <div key={i} style={{ fontSize: 12, color: '#888888', fontWeight: 600, marginBottom: 5, display: 'flex', alignItems: 'center', gap: 7 }}>
               <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#CCCCCC', flexShrink: 0 }} />
@@ -289,12 +266,13 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
     if (greetingRef.current) setGreetingH(greetingRef.current.offsetHeight)
   }, [])
 
+  const firstName = profile.name?.split(' ')[0] || 'there'
   const greetingText =
     overdue.length > 0
       ? `${overdue.length} task${overdue.length > 1 ? 's' : ''} need attention`
       : completedCount === totalCount
-      ? 'All done! 🎉'
-      : `Hi ${profile.name?.split(' ')[0] || 'there'}!`
+      ? 'All done!'
+      : `Hi ${firstName}!`
 
   const showOverdue  = activeFilter === 'all' || activeFilter === 'urgent'
   const showActNow   = activeFilter === 'all' || activeFilter === 'urgent'
@@ -312,53 +290,24 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
   return (
     <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
 
-      {/* ── Illustrated hero greeting ────────────────────────────────────────── */}
-      <div ref={greetingRef} style={{ padding: '20px 20px 22px', position: 'relative', overflow: 'hidden' }}>
+      {/* ── Hero greeting ────────────────────────────────────────────────────── */}
+      <div ref={greetingRef} style={{ padding: '20px 20px 22px', position: 'relative' }}>
 
-        {/* Decorative SVG layer — sparkles, dots, grad cap */}
-        <svg
-          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
-          viewBox="0 0 393 160"
-          preserveAspectRatio="xMidYMid slice"
-        >
-          <Sparkle x={338} y={24}  s={16} color="#F59E0B" op={0.55} rot={15} />
-          <Sparkle x={362} y={92}  s={10} color="#FB7185" op={0.45} rot={30} />
-          <Sparkle x={22}  y={112} s={12} color="#34D399" op={0.45} rot={-10} />
-          <Sparkle x={54}  y={18}  s={8}  color="#60A5FA" op={0.50} rot={20} />
-          <Sparkle x={308} y={142} s={14} color="#A78BFA" op={0.35} rot={0} />
-          <Sparkle x={165} y={8}   s={7}  color="#F5793A" op={0.40} rot={45} />
-          <circle cx={374} cy={54}  r={7}  fill="#F5793A" opacity={0.20} />
-          <circle cx={16}  cy={52}  r={9}  fill="#60A5FA" opacity={0.15} />
-          <circle cx={283} cy={62}  r={5}  fill="#34D399" opacity={0.28} />
-          <circle cx={368} cy={132} r={4}  fill="#F59E0B" opacity={0.28} />
-          <circle cx={200} cy={150} r={10} fill="#FB7185" opacity={0.12} />
-          {/* Grad cap doodle */}
-          <g transform="translate(344,108) rotate(12)" opacity={0.32}>
-            <polygon points="0,-9 15,0 0,9 -15,0" fill="#F59E0B" />
-            <polygon points="8,0 15,0 15,11 8,11" fill="#F59E0B" />
-            <line x1="0" y1="9" x2="0" y2="18" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round" />
-          </g>
-          {/* Tiny star cluster top-left */}
-          <circle cx={80}  cy={32}  r={2.5} fill="#FB7185" opacity={0.5} />
-          <circle cx={90}  cy={22}  r={1.8} fill="#A78BFA" opacity={0.55} />
-          <circle cx={100} cy={36}  r={2}   fill="#60A5FA" opacity={0.45} />
-        </svg>
-
-        {/* Greeting text + buddy */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
-          <div style={{ flex: 1, minWidth: 0, paddingRight: 14 }}>
-            <div style={{ fontSize: 28, fontWeight: 900, color: '#1A1A1A', letterSpacing: '-0.8px', lineHeight: 1.15 }}>
+        {/* Greeting + buddy */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div style={{ flex: 1, minWidth: 0, paddingRight: 12 }}>
+            <div style={{ fontSize: 34, fontWeight: 900, color: '#1A1A1A', letterSpacing: '-1px', lineHeight: 1.1 }}>
               {greetingText}
             </div>
-            <div style={{ fontSize: 13, color: '#5C5C52', marginTop: 7, lineHeight: 1.55, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }}>
+            <div style={{ fontSize: 13, color: '#6B6B60', marginTop: 8, lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }}>
               {nudge.body}
             </div>
           </div>
-          <BuddyAvatar mood={buddyMood} size={54} evolutionLevel={evolutionLevel} />
+          <BuddyAvatar mood={buddyMood} size={60} evolutionLevel={evolutionLevel} />
         </div>
 
-        {/* Progress pill */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '7px 14px 7px 10px', borderRadius: 50, background: 'rgba(0,0,0,0.06)' }}>
+        {/* Progress */}
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '8px 14px 8px 10px', borderRadius: 50, background: 'rgba(0,0,0,0.06)' }}>
           <div style={{ width: 72, height: 5, borderRadius: 5, background: 'rgba(0,0,0,0.12)', overflow: 'hidden' }}>
             <div style={{ height: '100%', borderRadius: 5, background: completedCount === totalCount ? GREEN : ORANGE, width: `${pct}%`, transition: 'width 0.6s ease' }} />
           </div>
@@ -386,11 +335,11 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
                 onClick={() => setActiveFilter(f.id)}
                 style={{
                   padding: '8px 16px', borderRadius: 50, flexShrink: 0, border: 'none', cursor: 'pointer',
-                  background: activeFilter === f.id ? '#1A1A1A' : 'white',
-                  color: activeFilter === f.id ? 'white' : '#555555',
+                  background: activeFilter === f.id ? filterColors[f.id] : 'white',
+                  color: activeFilter === f.id ? 'white' : '#666666',
                   fontSize: 13, fontWeight: 700,
-                  boxShadow: activeFilter === f.id ? '0 2px 8px rgba(0,0,0,0.18)' : '0 1px 4px rgba(0,0,0,0.07)',
-                  transition: 'background 0.15s, color 0.15s',
+                  boxShadow: activeFilter === f.id ? `0 2px 8px ${filterColors[f.id]}55` : '0 1px 4px rgba(0,0,0,0.07)',
+                  transition: 'background 0.15s, color 0.15s, box-shadow 0.15s',
                 }}
               >
                 {f.label}
@@ -398,7 +347,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
             ))}
           </div>
 
-          {/* Flat timeline — one continuous line through all sections */}
+          {/* Flat timeline */}
           {(() => {
             type FI =
               | { t: 'L'; label: string; badge?: { n: number; color: string } }
@@ -414,20 +363,19 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
             if (flat.length === 0) return null
 
             const dotColor = (t: string) =>
-              t === 'overdue' ? RED : t === 'actNow' ? ORANGE : t === 'done' ? GREEN : '#C8C8C8'
+              t === 'overdue' ? RED : t === 'actNow' ? ORANGE : t === 'done' ? GREEN : '#D0D0CC'
             const dotFill  = (t: string) => t === 'overdue' || t === 'actNow' || t === 'done'
 
             return (
               <div style={{ position: 'relative' }}>
-                {/* Single continuous line — runs from just below filter chips to near last dot */}
-                <div style={{ position: 'absolute', left: 9, top: 10, bottom: 22, width: 1.5, background: '#DDDDD8', zIndex: 0 }} />
+                <div style={{ position: 'absolute', left: 9, top: 10, bottom: 22, width: 1.5, background: '#E8E8E4', zIndex: 0 }} />
 
                 {flat.map((item, idx) => {
                   if (item.t === 'L') {
                     return (
                       <div key={`lbl-${idx}`} style={{ display: 'flex', gap: 10 }}>
                         <div style={{ width: 20, flexShrink: 0 }} />
-                        <div style={{ flex: 1, padding: `${idx === 0 ? 0 : 20}px 0 6px` }}>
+                        <div style={{ flex: 1, padding: `${idx === 0 ? 0 : 22}px 0 8px` }}>
                           <SectionLabel label={item.label} badge={item.badge} />
                         </div>
                       </div>
@@ -443,19 +391,19 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
                              : item.t === 'comingUp' ? <ComingUpCard moveKey={item.id} move={moves[item.id]} openGuide={openGuide} />
                              : item.t === 'locked'   ? <LockedCard   moveKey={item.id} move={moves[item.id]} blockers={getBlockers(item.id, moves)} openGuide={openGuide} />
                              : (
-                              <button onClick={() => openGuide(item.id)} style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 18, background: 'white', border: '1.5px solid #F0F0F0', cursor: 'pointer', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}>
+                              <button onClick={() => openGuide(item.id)} style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, padding: '13px 14px', borderRadius: 18, background: '#F9FDF9', border: '1.5px solid #D1FAE5', cursor: 'pointer' }}>
                                 <div style={{ width: 38, height: 38, borderRadius: 12, background: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={GREEN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                 </div>
-                                <span style={{ fontSize: 13, fontWeight: 600, color: '#666666', flex: 1 }}>{moves[item.id].title}</span>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#DDDDDD" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+                                <span style={{ fontSize: 14, fontWeight: 700, color: '#3D7A5A', flex: 1 }}>{moves[item.id].title}</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A7F3D0" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
                               </button>
                             )
 
                   return (
                     <div key={item.id} style={{ display: 'flex', gap: 10, paddingBottom: isLast ? 0 : 12 }}>
                       <div style={{ width: 20, flexShrink: 0, display: 'flex', justifyContent: 'center', paddingTop: 22, alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
-                        <div style={{ width: 10, height: 10, borderRadius: '50%', flexShrink: 0, background: df ? dc : 'white', border: `2px solid ${dc}` }} />
+                        <div style={{ width: 10, height: 10, borderRadius: '50%', flexShrink: 0, background: df ? dc : 'white', border: `2.5px solid ${dc}` }} />
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>{card}</div>
                     </div>
@@ -465,7 +413,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
             )
           })()}
 
-          {/* Empty state for filtered views */}
+          {/* Empty state */}
           {((activeFilter === 'urgent'   && overdue.length === 0 && actNow.length === 0) ||
             (activeFilter === 'upcoming' && comingUp.length === 0 && locked.length === 0) ||
             (activeFilter === 'done'     && done.length === 0)) && (
