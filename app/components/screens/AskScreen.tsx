@@ -303,7 +303,7 @@ export default function AskScreen({ profile, moves, openGuide, initialInput = ''
       </div>
 
       {/* Messages */}
-      <div className="no-scroll" style={{ flex: 1, overflowY: 'auto', padding: '14px 16px 90px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div className="no-scroll" style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '14px 16px 90px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         {messages.map(msg => (
           <div key={msg.id}>
             {/* Bubble */}
