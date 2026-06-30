@@ -848,40 +848,48 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
     <div className="no-scroll" style={{ flex: 1, overflowY: 'auto' }}>
 
       {/* Sticky header */}
-      <div style={{ padding: '10px 18px 14px', borderBottom: '1px solid var(--border-tertiary)', background: 'var(--bg-primary)', position: 'sticky', top: 0, zIndex: 10 }}>
+      <div style={{ padding: '10px 18px 14px', borderBottom: '1px solid rgba(0,0,0,0.07)', background: '#F8F7F6', position: 'sticky', top: 0, zIndex: 10 }}>
+        {/* Back button — icon only */}
         <button
           onClick={onBack}
-          style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'none', border: 'none', cursor: 'pointer', color: RED, fontSize: 13, fontWeight: 600, padding: 0, marginBottom: 10 }}
+          style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(28,28,28,0.08)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}
         >
-          ← Back
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none">
+            <path d="M8 1L1.5 7.5 8 14" stroke="#1C1C1C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </button>
 
-        {/* Big task title */}
-        <div style={{ fontSize: 26, fontWeight: 900, color: DARK, lineHeight: 1.15, letterSpacing: '-0.7px', marginBottom: 8 }}>{move.title}</div>
+        {/* Title row */}
+        <div style={{ fontSize: 26, fontWeight: 900, color: DARK, lineHeight: 1.15, letterSpacing: '-0.7px', marginBottom: 10 }}>{move.title}</div>
 
-        {/* Meta row: icon + status */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: !move.done ? 10 : 0 }}>
-          <div style={{ width: 28, height: 28, borderRadius: 8, background: col.bg, border: `1px solid ${col.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>
-            {categoryIcon[move.category]}
-          </div>
+        {/* Meta badges row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: !move.done ? 12 : 0, flexWrap: 'wrap' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 10px', borderRadius: 20, background: '#F0EEF9', border: '1px solid #DDD8F0', fontSize: 11, fontWeight: 700, color: PURPLE }}>
+            <span>{categoryIcon[move.category]}</span>
+            <span style={{ textTransform: 'capitalize' }}>{move.category}</span>
+          </span>
           {overdue && move.daysUntil !== null && (
-            <div style={{ fontSize: 12, color: RED, fontWeight: 700 }}>
-              {Math.abs(move.daysUntil)}d overdue — recovery plan below
-            </div>
+            <span style={{ padding: '4px 10px', borderRadius: 20, background: RED, color: 'white', fontSize: 11, fontWeight: 700 }}>
+              {Math.abs(move.daysUntil)}d overdue
+            </span>
           )}
           {!overdue && !move.done && move.daysUntil !== null && (
-            <div style={{ fontSize: 12, color: move.daysUntil <= 7 ? RED : '#EA580C', fontWeight: 700 }}>
-              {move.daysUntil === 0 ? 'Due today' : `${move.daysUntil} days left`}
-            </div>
+            <span style={{ padding: '4px 10px', borderRadius: 20, background: move.daysUntil <= 7 ? '#FEE2E2' : '#EDE9FB', color: move.daysUntil <= 7 ? RED : PURPLE, fontSize: 11, fontWeight: 700 }}>
+              {move.daysUntil === 0 ? 'Due today' : `${move.daysUntil}d left`}
+            </span>
           )}
-          {move.done && <div style={{ fontSize: 12, color: '#10B981', fontWeight: 700 }}>Completed ✓</div>}
+          {move.done && (
+            <span style={{ padding: '4px 10px', borderRadius: 20, background: '#D1FAE5', color: '#059669', fontSize: 11, fontWeight: 700 }}>
+              Completed ✓
+            </span>
+          )}
         </div>
 
         {!move.done && (
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
               <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Progress</span>
-              <span style={{ fontSize: 11, color: RED, fontWeight: 600 }}>{checkedCount} / {move.steps.length}</span>
+              <span style={{ fontSize: 11, color: PURPLE, fontWeight: 700 }}>{checkedCount} / {move.steps.length}</span>
             </div>
             <div style={{ height: 4, borderRadius: 2, background: '#E8E4F8', overflow: 'hidden' }}>
               <div style={{ height: '100%', borderRadius: 2, background: PURPLE, width: `${(checkedCount / move.steps.length) * 100}%`, transition: 'width 0.25s ease' }} />
@@ -890,7 +898,7 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
         )}
       </div>
 
-      <div style={{ padding: '16px 18px 36px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ padding: '16px 18px 36px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
         {/* ── Recovery triage (overdue only) ── */}
         {overdue && (
@@ -899,18 +907,22 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
 
         {/* ── Consequence (non-overdue, non-done) ── */}
         {!move.done && !overdue && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 12px', borderRadius: 10, background: '#FEF2F2', border: '1px solid #FECACA' }}>
-            <span style={{ fontSize: 15, flexShrink: 0 }}>⚠</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 14px', borderRadius: 14, background: 'white', border: '1px solid #FECACA', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+              <circle cx="8" cy="8" r="7" fill="#FEE2E2" stroke={RED} strokeWidth="1.5"/>
+              <path d="M8 5v3.5" stroke={RED} strokeWidth="1.8" strokeLinecap="round"/>
+              <circle cx="8" cy="11" r="0.9" fill={RED}/>
+            </svg>
             <span style={{ fontSize: 12, color: '#991B1B', lineHeight: 1.4 }}>If missed: <strong>{move.consequence}</strong></span>
           </div>
         )}
 
         {/* ── Have ready ── */}
-        <div>
-          <div style={{ fontSize: 20, fontWeight: 900, color: DARK, letterSpacing: '-0.5px', marginBottom: 10 }}>Have ready</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        <div style={{ background: 'white', borderRadius: 16, padding: '14px 16px', boxShadow: '0 1px 5px rgba(0,0,0,0.07)', border: '1px solid rgba(0,0,0,0.06)' }}>
+          <div style={{ fontSize: 18, fontWeight: 900, color: DARK, letterSpacing: '-0.5px', marginBottom: 11 }}>Have ready</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
             {move.gather.map((item, i) => (
-              <div key={i} style={{ padding: '5px 11px', borderRadius: 20, background: col.bg, border: `1px solid ${col.border}`, fontSize: 12, fontWeight: 500, color: col.text }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 20, background: '#F4F2FC', border: '1px solid #DDD8F0', fontSize: 12, fontWeight: 600, color: PURPLE }}>
                 {item}
               </div>
             ))}
@@ -918,9 +930,9 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
         </div>
 
         {/* ── Steps + inline Bruno ── */}
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <div style={{ fontSize: 20, fontWeight: 900, color: DARK, letterSpacing: '-0.5px' }}>Steps</div>
+        <div style={{ background: 'white', borderRadius: 16, padding: '14px 16px', boxShadow: '0 1px 5px rgba(0,0,0,0.07)', border: '1px solid rgba(0,0,0,0.06)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div style={{ fontSize: 18, fontWeight: 900, color: DARK, letterSpacing: '-0.5px' }}>Steps</div>
             <button
               onClick={() => setShowBuilder(true)}
               style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 12px', borderRadius: 20, border: 'none', background: RED, color: 'white', fontSize: 11, fontWeight: 800, cursor: 'pointer' }}
@@ -934,23 +946,23 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
             {move.steps.map((step, i) => {
               const checked = !!checkedSteps[i]
               return (
-                <div key={i} style={{ borderRadius: 12, border: `1px solid ${checked ? '#D1FAE5' : 'var(--border-secondary)'}`, background: checked ? '#F0FDF4' : 'white', overflow: 'hidden' }}>
+                <div key={i} style={{ borderRadius: 12, border: `1px solid ${checked ? '#D1FAE5' : '#EFEFEF'}`, background: checked ? '#F0FDF4' : '#FAFAFA', overflow: 'hidden' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '11px 12px' }}>
                     <button
                       onClick={() => toggleStep(i)}
-                      style={{ width: 22, height: 22, borderRadius: 6, border: `2px solid ${checked ? '#10B981' : col.border}`, background: checked ? '#10B981' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, marginTop: 1 }}
+                      style={{ width: 22, height: 22, borderRadius: 6, border: `2px solid ${checked ? '#10B981' : '#D1D5DB'}`, background: checked ? '#10B981' : 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, marginTop: 1 }}
                     >
                       {checked && <span style={{ color: 'white', fontSize: 12, fontWeight: 700, lineHeight: 1 }}>✓</span>}
                     </button>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                        <span style={{ fontSize: 10, fontWeight: 700, color: col.text, flexShrink: 0 }}>{i + 1}</span>
-                        <span style={{ fontSize: 13, fontWeight: 600, color: checked ? 'var(--text-tertiary)' : 'var(--text-primary)', lineHeight: 1.4, textDecoration: checked ? 'line-through' : 'none' }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: PURPLE, flexShrink: 0 }}>{i + 1}</span>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: checked ? '#9CA3AF' : DARK, lineHeight: 1.4, textDecoration: checked ? 'line-through' : 'none' }}>
                           {step.action}
                         </span>
                       </div>
                       {step.detail && !checked && (
-                        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 3, marginLeft: 16, lineHeight: 1.4 }}>{step.detail}</div>
+                        <div style={{ fontSize: 12, color: '#6B7280', marginTop: 3, marginLeft: 16, lineHeight: 1.4 }}>{step.detail}</div>
                       )}
                     </div>
                   </div>
@@ -959,10 +971,10 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
                       href={step.link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 12px', background: col.bg, borderTop: `1px solid ${col.border}`, textDecoration: 'none' }}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '9px 12px', background: '#F4F2FC', borderTop: '1px solid #DDD8F0', textDecoration: 'none' }}
                     >
-                      <span style={{ fontSize: 12, fontWeight: 700, color: col.text }}>🔗 {step.link.label}</span>
-                      <span style={{ fontSize: 12, color: col.text }}>↗</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: PURPLE }}>🔗 {step.link.label}</span>
+                      <span style={{ fontSize: 12, color: PURPLE }}>↗</span>
                     </a>
                   )}
                 </div>
@@ -1008,18 +1020,15 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
         )}
 
         {/* ── If something goes wrong ── */}
-        <div style={{ padding: '11px 13px', borderRadius: 12, background: '#F9FAFB', border: '1px solid #E5E7EB', display: 'flex', gap: 8 }}>
-          <span style={{ fontSize: 14, flexShrink: 0 }}>🔧</span>
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 900, color: DARK, letterSpacing: '-0.3px', marginBottom: 6 }}>If something goes wrong</div>
-            <div style={{ fontSize: 12, color: 'var(--text-primary)', lineHeight: 1.5 }}>{move.ifWrong}</div>
-          </div>
+        <div style={{ background: 'white', borderRadius: 16, padding: '14px 16px', boxShadow: '0 1px 5px rgba(0,0,0,0.07)', border: '1px solid rgba(0,0,0,0.06)' }}>
+          <div style={{ fontSize: 14, fontWeight: 900, color: DARK, letterSpacing: '-0.3px', marginBottom: 8 }}>If something goes wrong</div>
+          <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.6 }}>{move.ifWrong}</div>
         </div>
 
         {/* ── Contacts ── */}
         {move.contacts && move.contacts.length > 0 && (
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 900, color: DARK, letterSpacing: '-0.5px', marginBottom: 10 }}>
+          <div style={{ background: 'white', borderRadius: 16, padding: '14px 16px', boxShadow: '0 1px 5px rgba(0,0,0,0.07)', border: '1px solid rgba(0,0,0,0.06)' }}>
+            <div style={{ fontSize: 18, fontWeight: 900, color: DARK, letterSpacing: '-0.5px', marginBottom: 12 }}>
               Who to contact
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -1033,14 +1042,14 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
         {/* ── From a peer ── */}
         <button
           onClick={() => setShowPeer(p => !p)}
-          style={{ width: '100%', textAlign: 'left', padding: '11px 13px', borderRadius: 12, background: col.bg, border: `1px solid ${col.border}`, cursor: 'pointer' }}
+          style={{ width: '100%', textAlign: 'left', padding: '13px 15px', borderRadius: 14, background: 'white', border: '1px solid rgba(0,0,0,0.08)', cursor: 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: col.text }}>💬 From a peer</span>
-            <span style={{ fontSize: 12, color: col.text }}>{showPeer ? '▲' : '▼'}</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: DARK }}>💬 From a peer</span>
+            <span style={{ fontSize: 11, color: '#9CA3AF' }}>{showPeer ? '▲' : '▼'}</span>
           </div>
           {showPeer && (
-            <div style={{ fontSize: 12, color: 'var(--text-primary)', lineHeight: 1.55, fontStyle: 'italic', marginTop: 8 }}>{move.peerInsight}</div>
+            <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.6, fontStyle: 'italic', marginTop: 10, paddingTop: 10, borderTop: '1px solid #F3F4F6' }}>{move.peerInsight}</div>
           )}
         </button>
 
@@ -1050,10 +1059,11 @@ export default function GuideDetail({ moveKey, move, profile, onBack, onMarkDone
             onClick={() => onMarkDone(moveKey)}
             style={{
               width: '100%', padding: '15px', borderRadius: 14,
-              background: allChecked ? '#059669' : RED,
+              background: allChecked ? '#059669' : DARK,
               color: 'white', border: 'none', cursor: 'pointer',
-              fontSize: 15, fontWeight: 800, letterSpacing: '-0.2px',
+              fontSize: 15, fontWeight: 800, letterSpacing: '-0.3px',
               transition: 'background 0.3s ease',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
             }}
           >
             {allChecked ? 'All steps done — Mark complete ✓' : 'Mark as done ✓'}
