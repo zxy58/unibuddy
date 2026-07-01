@@ -404,11 +404,11 @@ export default function AskScreen({ profile, moves, openGuide, initialInput = ''
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
               <BuddyAvatar mood="thinking" size={32} />
               <div style={{ fontSize: 14, fontWeight: 800, color: 'white', letterSpacing: '-0.2px', lineHeight: 1.25 }}>
-                You shouldn't have to figure out what to ask
+                You shouldn&apos;t have to figure out what to ask
               </div>
             </div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', lineHeight: 1.5 }}>
-              Tell me your situation in plain English. I'll map the right steps for you.
+              Tell me your situation in plain English. I&apos;ll map the right steps for you.
             </div>
           </div>
 
@@ -519,7 +519,7 @@ export default function AskScreen({ profile, moves, openGuide, initialInput = ''
           <div style={{ padding: '14px 16px', borderRadius: 16, background: DARK }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
               <BuddyAvatar mood="happy" size={22} />
-              <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Bruno's read</div>
+              <div style={{ fontSize: 10, fontWeight: 800, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Bruno&apos;s read</div>
             </div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.88)', lineHeight: 1.6 }}>
               {workflow.summary}

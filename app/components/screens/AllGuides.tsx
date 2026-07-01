@@ -129,7 +129,7 @@ export default function AllGuides({ moves, profile, openGuide, onDescribeSituati
                 Not sure which guide you need?
               </div>
               <div style={{ fontSize: 12, color: '#6B7280', marginTop: 3, lineHeight: 1.45 }}>
-                Describe your situation. I'll generate the right workflow for you
+                Describe your situation. I&apos;ll generate the right workflow for you
               </div>
             </div>
             <span style={{ fontSize: 18, color: PURPLE, flexShrink: 0 }}>→</span>
