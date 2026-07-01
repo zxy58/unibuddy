@@ -3,11 +3,13 @@
 import type { Move, MoveCategory } from '@/app/lib/types'
 import type { UserProfile } from '@/app/lib/profile'
 import { getPrioritizedMoves } from '@/app/lib/recommendations'
+import BuddyAvatar from '@/app/components/ui/BuddyAvatar'
 
 interface Props {
   moves: Record<string, Move>
   profile: UserProfile
   openGuide: (key: string) => void
+  onDescribeSituation?: () => void
 }
 
 const NEUTRAL = { bg: '#F5F5F5', text: '#1A1A1A', border: '#E5E5E5' }
@@ -83,7 +85,11 @@ const categoryIcons: Record<MoveCategory, () => JSX.Element> = {
   academic:   AcademicIcon,
 }
 
-export default function AllGuides({ moves, profile, openGuide }: Props) {
+const RED    = '#E85028'
+const PURPLE = '#8878CC'
+const BROWN  = '#5C3D2E'
+
+export default function AllGuides({ moves, profile, openGuide, onDescribeSituation }: Props) {
   const ordered = getPrioritizedMoves(profile, moves)
 
   // Group by category
@@ -104,6 +110,31 @@ export default function AllGuides({ moves, profile, openGuide }: Props) {
           <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.4px' }}>Process guides</div>
           <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginTop: 2 }}>Step-by-step instructions for every admin task</div>
         </div>
+
+        {/* Describe your situation entry card */}
+        {onDescribeSituation && (
+          <button
+            onClick={onDescribeSituation}
+            style={{
+              width: '100%', textAlign: 'left', padding: '14px 16px', borderRadius: 16,
+              background: 'linear-gradient(135deg, #F9F7FF 0%, #FFF5F5 100%)',
+              border: '1.5px solid #DDD8F0', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 12,
+              boxShadow: '0 2px 8px rgba(136,120,204,0.10)',
+            }}
+          >
+            <BuddyAvatar mood="thinking" size={40} />
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, fontWeight: 800, color: BROWN, letterSpacing: '-0.2px' }}>
+                Not sure which guide you need?
+              </div>
+              <div style={{ fontSize: 12, color: '#6B7280', marginTop: 3, lineHeight: 1.45 }}>
+                Describe your situation. I'll generate the right workflow for you
+              </div>
+            </div>
+            <span style={{ fontSize: 18, color: PURPLE, flexShrink: 0 }}>→</span>
+          </button>
+        )}
 
         {categories.map(cat => {
           const keys = byCategory[cat]!

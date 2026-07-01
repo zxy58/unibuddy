@@ -201,7 +201,7 @@ export default function UnibuddyApp() {
         <>
           <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden', position: 'relative' }}>
             {activeTab === 'timeline' && <div key="timeline" className="fade-up" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}><Timeline profile={profile} moves={moves} openGuide={openGuide} evolutionLevel={evolutionLevel} recoveryMoves={recoveryMoves} /></div>}
-            {activeTab === 'guides'   && <div key="guides"   className="fade-up" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}><AllGuides moves={moves} profile={profile} openGuide={openGuide} /></div>}
+            {activeTab === 'guides'   && <div key="guides"   className="fade-up" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}><AllGuides moves={moves} profile={profile} openGuide={openGuide} onDescribeSituation={() => { setAskPrompt(''); setActiveTab('ask') }} /></div>}
             {activeTab === 'ask'      && <div key="ask"      className="fade-up" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}><AskScreen profile={profile} moves={moves} openGuide={openGuide} initialInput={askPrompt} /></div>}
             {activeTab === 'profile'  && <div key="profile"  className="fade-up" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}><ProfileScreen profile={profile} onSignOut={handleSignOut} onProfileUpdate={(p) => setProfile(p)} /></div>}
             {/* Ambient glow behind nav */}

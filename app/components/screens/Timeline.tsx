@@ -145,7 +145,7 @@ function OverdueCard({ moveKey, move, openGuide, inRecovery }: { moveKey: string
       </div>
       <div style={{ padding: '10px 13px', background: 'rgba(0,0,0,0.16)', borderRadius: 14, marginBottom: 16 }}>
         <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.88)', lineHeight: 1.5 }}>
-          {inRecovery ? 'Recovery plan in progress — tap to continue your steps' : move.consequence}
+          {inRecovery ? 'Recovery plan in progress. Tap to continue your steps' : move.consequence}
         </span>
       </div>
       <button
@@ -271,6 +271,7 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
   const buddyMood: BuddyMood = completedCount === totalCount ? 'celebrate' : overdue.length > 0 ? 'urgent' : 'happy'
 
   const [activeFilter, setActiveFilter] = useState<Filter>('all')
+  const [showNudge, setShowNudge] = useState(false)
 
   const greetingRef = useRef<HTMLDivElement>(null)
   const [greetingH, setGreetingH] = useState(160)
@@ -302,69 +303,91 @@ export default function Timeline({ profile, moves, openGuide, evolutionLevel = 0
   return (
     <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
 
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <div ref={greetingRef} style={{ padding: '14px 20px 14px', position: 'relative', overflow: 'hidden' }}>
-
-        {/* Ambient graphic shapes (background) */}
-        <svg aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', overflow: 'visible' }}>
-          {/* Thick purple arch — upper-right, tilted */}
-          <g transform="translate(318,4) rotate(-16)">
-            <path d="M-44,58 A44,44 0 0,0 44,58 L28,58 A28,28 0 0,1 -28,58 Z" fill={PURPLE} opacity="0.18"/>
-          </g>
-          {/* Red four-petal clover — upper-left */}
-          <g transform="translate(26,26)" opacity="0.18">
-            <circle cx="0" cy="-13" r="14" fill={RED}/>
-            <circle cx="13" cy="0" r="14" fill={RED}/>
-            <circle cx="0" cy="13" r="14" fill={RED}/>
-            <circle cx="-13" cy="0" r="14" fill={RED}/>
-          </g>
-          {/* Horizontal pill — mid hero, very faint */}
-          <rect x="140" y="74" width="56" height="18" rx="9" fill={PURPLE} opacity="0.09"/>
-        </svg>
-
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10, position: 'relative', zIndex: 1 }}>
-          <div style={{ flex: 1, minWidth: 0, paddingRight: 12 }}>
-            <div style={{ fontSize: 32, fontWeight: 900, color: DARK, letterSpacing: '-0.9px', lineHeight: 1.1 }}>
-              {greetingText}
-            </div>
-            <div style={{ fontSize: 12, color: '#6B6B60', marginTop: 6, lineHeight: 1.45, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }}>
-              {nudge.body}
-            </div>
-          </div>
-          <BuddyAvatar mood={buddyMood} size={54} evolutionLevel={evolutionLevel} />
-        </div>
-
-        {/* Progress + leaf shape pile */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '7px 13px 7px 9px', borderRadius: 50, background: 'rgba(0,0,0,0.06)' }}>
-            <div style={{ width: 66, height: 4, borderRadius: 4, background: 'rgba(0,0,0,0.10)', overflow: 'hidden' }}>
-              <div style={{ height: '100%', borderRadius: 4, background: PURPLE, width: `${pct}%`, transition: 'width 0.6s ease' }} />
-            </div>
-            <span style={{ fontSize: 11, fontWeight: 700, color: DARK }}>{completedCount}/{totalCount} done</span>
-          </div>
-
-          {/* Graphic shape pile */}
-          <svg aria-hidden="true" width="96" height="68" viewBox="0 0 96 68" fill="none" style={{ pointerEvents: 'none', flexShrink: 0 }}>
-            {/* Thick purple arch — main form, anchored at bottom */}
-            <path d="M2,68 A46,46 0 0,0 94,68 L76,68 A28,28 0 0,1 20,68 Z" fill={PURPLE}/>
-            {/* Red four-petal clover — upper-right, overlapping arch */}
-            <g transform="translate(72,26)">
-              <circle cx="0" cy="-13" r="14" fill={RED}/>
-              <circle cx="13" cy="0" r="14" fill={RED}/>
-              <circle cx="0" cy="13" r="14" fill={RED}/>
-              <circle cx="-13" cy="0" r="14" fill={RED}/>
-            </g>
-            {/* Cream rounded square — lower-left accent */}
-            <rect x="4" y="36" width="22" height="22" rx="7" fill="#F8F7F6"/>
-            {/* Small purple dot — floating */}
-            <circle cx="18" cy="16" r="5" fill={PURPLE} opacity="0.5"/>
-          </svg>
-        </div>
-      </div>
-
-      {/* ── Scroll sheet ─────────────────────────────────────────────────── */}
+      {/* ── Scroll sheet — hero scrolls away with the rest of the content ─── */}
       <div className="no-scroll" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflowY: 'auto', overflowX: 'hidden', zIndex: 2 }}>
-        <div style={{ height: greetingH, flexShrink: 0 }} />
+
+        {/* ── Hero ─────────────────────────────────────────────────────────── */}
+        <div ref={greetingRef} style={{ position: 'relative' }}>
+          <div style={{ padding: '10px 20px 10px', position: 'relative', overflow: 'hidden' }}>
+
+            {/* Ambient graphic shapes (background) — spread across full width */}
+            <svg aria-hidden="true" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', overflow: 'visible' }}>
+              {/* Purple arch — upper-left, tilted, peeking from corner */}
+              <g transform="translate(38, -6) rotate(14)">
+                <path d="M-44,58 A44,44 0 0,0 44,58 L28,58 A28,28 0 0,1 -28,58 Z" fill={PURPLE} opacity="0.16"/>
+              </g>
+              {/* Red four-petal clover — center-right area */}
+              <g transform="translate(268, 52)" opacity="0.16">
+                <circle cx="0" cy="-13" r="14" fill={RED}/>
+                <circle cx="13" cy="0" r="14" fill={RED}/>
+                <circle cx="0" cy="13" r="14" fill={RED}/>
+                <circle cx="-13" cy="0" r="14" fill={RED}/>
+              </g>
+              {/* Small purple dot — lower-left float */}
+              <circle cx="120" cy="88" r="10" fill={PURPLE} opacity="0.10"/>
+            </svg>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginTop: 8, marginBottom: 6, position: 'relative', zIndex: 1 }}>
+              <div style={{ flex: 1, minWidth: 0, paddingRight: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <span style={{ fontSize: 26, fontWeight: 900, color: DARK, letterSpacing: '-0.7px', lineHeight: 1.15 }}>
+                    {greetingText}
+                  </span>
+                  <button
+                    onClick={e => { e.stopPropagation(); setShowNudge(v => !v) }}
+                    style={{ width: 20, height: 20, borderRadius: '50%', background: showNudge ? PURPLE : 'rgba(0,0,0,0.13)', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 800, color: showNudge ? 'white' : '#6B6B60', flexShrink: 0, lineHeight: 1 }}
+                  >
+                    i
+                  </button>
+                </div>
+              </div>
+              <BuddyAvatar mood={buddyMood} size={46} evolutionLevel={evolutionLevel} />
+            </div>
+
+            {/* Progress + leaf shape pile */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '7px 13px 7px 9px', borderRadius: 50, background: 'rgba(0,0,0,0.06)' }}>
+                <div style={{ width: 66, height: 4, borderRadius: 4, background: 'rgba(0,0,0,0.10)', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', borderRadius: 4, background: PURPLE, width: `${pct}%`, transition: 'width 0.6s ease' }} />
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: DARK }}>{completedCount}/{totalCount} done</span>
+              </div>
+
+              {/* Graphic shape pile */}
+              <svg aria-hidden="true" width="96" height="68" viewBox="0 0 96 68" fill="none" style={{ pointerEvents: 'none', flexShrink: 0, overflow: 'visible' }}>
+                {/* Thick purple arch — tilted CCW so right leg drops off, left edge stays */}
+                <g transform="rotate(-22, 48, 68)">
+                  <path d="M2,68 A46,46 0 0,0 94,68 L76,68 A28,28 0 0,1 20,68 Z" fill={PURPLE}/>
+                </g>
+                {/* Red four-petal clover — centered, overlapping arch */}
+                <g transform="translate(52,30)">
+                  <circle cx="0" cy="-13" r="14" fill={RED}/>
+                  <circle cx="13" cy="0" r="14" fill={RED}/>
+                  <circle cx="0" cy="13" r="14" fill={RED}/>
+                  <circle cx="-13" cy="0" r="14" fill={RED}/>
+                </g>
+                {/* Cream rounded square — right accent */}
+                <rect x="70" y="34" width="20" height="20" rx="6" fill="#F8F7F6"/>
+                {/* Small purple dot — floating left */}
+                <circle cx="14" cy="18" r="5" fill={PURPLE} opacity="0.5"/>
+              </svg>
+            </div>
+          </div>
+
+          {/* ── Nudge popover — anchored under heading, scrolls away with the hero ── */}
+          {showNudge && (
+            <div style={{
+              position: 'absolute', top: 46, left: 20, right: 20, zIndex: 10,
+              background: 'rgba(28,28,28,0.93)', backdropFilter: 'blur(10px)',
+              borderRadius: 12, padding: '11px 13px',
+              boxShadow: '0 6px 24px rgba(0,0,0,0.22)',
+            }}>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.92)', lineHeight: 1.6 }}>
+                {nudge.body}
+              </div>
+            </div>
+          )}
+        </div>
 
         <div style={{
           background: 'white',
